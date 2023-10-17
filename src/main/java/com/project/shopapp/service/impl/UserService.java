@@ -4,8 +4,8 @@ import com.project.shopapp.dtos.UserDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Role;
 import com.project.shopapp.models.User;
-import com.project.shopapp.repositories.RoleRepository;
-import com.project.shopapp.repositories.UserRepository;
+import com.project.shopapp.repository.RoleRepository;
+import com.project.shopapp.repository.UserRepository;
 import com.project.shopapp.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,7 +21,7 @@ public class UserService implements IUserService {
         String email = userDTO.getEmail();
         //Kiểm tra số điện thoại đã tồn tại hay chưa
         if(userRepository.existsByEmail(email)) {
-            throw new DataIntegrityViolationException("Số điện thoại đã tồn tại");
+            throw new DataIntegrityViolationException("Email đã tồn tại");
         }
         //Convert UserDTO -> User
         User newUser = User.builder()
