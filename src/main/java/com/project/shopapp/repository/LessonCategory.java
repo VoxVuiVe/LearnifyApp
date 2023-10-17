@@ -1,4 +1,4 @@
-package com.project.shopapp.reponsitory;
+package com.project.shopapp.repository;
 
 import com.project.shopapp.models.Lesson;
 import org.springframework.data.jpa.repository.JpaRepository;
