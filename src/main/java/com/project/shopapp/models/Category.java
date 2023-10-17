@@ -20,6 +20,6 @@ public class Category {
     private String categoryName;
 
     @ManyToOne
-    @Column olunm(name = "course_id")
+    @Column(name = "course_id")
     private Course course;
 }
