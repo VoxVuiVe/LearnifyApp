@@ -12,12 +12,16 @@ import lombok.*;
 public class Section {
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
+     @Column(name = "section_id")
      private Long sectionId;
 
+     @Column(name = "title")
      private String title;
 
+     @Column(name = "quantity_Lesson")
      private int quantityLesson;
 
+     @Column(name = "total_minutes_section")
      private int totalMinutesSection;
 
 }

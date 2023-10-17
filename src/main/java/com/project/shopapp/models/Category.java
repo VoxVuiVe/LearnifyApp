@@ -13,9 +13,13 @@ import jakarta.persistence.*;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private Long categoryId;
 
+    @Column(name = "category_name",nullable = false)
     private String categoryName;
 
-    //chưa có course nên chưa thể viết quan hệ với CourseId
+    @ManyToOne
+    @Column olunm(name = "course_id")
+    private Course course;
 }
