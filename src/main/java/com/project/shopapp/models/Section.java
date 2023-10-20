@@ -15,6 +15,9 @@ public class Section {
      @Column(name = "section_id")
      private Long sectionId;
 
+     @Column(name = "lesson_id")
+     private Long lessonId;
+
      @Column(name = "title")
      private String title;
 
