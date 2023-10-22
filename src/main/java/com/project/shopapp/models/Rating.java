@@ -1,9 +1,5 @@
 package com.project.shopapp.models;
 
-public class Rating {
-}
-package com.project.shopapp.models;
-
 import java.util.Date;
 
 import javax.swing.text.AbstractDocument.Content;
@@ -31,29 +27,23 @@ import lombok.Setter;
 public class Rating {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name ="user_id")
-	private Long userId;
+	@Column(name ="id")
+	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name ="user_id")
+	private User user;
 	
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	private Course course;
 	
-	@ManyToOne
-	@JoinColumn(name ="content_id")
-	private Content content;
+	@Column(name ="rating")
+	private String rating;
+	
+	@Column(name ="content")
+	private String content;
 	
 	@Column(name ="create_data")
-	private Date createDate;
-	
-	@Column(name ="number_of_like_comments")
-	private int number_of_like_comments;
-	
+	private Date createDate;	
 }
-
-
-
-
-
-
-
-

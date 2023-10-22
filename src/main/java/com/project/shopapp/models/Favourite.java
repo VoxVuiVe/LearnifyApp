@@ -23,7 +23,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "favourite")
 public class Favourite {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name ="favourite_id")
@@ -39,7 +38,5 @@ public class Favourite {
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	private Course course;
-	
-
 	
 }
