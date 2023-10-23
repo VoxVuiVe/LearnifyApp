@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
 @Table(name = "payment_history")
 public class PaymentHistory {
@@ -45,4 +46,5 @@ public class PaymentHistory {
     @ManyToOne
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
+
 }
