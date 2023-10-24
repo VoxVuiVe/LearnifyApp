@@ -14,8 +14,9 @@ import jakarta.persistence.*;
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lesson_id")
-    private Long lessonId;
+    @ManyToOne
+    @JoinColumn(name = "leeson_id")
+    private Section section;
 
     @Column(name = "title",length = 350)
     private String title;
