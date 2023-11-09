@@ -23,6 +23,4 @@ public class UserRole {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
-
 }

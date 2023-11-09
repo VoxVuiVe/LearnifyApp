@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@MappedSuperclass
+// @MappedSuperclass
 @Table(name = "discount_course")
 public class DiscountCourse {
     @Id
