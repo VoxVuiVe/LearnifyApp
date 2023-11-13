@@ -1,30 +1,38 @@
 package com.project.shopapp.models;
 
-import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "section")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Setter@Getter
+@Setter
+@Getter
+@Table(name = "sections")
 public class Section {
-     @Id
-     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     @Column(name = "section_id")
-     private Long sectionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "section_id")
+    private Long sectionId;
 
-     @Column(name = "lesson_id")
-     private Long lessonId;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
-     @Column(name = "title")
-     private String title;
+    @ManyToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
 
-     @Column(name = "quantity_Lesson")
-     private int quantityLesson;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-     @Column(name = "total_minutes_section")
-     private int totalMinutesSection;
+    @Column(name = "quantity_lesson")
+    private int quantityLesson;
 
+    @Column(name = "total_minutes_section")
+    private int totalMinutesSection;
+
+    @Column(name = "resource")
+    private String resource;
 }

@@ -4,7 +4,6 @@ import com.project.shopapp.dtos.CartDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Cart;
 import com.project.shopapp.models.Course;
-import com.project.shopapp.models.Payment;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repository.CartRepository;
 import com.project.shopapp.repository.CourseRepository;

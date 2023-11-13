@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "userrole")
+@Table(name = "user_role")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -23,6 +23,4 @@ public class UserRole {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
-
 }

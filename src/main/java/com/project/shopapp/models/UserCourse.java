@@ -22,11 +22,11 @@ public class UserCourse {
     private Long userCourseId;
 
     @ManyToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     User userId;
 
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false)
     Course courseId;
 
     @Column (name = "enrollment_date")
