@@ -1,0 +1,11 @@
+package com.project.learnifyapp.service;
+
+import com.project.learnifyapp.dtos.UserDTO;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.models.User;
+
+public interface IUserService {
+    User createUser(UserDTO userDTO) throws DataNotFoundException;
+
+    String login(String number, String password); //Kieu String de tra ve token key
+}
