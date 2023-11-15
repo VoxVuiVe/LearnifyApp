@@ -13,19 +13,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter@Setter
 @Entity
-@Table(name = "favourite")
-public class Favourite {
+@Table(name = "favourites")
+public class Favourite implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name ="favourite_id")
-	private Long favouriteId;
+	private Long id;
 	
-	@Column(name ="isActive")
-	private Boolean isActive ;
+	@Column(name ="is_active")
+	private Boolean isActive;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -34,5 +35,4 @@ public class Favourite {
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	private Course course;
-	
 }

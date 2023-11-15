@@ -3,6 +3,8 @@ package com.project.learnifyapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "social_accounts")
 @Getter
@@ -10,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SocialAccount {
+public class SocialAccount implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +23,7 @@ public class SocialAccount {
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
 
-    @Column(name = "name",length = 150)
+    @Column(name = "name", length = 150)
     private String name;
 
     @Column(name = "email", length = 150)

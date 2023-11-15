@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -13,23 +14,20 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "user_course")
-public class UserCourse {
-
+@Table(name = "user_courses")
+public class UserCourse implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "user_course_id")
-    private Long userCourseId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    User userId;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
-    Course courseId;
+    private Course course;
 
     @Column (name = "enrollment_date")
     private Date enrollmentDate;
-
 }

@@ -3,23 +3,24 @@ package com.project.learnifyapp.models;
 import lombok.*;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.util.List;
+
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Setter
 @Getter
-public class Category {
+public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long categoryId;
+    private Long id;
 
-    @Column(name = "category_name",nullable = false)
+    @Column(name = "category_name", nullable = false, length = 100)
     private String categoryName;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> course;
 }

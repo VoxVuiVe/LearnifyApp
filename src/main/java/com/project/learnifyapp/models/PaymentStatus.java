@@ -6,6 +6,6 @@ public class PaymentStatus {
     public static final String PAID = "paid";
     public static final String FAILED = "failed";
     public static final String CANCELLED = "cancelled";
-    public static final String SUCCESSDA     = "successfully";
+    public static final String SUCCESS = "successfully";
     //Thêm trạng thái mới nếu cần thiết
 }

@@ -1,9 +1,11 @@
 package com.project.learnifyapp.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,20 +21,18 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "courses")
-public class Course {
-    
+public class Course extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "course_id")
-    private Long courseId;
+    private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Double price;
 
-    @Column(name = "teacher")
+    @Column(name = "teacher", nullable = false, length = 50)
     private String teacher;
 
     @Column(name = "start_time")
@@ -44,25 +44,14 @@ public class Course {
     @Column(name = "enrollment_count")
     private Integer enrollmentCount;
 
-    @Column(name = "last_update_time")
-    private LocalDateTime lastUpdateTime;
-
-    @Column(name = "image")
-    private String image;
+    @Column(name = "thumbnail")
+    private String thumbnail;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rating> ratings;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favourite> favourites;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DiscountCourse> discountCourses;
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

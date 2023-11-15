@@ -1,5 +1,6 @@
 package com.project.learnifyapp.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -19,8 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter@Setter
 @Entity
-@Table(name = "rating")
-public class Rating {
+@Table(name = "ratings")
+public class Rating extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name ="id")
@@ -34,12 +35,9 @@ public class Rating {
 	@JoinColumn(name = "course_id")
 	private Course course;
 	
-	@Column(name ="rating")
-	private String rating;
+	@Column(name ="number_rating")
+	private Integer numberRating;
 	
-	@Column(name ="content")
-	private String content;
-	
-	@Column(name ="create_data")
-	private Date createDate;	
+	@Column(name ="description")
+	private String description;
 }

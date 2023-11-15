@@ -4,17 +4,18 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-@Table(name = "lesson")
+@Table(name = "lessons")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Setter
 @Getter
-public class Lesson {
+public class Lesson implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JoinColumn(name = "lesson_id")
     private Long id;
 
     @Column(name = "title",length = 350)
@@ -26,7 +27,7 @@ public class Lesson {
     @Column(name = "video_url",nullable = false , length = 350)
     private String videoUrl;
 
-    @Column(name = "question_and_answer",length = 350)
+    @Column(name = "question_and_answer", length = 350)
     private String questionAndAnswer;
 
     @Column(name = "overview")
@@ -34,4 +35,10 @@ public class Lesson {
 
     @Column(name = "note")
     private String note;
+
+    @Column(name = "comment")
+    private String comment;
+
+
+
 }

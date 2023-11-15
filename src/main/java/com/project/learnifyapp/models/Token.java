@@ -3,6 +3,7 @@ package com.project.learnifyapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Token {
+public class Token implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,10 +27,7 @@ public class Token {
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
-    @Column(name = "revoked")
     private boolean revoked;
-
-    @Column(name = "expired")
     private boolean expired;
 
     @ManyToOne

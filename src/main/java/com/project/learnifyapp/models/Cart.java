@@ -3,7 +3,9 @@ package com.project.learnifyapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -12,22 +14,19 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @Entity
-@Table(name = "cart")
-public class Cart {
+@Table(name = "carts")
+public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_id")
-    private Long cartId;
+    private Long id;
 
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
+    @Column(name = "total_money")
+    private Float totalMoney;
 
-    @Column(name = "name")
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
-    @Column(name = "price")
-    private Double price;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> courses;
 }

@@ -9,6 +9,7 @@ import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public User createUser(UserDTO userDTO) throws DataNotFoundException {
         String email = userDTO.getEmail();
@@ -42,9 +44,9 @@ public class UserService implements IUserService {
         //Nếu không đăng nhập bằng FB và GG sẽ yêu cầu mật khẩu
         if(userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
-            //String encodePassword = passwordEncoder.encode(password);
+            String encodePassword = passwordEncoder.encode(password);
             //--Sẽ làm tiếp tục khi làm phần spring security
-            //newUser.setPassword(encodePassword);
+            newUser.setPassword(encodePassword);
         }
         return userRepository.save(newUser);
     }

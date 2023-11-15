@@ -3,6 +3,8 @@ package com.project.learnifyapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 
 @Entity
 @NoArgsConstructor
@@ -10,12 +12,11 @@ import lombok.*;
 @Getter
 @Setter
 // @MappedSuperclass
-@Table(name = "discount_course")
-public class DiscountCourse {
+@Table(name = "discount_courses")
+public class DiscountCourse implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "discount_course_id")
-    private Long discountCourseId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "course_id" , nullable = false)

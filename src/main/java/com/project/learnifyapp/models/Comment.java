@@ -1,5 +1,6 @@
 package com.project.learnifyapp.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -20,27 +21,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter@Setter
 @Entity
-@Table(name = "comment")
-public class Comment {
+@Table(name = "comments")
+public class Comment implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name ="id")
 	private Long id;
 	
+	@Column(name ="comment", length = 150)
+	private String comment;
+	
+	@Column(name ="create_date", nullable = false)
+	private Date createDate;
+	
+	@Column(name ="quantity_like")
+	private Integer quantity;
+
 	@ManyToOne
 	@JoinColumn(name ="user_id")
 	private User user;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "course_id")
-	private Course course;
-	
-	@Column(name ="content")
-	private String content;
-	
-	@Column(name ="create_data")
-	private Date createDate;
-	
-	@Column(name ="number_of_like_comments")
-	private int number_of_like_comments;
+	@JoinColumn(name = "lesson_id")
+	private Lesson lesson;
 }
