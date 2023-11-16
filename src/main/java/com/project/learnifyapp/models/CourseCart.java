@@ -5,25 +5,24 @@ import lombok.*;
 
 import java.io.Serializable;
 
-
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Getter
 @Setter
 @Builder
-// @MappedSuperclass
-@Table(name = "discount_courses")
-public class DiscountCourse implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "course_cart")
+public class CourseCart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "course_id" , nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "discount_id" , nullable = false)
-    private Discount discount;
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

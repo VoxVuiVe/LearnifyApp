@@ -1,2 +1,4 @@
-package com.project.learnifyapp.service.impl;public class SectionService {
+package com.project.learnifyapp.service.impl;
+
+public class SectionService {
 }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,10 +22,14 @@ public class Cart implements Serializable {
     @Column(name = "total_money")
     private Float totalMoney;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Course> courses;
+    private List<CourseCart> courseCarts;
+
 }

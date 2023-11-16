@@ -40,7 +40,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private String password;
 
     @Column(name = "active")
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -49,10 +49,10 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private Date dateOfBirth;
 
     @Column(name = "facebook_account_id")
-    private int facebookAccountId;
+    private Integer facebookAccountId;
 
     @Column(name = "google_account_id")
-    private int googleAccountId;
+    private Integer googleAccountId;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

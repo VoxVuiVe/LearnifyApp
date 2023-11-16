@@ -4,6 +4,7 @@ package com.project.learnifyapp.service.impl;
 import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.models.Comment;
 import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.CommnetRepository;
 import com.project.learnifyapp.service.ICommentsService;
@@ -27,12 +28,12 @@ public class CommentService implements ICommentsService {
 
     private CommentDTO convertToCommentDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(comment.getId());
-        commentDTO.setUserId(comment.getUser().getUserId());
-        commentDTO.setCourseId(comment.getCourse().getCourseId());
-        commentDTO.setContent(comment.getContent());
+        commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setLessonId(comment.getLesson().getId());
+        commentDTO.setComment(comment.getComment());
         commentDTO.setCreateDate(comment.getCreateDate());
-        commentDTO.setNumberOfLikeComments(comment.getNumber_of_like_comments());
+        commentDTO.setIsLike(comment.getIsLike());
+        commentDTO.setQuantity(comment.getQuantity());
         return commentDTO;
     }
 
@@ -41,10 +42,12 @@ public class CommentService implements ICommentsService {
         Comment comment = new Comment();
         // Set user and course based on IDs from DTO
         comment.setUser(new User());
-        comment.setCourse(new Course());
-        comment.setContent(commentDTO.getContent());
+        comment.setLesson(new Lesson());
+        comment.setComment(commentDTO.getComment());
         comment.setCreateDate(commentDTO.getCreateDate());
-        comment.setNumber_of_like_comments(commentDTO.getNumberOfLikeComments());
+        comment.setCreateDate(commentDTO.getCreateDate());
+        comment.setIsLike(commentDTO.getIsLike());
+        comment.setQuantity(commentDTO.getQuantity());
 
         Comment savedComment = commentRepository.save(comment);
         return convertToCommentDTO(savedComment);
@@ -64,11 +67,12 @@ public class CommentService implements ICommentsService {
 
         // Update fields
         existingComment.setUser(new User());
-        existingComment.setCourse(new Course());
-        existingComment.setContent(commentDTO.getContent());
+        existingComment.setLesson(new Lesson());
+        existingComment.setComment(commentDTO.getComment());
         existingComment.setCreateDate(commentDTO.getCreateDate());
-        existingComment.setNumber_of_like_comments(commentDTO.getNumberOfLikeComments());
-
+        existingComment.setCreateDate(commentDTO.getCreateDate());
+        existingComment.setIsLike(commentDTO.getIsLike());
+        existingComment.setQuantity(commentDTO.getQuantity());
         Comment updatedComment = commentRepository.save(existingComment);
         return convertToCommentDTO(updatedComment);
     }

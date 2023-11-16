@@ -1,28 +1,29 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter@Setter
+@Builder
 public class RatingDTO {
 
-    @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("userId")
+    @JsonProperty("user_id")
     private Long userId;
 
-    @JsonProperty("courseId")
+    @JsonProperty("course_id")
     private Long courseId;
 
-    @JsonProperty("rating")
-    private String rating;
+    @JsonProperty("number_rating")
+    private Integer numberRating;
 
-    @JsonProperty("content")
-    private String content;
+    @JsonProperty("description")
+    private String description;
 
-    @JsonProperty("createDate")
-    private Date createDate;
 }

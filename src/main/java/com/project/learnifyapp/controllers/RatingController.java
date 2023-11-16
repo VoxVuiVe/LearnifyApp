@@ -24,33 +24,33 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @PostMapping
-    public ResponseEntity<RatingDTO> addRating(@RequestBody @Valid RatingDTO ratingDTO) {
-        RatingDTO savedRating = ratingService.addRating(ratingDTO);
-        return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{ratingId}")
-    public ResponseEntity<RatingDTO> getRating(@PathVariable Long ratingId) throws NotFoundException {
-        RatingDTO ratingDTO = ratingService.getRating(ratingId);
-        return ResponseEntity.ok(ratingDTO);
-    }
-
-    @PutMapping("/{ratingId}")
-    public ResponseEntity<RatingDTO> updateRating(@PathVariable Long ratingId, @RequestBody @Valid RatingDTO ratingDTO) throws NotFoundException {
-        RatingDTO updatedRating = ratingService.updateRating(ratingId, ratingDTO);
-        return ResponseEntity.ok(updatedRating);
-    }
-
-    @DeleteMapping("/{ratingId}")
-    public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
-        ratingService.deleteRating(ratingId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<RatingDTO>> getAllRatings() {
-        List<RatingDTO> allRatings = ratingService.getAllRatings();
-        return ResponseEntity.ok(allRatings);
-    }
+//    @PostMapping
+//    public ResponseEntity<RatingDTO> addRating(@RequestBody @Valid RatingDTO ratingDTO) {
+//        RatingDTO savedRating = ratingService.addRating(ratingDTO);
+//        return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
+//    }
+//
+//    @GetMapping("/{ratingId}")
+//    public ResponseEntity<RatingDTO> getRating(@PathVariable Long ratingId) throws NotFoundException {
+//        RatingDTO ratingDTO = ratingService.getRating(ratingId);
+//        return ResponseEntity.ok(ratingDTO);
+//    }
+//
+//    @PutMapping("/{ratingId}")
+//    public ResponseEntity<RatingDTO> updateRating(@PathVariable Long ratingId, @RequestBody @Valid RatingDTO ratingDTO) throws NotFoundException {
+//        RatingDTO updatedRating = ratingService.updateRating(ratingId, ratingDTO);
+//        return ResponseEntity.ok(updatedRating);
+//    }
+//
+//    @DeleteMapping("/{ratingId}")
+//    public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
+//        ratingService.deleteRating(ratingId);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @GetMapping("/all")
+//    public ResponseEntity<List<RatingDTO>> getAllRatings() {
+//        List<RatingDTO> allRatings = ratingService.getAllRatings();
+//        return ResponseEntity.ok(allRatings);
+//    }
 }

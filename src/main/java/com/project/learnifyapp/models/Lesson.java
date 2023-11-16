@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Table(name = "lessons")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Data
 @Setter
 @Getter
@@ -18,13 +19,13 @@ public class Lesson implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title",length = 350)
+    @Column(name = "title", length = 350)
     private String title;
 
     @Column(name = "time")
     private String time;
 
-    @Column(name = "video_url",nullable = false , length = 350)
+    @Column(name = "video_url", nullable = false, length = 350)
     private String videoUrl;
 
     @Column(name = "question_and_answer", length = 350)
@@ -39,6 +40,7 @@ public class Lesson implements Serializable {
     @Column(name = "comment")
     private String comment;
 
-
-
+    @ManyToOne
+    @JoinColumn(name = "section_id")
+    private Section section;
 }
