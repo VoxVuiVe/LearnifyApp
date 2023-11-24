@@ -1,6 +1,7 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.learnifyapp.models.Cart;
 import com.project.learnifyapp.models.Favourite;
 import lombok.*;
 
@@ -43,8 +44,7 @@ public class CourseDTO implements Serializable {
     @JsonProperty("category_id")
     private Long categoryId;
 
-    @JsonProperty("cart_id")
-    private Long cartId;
+    private Set<Cart> carts;
 
     private Set<DiscountDTO> discounts;
 

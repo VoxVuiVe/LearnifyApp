@@ -29,5 +29,7 @@ public class CartDTO {
     @JsonProperty("user_id")
     private Long userId;
 
-    private Set<CourseDTO> courses;
+    @NotNull
+    @JsonProperty("course_id")
+    private Long courseId;
 }

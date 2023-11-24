@@ -53,9 +53,8 @@ public class Course extends BaseEntity implements Serializable {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name="cart_id")
-    private Cart cart;
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private Set<Cart> carts = new HashSet<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Discount> discounts = new HashSet<>();
