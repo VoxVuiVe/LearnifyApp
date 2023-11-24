@@ -32,6 +32,6 @@ public class DiscountDTO {
     @JsonProperty("is_active")
     private Boolean isActive;
 
-    @JsonProperty("course_id")
-    private Long courseId;
+    @NotNull(message = "couser Id cannot be null")
+    private Long course_id;
 }
