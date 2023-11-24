@@ -3,6 +3,7 @@ package com.project.learnifyapp.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -33,5 +34,5 @@ public class DiscountDTO {
     private Boolean isActive;
 
     @NotNull(message = "couser Id cannot be null")
-    private Long course_id;
+    private Long courseId;
 }

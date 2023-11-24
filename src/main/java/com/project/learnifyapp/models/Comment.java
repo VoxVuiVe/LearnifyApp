@@ -1,7 +1,10 @@
 package com.project.learnifyapp.models;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,13 +27,13 @@ public class Comment implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name ="comment", length = 150)
 	private String comment;
-	
+
 	@Column(name ="create_date", nullable = false)
-	private Date createDate;
-	
+	private LocalDateTime createDate = LocalDateTime.now();
+
 	@Column(name ="quantity_like")
 	private Integer quantity;
 

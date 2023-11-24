@@ -28,7 +28,6 @@ public class DiscountController {
     private final DiscountRepository discountRepository;
     @PostMapping("/discounts")
     public ResponseEntity<DiscountDTO> createDiscount(@Valid @RequestBody DiscountDTO discountDTO){
-
         if(discountDTO.getId() != null){
             throw new BadRequestAlertException("A new Discount cannot already have an Id",ENTITY_NAME, "idexists");
         }

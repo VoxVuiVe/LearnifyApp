@@ -95,4 +95,9 @@ public class LessonService implements ILessonService {
             throw new RuntimeException("Failed to delete lesson: " + e.getMessage(), e);
         }
     }
+
+    @Transactional(readOnly = true)
+    public boolean isLessonExists(Long lessonId) {
+        return lessonRepository.existsById(lessonId);
+    }
 }
