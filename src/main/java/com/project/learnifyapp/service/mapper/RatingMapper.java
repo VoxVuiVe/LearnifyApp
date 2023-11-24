@@ -7,9 +7,4 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {CourseMapper.class})
 public interface RatingMapper extends EntityMapper<RatingDTO, Rating>{
-    @Override
-    @Mapping(source = "course.id" ,target = "courseId")
-    @Mapping(source = "user.id" ,target = "userId")
-    RatingDTO toDTO(Rating entity);
-
 }

@@ -1,6 +1,8 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -29,4 +31,7 @@ public class DiscountDTO {
 
     @JsonProperty("is_active")
     private Boolean isActive;
+
+    @JsonProperty("course_id")
+    private Long courseId;
 }

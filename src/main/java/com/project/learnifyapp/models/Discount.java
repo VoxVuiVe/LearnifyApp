@@ -33,4 +33,8 @@ public class Discount implements Serializable {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

@@ -1,15 +1,11 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.learnifyapp.models.CourseCart;
-import com.project.learnifyapp.models.User;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Getter
@@ -33,5 +29,5 @@ public class CartDTO {
     @JsonProperty("user_id")
     private Long userId;
 
-    private List<CourseCart> courseCarts;
+    private Set<CourseDTO> courses;
 }

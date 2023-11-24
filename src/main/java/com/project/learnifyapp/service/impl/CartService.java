@@ -3,8 +3,6 @@ package com.project.learnifyapp.service.impl;
 import com.project.learnifyapp.dtos.CartDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Cart;
-import com.project.learnifyapp.models.Course;
-import com.project.learnifyapp.models.CourseCart;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.CartRepository;
 import com.project.learnifyapp.repository.CourseRepository;
@@ -12,10 +10,6 @@ import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,14 +1,13 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.learnifyapp.models.CourseCart;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
+import com.project.learnifyapp.models.Favourite;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -44,5 +43,10 @@ public class CourseDTO implements Serializable {
     @JsonProperty("category_id")
     private Long categoryId;
 
-    private List<CourseCart> courseCarts;
+    @JsonProperty("cart_id")
+    private Long cartId;
+
+    private Set<DiscountDTO> discounts;
+
+    private List<FavouriteDTO> favourites;
 }
