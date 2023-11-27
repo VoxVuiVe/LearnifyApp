@@ -8,14 +8,14 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 public interface ICommentsService {
 
-    CommentDTO addComment(CommentDTO commentDTO);
+    CommentDTO save(CommentDTO commentDTO);
 
-    CommentDTO getComment(Long commentId) throws NotFoundException;
+    CommentDTO getComment(Long commentId);
 
-    CommentDTO updateComment(Long commentId, CommentDTO commentDTO) throws NotFoundException;
+    CommentDTO update(Long commentId, CommentDTO commentDTO);
 
-    void deleteComment(Long commentId);
+    void remove(Long commentId);
 
-    List<CommentDTO> getAllComments();
+    boolean existingComment(Long commentId);
 }
 

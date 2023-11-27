@@ -3,10 +3,12 @@ package com.project.learnifyapp.service.impl;
 import com.project.learnifyapp.dtos.PaymentHistoryDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentHistory;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.repository.PaymentHistoryRepository;
+import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IPaymentHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,29 +21,28 @@ import java.time.LocalDateTime;
 public class PaymentHistoryService implements IPaymentHistoryService {
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public PaymentHistory createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException {
         Long courseId = paymentHistoryDTO.getCourseId();
-        Long userId = paymentHistoryDTO.getUserId();
+        Long paymentId = paymentHistoryDTO.getPaymentId();
 
         // Kiểm tra sự tồn tại của Course và User
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new DataNotFoundException("Course không tồn tại"));
 
-        User user = userRepository.findById(userId)
+        Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new DataNotFoundException("User không tồn tại"));
 
         // Convert PaymentHistoryDTO -> PaymentHistory
         PaymentHistory newPaymentHistory = PaymentHistory.builder()
                 .totalMoney(paymentHistoryDTO.getTotalMoney())
                 .numberOfCourse(paymentHistoryDTO.getNumberOfCourse())
-                .transactionStatus(paymentHistoryDTO.getTransactionStatus())
-                .paymentDate(LocalDateTime.now())
-                .paymentMethod(paymentHistoryDTO.getPaymentMethod())
+                .transactionId(paymentHistoryDTO.getTransactionId())
+                .price(paymentHistoryDTO.getPrice())
                 .course(course)
-                .user(user)
+                .payment(payment)
                 .build();
 
         return paymentHistoryRepository.save(newPaymentHistory);
@@ -59,9 +60,8 @@ public class PaymentHistoryService implements IPaymentHistoryService {
 
         paymentHistory.setTotalMoney(updatedData.getTotalMoney());
         paymentHistory.setNumberOfCourse(updatedData.getNumberOfCourse());
-        paymentHistory.setTransactionStatus(updatedData.getTransactionStatus());
-        paymentHistory.setPaymentDate(updatedData.getPaymentDate());
-        paymentHistory.setPaymentMethod(updatedData.getPaymentMethod());
+        paymentHistory.setTransactionId(updatedData.getTransactionId());
+        paymentHistory.setPrice(updatedData.getPrice());
 
         return paymentHistoryRepository.save(paymentHistory);
     }

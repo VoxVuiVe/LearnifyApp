@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 // @MappedSuperclass
 @Table(name = "discount_courses")
 public class DiscountCourse implements Serializable {

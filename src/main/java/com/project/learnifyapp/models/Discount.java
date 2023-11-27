@@ -32,5 +32,9 @@ public class Discount implements Serializable {
     private LocalDateTime startEnd;
 
     @Column(name = "is_active")
-    private boolean active;
+    private Boolean isActive;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

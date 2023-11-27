@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,10 +24,15 @@ public class Cart implements Serializable {
     @Column(name = "total_money")
     private Float totalMoney;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Course> courses;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+
 }

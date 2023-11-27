@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentHistoryDTO {
 
+    private Long id;
     @NotNull
     @DecimalMin("0.0")
     @JsonProperty("total_money")
@@ -22,19 +23,19 @@ public class PaymentHistoryDTO {
     @JsonProperty("number_of_course")
     private Integer numberOfCourse;
 
+    @NotNull
+    @JsonProperty("price")
+    private Float price;
+
     @NotBlank
-    @JsonProperty("transaction_status")
-    private String transactionStatus;
+    @JsonProperty("transaction_id")
+    private String transactionId;
 
-    @JsonProperty("payment_date")
-    private LocalDateTime paymentDate;
-
-    @JsonProperty("payment_method")
-    private String paymentMethod;
-
+    @NotNull(message = "User ID cannot be null")
     @JsonProperty("course_id")
     private Long courseId;
 
-    @JsonProperty("user_id")
-    private Long userId;
+    @NotNull(message = "User ID cannot be null")
+    @JsonProperty("payment_id")
+    private Long paymentId;
 }

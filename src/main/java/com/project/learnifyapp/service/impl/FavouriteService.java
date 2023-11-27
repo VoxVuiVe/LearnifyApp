@@ -26,10 +26,9 @@ public class FavouriteService implements IFavouriteService {
 
     private FavouriteDTO convertToFavouriteDTO(Favourite favourite) {
         FavouriteDTO favouriteDTO = new FavouriteDTO();
-        favouriteDTO.setFavouriteId(favourite.getFavouriteId());
         favouriteDTO.setIsActive(favourite.getIsActive());
-        favouriteDTO.setUserId(favourite.getUser().getUserId());
-        favouriteDTO.setCourseId(favourite.getCourse().getCourseId());
+        favouriteDTO.setUserId(favourite.getUser().getId());
+        favouriteDTO.setCourseId(favourite.getCourse().getId());
         return favouriteDTO;
     }
 

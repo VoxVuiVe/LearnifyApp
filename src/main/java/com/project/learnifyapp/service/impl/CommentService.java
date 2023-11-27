@@ -3,87 +3,109 @@ package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.models.Comment;
-import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.models.User;
-import com.project.learnifyapp.repository.CommnetRepository;
+import com.project.learnifyapp.repository.CommentRepository;
+import com.project.learnifyapp.repository.LessonRepository;
+import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.ICommentsService;
 
+import com.project.learnifyapp.service.mapper.CommentMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentService implements ICommentsService {
 
-    private final CommnetRepository commentRepository;
+    private final CommentRepository commentRepository;
+
+    private final CommentMapper commentMapper;
+
+    private final LessonRepository lessonRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    public CommentService (CommnetRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, LessonRepository lessonRepository, UserRepository userRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
+        this.lessonRepository = lessonRepository;
+        this.userRepository = userRepository;
+        this.commentMapper = commentMapper;
     }
 
     private CommentDTO convertToCommentDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(comment.getId());
-        commentDTO.setUserId(comment.getUser().getUserId());
-        commentDTO.setCourseId(comment.getCourse().getCourseId());
-        commentDTO.setContent(comment.getContent());
+        commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setLessonId(comment.getLesson().getId());
+        commentDTO.setComment(comment.getComment());
         commentDTO.setCreateDate(comment.getCreateDate());
-        commentDTO.setNumberOfLikeComments(comment.getNumber_of_like_comments());
+        commentDTO.setIsLike(comment.getIsLike());
+        commentDTO.setQuantity(comment.getQuantity());
         return commentDTO;
     }
 
     @Override
-    public CommentDTO addComment(CommentDTO commentDTO) {
-        Comment comment = new Comment();
-        // Set user and course based on IDs from DTO
-        comment.setUser(new User());
-        comment.setCourse(new Course());
-        comment.setContent(commentDTO.getContent());
-        comment.setCreateDate(commentDTO.getCreateDate());
-        comment.setNumber_of_like_comments(commentDTO.getNumberOfLikeComments());
+    public CommentDTO save(CommentDTO commentDTO) {
+        Comment comment = commentMapper.toEntity(commentDTO);
 
-        Comment savedComment = commentRepository.save(comment);
-        return convertToCommentDTO(savedComment);
-    }
+        Long lessonId = commentDTO.getLessonId();
+        if (lessonId == null) {
+            Lesson lesson = lessonRepository.findById(lessonId)
+                    .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + lessonId));
+            comment.setLesson(lesson);
+        }
 
-    @Override
-    public CommentDTO getComment(Long commentId) throws NotFoundException {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException());
+        Long userId = commentDTO.getUserId();
+        if (userId == null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+            comment.setUser(user);
+        }
+
+        comment = commentRepository.save(comment);
+
         return convertToCommentDTO(comment);
     }
 
     @Override
-    public CommentDTO updateComment(Long commentId, CommentDTO commentDTO) throws NotFoundException {
+    public CommentDTO update(Long commentId, CommentDTO commentDTO) {
         Comment existingComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException());
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+        Long lessonId = commentDTO.getLessonId();
+        if (lessonId != null) {
+            Lesson lesson = lessonRepository.findById(lessonId)
+                    .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + lessonId));
+            existingComment.setLesson(lesson);
+        }
 
-        // Update fields
-        existingComment.setUser(new User());
-        existingComment.setCourse(new Course());
-        existingComment.setContent(commentDTO.getContent());
-        existingComment.setCreateDate(commentDTO.getCreateDate());
-        existingComment.setNumber_of_like_comments(commentDTO.getNumberOfLikeComments());
+        Long userId = commentDTO.getUserId();
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+            existingComment.setUser(user);
+        }
 
-        Comment updatedComment = commentRepository.save(existingComment);
-        return convertToCommentDTO(updatedComment);
+        commentRepository.save(existingComment);
+        return commentDTO;
     }
 
     @Override
-    public void deleteComment(Long commentId) {
+    public void remove(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
     @Override
-    public List<CommentDTO> getAllComments() {
-        List<Comment> comments = commentRepository.findAll();
-        return comments.stream()
-                .map(this::convertToCommentDTO)
-                .collect(Collectors.toList());
+    public CommentDTO getComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+        return convertToCommentDTO(comment);
     }
-}
 
+    @Override
+    public boolean existingComment(Long commentId) {
+        return commentRepository.existsById(commentId);
+    }
+
+}

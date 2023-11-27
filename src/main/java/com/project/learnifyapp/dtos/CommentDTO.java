@@ -1,29 +1,35 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
+@Builder
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentDTO {
-
-    @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("userId")
+    @JsonProperty("create_date")
+    private LocalDateTime createDate = LocalDateTime.now();
+
+    @JsonProperty("comment")
+    private String comment;
+
+    @JsonProperty("quantity_like")
+    private Integer quantity;
+
+    @JsonProperty("is_like")
+    private Boolean isLike;
+
+    @JsonProperty("user_id")
     private Long userId;
 
-    @JsonProperty("courseId")
-    private Long courseId;
+    @JsonProperty("lesson_id")
+    private Long lessonId;
 
-    @JsonProperty("content")
-    private String content;
-
-    @JsonProperty("createDate")
-    private Date createDate;
-
-    @JsonProperty("numberOfLikeComments")
-    private int numberOfLikeComments;
 }
-

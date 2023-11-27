@@ -1,43 +1,35 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CartDTO {
 
-    @NotNull
-    @JsonProperty("create_date")
-    private LocalDateTime createDate;
+    private Long id;
 
     @NotNull
-    @JsonProperty("name")
-    private String name;
-
-    @NotNull
-    @Min(0)
     @JsonProperty("quantity")
     private Integer quantity;
 
     @NotNull
-    @DecimalMin("0.0")
-    @JsonProperty("price")
-    private Double price;
-
-    @NotNull
-    @JsonProperty("course_id")
-    private Long courseId;
+    @JsonProperty("total_money")
+    private Float totalMoney;
 
     @NotNull
     @JsonProperty("user_id")
     private Long userId;
 
     @NotNull
-    @JsonProperty("payment_id")
-    private Long paymentId;
+    @JsonProperty("course_id")
+    private Long courseId;
 }

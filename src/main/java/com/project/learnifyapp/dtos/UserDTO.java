@@ -13,6 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class UserDTO {
+
+    private Long id;
     @JsonProperty("fullname")
     private String fullName;
 

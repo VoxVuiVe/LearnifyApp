@@ -11,6 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserLoginDTO {
+
+    private Long id;
     @JsonProperty("email")
     @NotBlank(message = "Email must be is required!")
     private String email;
