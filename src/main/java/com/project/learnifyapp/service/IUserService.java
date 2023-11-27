@@ -7,5 +7,5 @@ import com.project.learnifyapp.models.User;
 public interface IUserService {
     User createUser(UserDTO userDTO) throws DataNotFoundException;
 
-    String login(String number, String password); //Kieu String de tra ve token key
+    String login(String number, String password) throws Exception; //Kieu String de tra ve token key
 }

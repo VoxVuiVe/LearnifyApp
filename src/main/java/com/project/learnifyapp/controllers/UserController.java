@@ -45,11 +45,14 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO
-    ) {
+            @Valid @RequestBody UserLoginDTO userLoginDTO) {
         //Kiểm tra thông tin đăng nhập và sinh TOKEN
-        String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+        try {
+            String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         // Tra ve token trong response
-        return ResponseEntity.ok(token);
     }
 }
