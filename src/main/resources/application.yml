@@ -1,0 +1,28 @@
+server:
+  port: 8080
+#  Kiem tra dung luong qua 10mb thi day ra
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/learnifyapp?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update #tu dong tao database
+    #    generate-ddl: true
+    show-sql: true
+  properties:
+    hibernate:
+    dialect: org.hibernate.dialect.MySQL8Dialect #driver de ket noi den csdl
+    format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+#xu dung bien moi truong de quan li API de dang hon => thay doi 1 lan kh can phai thay doi nhieu lan
+api:
+  prefix: api/v1
+jwt:
+  expiration: 2592000 #30 days = 30d * 24h * 60m * 60s
+  secretKey: I have a dream
