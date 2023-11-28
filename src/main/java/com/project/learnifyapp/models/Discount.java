@@ -6,6 +6,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "discounts")
@@ -26,7 +27,7 @@ public class Discount implements Serializable {
     private Float percentage;
 
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDateTime startDate = LocalDateTime.now();
 
     @Column(name = "start_end")
     private LocalDateTime startEnd;
@@ -34,7 +35,6 @@ public class Discount implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<DiscountCourse> discountCourses;
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,6 +34,5 @@ public class DiscountDTO {
     @JsonProperty("is_active")
     private Boolean isActive;
 
-    @NotNull(message = "couser Id cannot be null")
-    private Long courseId;
+    private List<DiscountCourseDTO> discountCourses;
 }

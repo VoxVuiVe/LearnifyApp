@@ -44,9 +44,9 @@ public class CourseDTO implements Serializable {
     @JsonProperty("category_id")
     private Long categoryId;
 
-    private Set<Cart> carts;
+    private List<Cart> carts;
 
-    private Set<DiscountDTO> discounts;
+    private List<DiscountCourseDTO> discountCourses;
 
     private List<FavouriteDTO> favourites;
 }

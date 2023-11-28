@@ -10,11 +10,11 @@ import java.util.Optional;
 
 
 public interface IDiscountService {
-    public DiscountDTO createDiscourse(DiscountDTO discountDTO);
+    DiscountDTO createDiscourse(DiscountDTO discountDTO);
     Optional<DiscountDTO> getDiscourseById(long id);
     Page<Discount> getDiscountPage (PageRequest pageRequest);
 
-    List<Discount> getAllDiscount();
+    List<DiscountDTO> getAllDiscount();
 
     void deleteDiscourse(long id);
 //    boolean existsByName(String name);

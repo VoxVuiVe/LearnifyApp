@@ -5,14 +5,6 @@ import com.project.learnifyapp.models.Discount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {CourseMapper.class})
+@Mapper(componentModel = "spring", uses = {DiscountCourseMapper.class})
 public interface DiscountMapper extends EntityMapper<DiscountDTO, Discount> {
-
-    @Override
-    @Mapping(source = "course.id", target = "courseId")
-    DiscountDTO toDTO (Discount entity);
-
-    @Override
-    @Mapping(source = "courseId", target = "course.id")
-    Discount toEntity (DiscountDTO dto);
 }

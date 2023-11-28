@@ -4,6 +4,5 @@ import com.project.learnifyapp.dtos.DiscountCourseDTO;
 import com.project.learnifyapp.models.DiscountCourse;
 
 public interface IDiscountCourseService {
-    DiscountCourse createDiscountCourse(DiscountCourseDTO discountCourseDTO);
-
+    DiscountCourseDTO createDiscountCourse(DiscountCourseDTO discountCourseDTO);
 }

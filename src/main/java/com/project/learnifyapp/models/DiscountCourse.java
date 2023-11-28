@@ -19,11 +19,14 @@ public class DiscountCourse implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
     @ManyToOne
-    @JoinColumn(name = "course_id" , nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "discount_id" , nullable = false)
+    @JoinColumn(name = "discount_id")
     private Discount discount;
 }

@@ -54,11 +54,12 @@ public class Course extends BaseEntity implements Serializable {
     private Category category;
 
     @OneToMany(mappedBy = "course", orphanRemoval = true)
-    private Set<Cart> carts = new HashSet<>();
+    private List<Cart> carts;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<Discount> discounts = new HashSet<>();
+    private List<DiscountCourse> discountCourses;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Favourite> favourites = new ArrayList<>();
+    private List<Favourite> favourites;
+
 }
