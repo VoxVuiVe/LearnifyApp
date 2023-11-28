@@ -49,16 +49,19 @@ public class Course extends BaseEntity implements Serializable {
     @Column(name = "thumbnail")
     private String thumbnail;
 
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "course", orphanRemoval = true)
-    private Set<Cart> carts = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL ,orphanRemoval = true)
+    private List<Cart> carts;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<Discount> discounts = new HashSet<>();
+    private Set<Discount> discounts;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Favourite> favourites = new ArrayList<>();
+    private List<Favourite> favourites;
 }

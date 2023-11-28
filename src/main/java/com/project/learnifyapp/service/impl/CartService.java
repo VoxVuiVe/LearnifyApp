@@ -8,6 +8,7 @@ import com.project.learnifyapp.repository.CartRepository;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.ICartService;
+import com.project.learnifyapp.service.mapper.CartMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class CartService implements ICartService {
     private final CartRepository cartRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final CartMapper cartMapper;
 
     @Override
     public Cart createCart(CartDTO cartDTO) throws DataNotFoundException {

@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-
 @Data
 @Getter
 @Setter
@@ -14,21 +11,22 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CartDTO {
-
+public class CartItemDTO {
     private Long id;
 
     @NotNull
-    @JsonProperty("total_item")
-    private Integer totalItem;
+    @JsonProperty("quantity")
+    private Integer quantity;
 
     @NotNull
-    @JsonProperty("total_money")
-    private Float totalMoney;
+    @JsonProperty("total_price")
+    private Float totalPrice;
 
     @NotNull
-    @JsonProperty("user_id")
-    private Long userId;
+    @JsonProperty("cart_id")
+    private Long cartId;
 
-    private Set<CartItemDTO> cartItemDTOs;
+    @NotNull
+    @JsonProperty("course_id")
+    private Long courseId;
 }

@@ -76,9 +76,8 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> socialAccounts;
 
-    @OneToOne
-    @JoinColumn(name = "user")
-    private Cart cart;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cart> cart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { //Lấy ra các quyền -> table ROLE

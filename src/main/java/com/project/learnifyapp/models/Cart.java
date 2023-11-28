@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,24 +16,25 @@ import java.util.Set;
 @Setter
 @Builder
 @Entity
+@ToString
 @Table(name = "carts")
 public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "total_item")
+    private Integer totalItem;
+
     @Column(name = "total_money")
     private Float totalMoney;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    @OneToMany(mappedBy ="cart",cascade = CascadeType.ALL)
+    private Set<CartItem> cartItems;
 
 }
+
