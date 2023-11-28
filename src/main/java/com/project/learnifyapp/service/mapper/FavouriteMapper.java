@@ -1,11 +1,13 @@
 package com.project.learnifyapp.service.mapper;
 
+import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.dtos.FavouriteDTO;
+import com.project.learnifyapp.models.Comment;
 import com.project.learnifyapp.models.Favourite;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-@Mapper(componentModel = "spring", uses = { UserMapper.class,CourseMapper.class})
+import org.mapstruct.MappingTarget;
+@Mapper(componentModel = "spring", uses = {UserMapper.class,CourseMapper.class})
 public interface FavouriteMapper extends EntityMapper<FavouriteDTO, Favourite>{
 
     @Override
@@ -17,4 +19,7 @@ public interface FavouriteMapper extends EntityMapper<FavouriteDTO, Favourite>{
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "courseId", target = "course.id")
     Favourite toEntity(FavouriteDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    void updateFavouriteFromDTO(FavouriteDTO favouriteDTO, @MappingTarget Favourite favourite);
 }

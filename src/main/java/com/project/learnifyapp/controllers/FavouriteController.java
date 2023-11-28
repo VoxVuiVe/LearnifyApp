@@ -1,56 +1,76 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.FavouriteDTO;
+import com.project.learnifyapp.exceptions.BadRequestAlertException;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.service.impl.FavouriteService;
-
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+
+import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
-@RequestMapping("/api/favourites")
+@RequiredArgsConstructor
+@RequestMapping("/api")
 public class FavouriteController {
 
     private final FavouriteService favouriteService;
 
-    @Autowired
-    public FavouriteController(FavouriteService favouriteService) {
-        this.favouriteService = favouriteService;
+
+    @PostMapping("/favourite")
+    public ResponseEntity<FavouriteDTO> createFavourite(@Valid @RequestBody FavouriteDTO favouriteDTO){
+        if (favouriteDTO.getId() != null) {
+            throw new BadRequestAlertException("A new Favourite cannot already have an Id", ENTITY_NAME, "idexists");
+        }
+
+        FavouriteDTO result = favouriteService.save(favouriteDTO);
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
-    @PostMapping
-    public ResponseEntity<FavouriteDTO> addFavourite(@RequestBody @Valid FavouriteDTO favouriteDTO) {
-        FavouriteDTO savedFavourite = favouriteService.addFavourite(favouriteDTO);
-        return new ResponseEntity<>(savedFavourite, HttpStatus.CREATED);
+    @PutMapping("/favourite/{id}")
+    public ResponseEntity<FavouriteDTO> updateFavourite(@PathVariable Long id, @Valid @RequestBody FavouriteDTO favouriteDTO) throws DataNotFoundException {
+        if (favouriteDTO.getId() != null && !Objects.equals(id, favouriteDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!favouriteService.exitsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnot found");
+        }
+
+        FavouriteDTO result = favouriteService.update(id, favouriteDTO);
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
-    @GetMapping("/{favouriteId}")
-    public ResponseEntity<FavouriteDTO> getFavourite(@PathVariable Long favouriteId) throws NotFoundException {
-        FavouriteDTO favouriteDTO = favouriteService.getFavourite(favouriteId);
-        return ResponseEntity.ok(favouriteDTO);
+    @DeleteMapping("/favourite/{id}")
+    public ResponseEntity<Void> deleteFavourite(@PathVariable Long id) throws DataNotFoundException {
+        favouriteService.remove(id);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
-    @PutMapping("/{favouriteId}")
-    public ResponseEntity<FavouriteDTO> updateFavourite(@PathVariable Long favouriteId, @RequestBody @Valid FavouriteDTO favouriteDTO) throws NotFoundException {
-        FavouriteDTO updatedFavourite = favouriteService.updateFavourite(favouriteId, favouriteDTO);
-        return ResponseEntity.ok(updatedFavourite);
+    @GetMapping("/favourite/{id}")
+    public ResponseEntity<FavouriteDTO> getFavouriteById(@PathVariable Long id) throws DataNotFoundException {
+        FavouriteDTO favouriteDTO = favouriteService.getFavourite(id);
+        return ResponseEntity
+                .ok()
+                .body(favouriteDTO);
     }
 
-    @DeleteMapping("/{favouriteId}")
-    public ResponseEntity<Void> deleteFavourite(@PathVariable Long favouriteId) {
-        favouriteService.deleteFavourite(favouriteId);
-        return ResponseEntity.noContent().build();
-    }
 
-    @GetMapping("/all")
+    @GetMapping("/favourites")
     public ResponseEntity<List<FavouriteDTO>> getAllFavourites() {
-        List<FavouriteDTO> allFavourites = favouriteService.getAllFavourites();
-        return ResponseEntity.ok(allFavourites);
+        List<FavouriteDTO> favourites = favouriteService.getAllFavourites();
+        return ResponseEntity
+                .ok(favourites);
     }
 }

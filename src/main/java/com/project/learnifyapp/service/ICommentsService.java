@@ -4,18 +4,21 @@ import com.project.learnifyapp.dtos.CommentDTO;
 
 import java.util.List;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
 
 public interface ICommentsService {
 
-    CommentDTO addComment(CommentDTO commentDTO);
+    CommentDTO save(CommentDTO commentDTO) ;
 
-    CommentDTO getComment(Long commentId) throws NotFoundException;
+    CommentDTO update(Long Id, CommentDTO commentDTO) throws DataNotFoundException;
 
-    CommentDTO updateComment(Long commentId, CommentDTO commentDTO) throws NotFoundException;
+    void remove(Long Id) throws DataNotFoundException;
 
-    void deleteComment(Long commentId);
+    CommentDTO getComment(Long Id);
 
     List<CommentDTO> getAllComments();
+
+    boolean existsById(Long id);
+
 }
 
