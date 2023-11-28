@@ -46,7 +46,7 @@ public class CourseDTO implements Serializable {
 
     private List<Cart> carts;
 
-    private Set<DiscountDTO> discounts;
+    private List<DiscountCourseDTO> discountCourses;
 
     private List<FavouriteDTO> favourites;
 }
