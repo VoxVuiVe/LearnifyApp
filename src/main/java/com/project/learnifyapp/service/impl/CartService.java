@@ -28,7 +28,6 @@ public class CartService implements ICartService {
 
         // Convert CartDTO -> Cart
         Cart newCart = Cart.builder()
-                .quantity(cartDTO.getQuantity())
                 .totalMoney(cartDTO.getTotalMoney())
                 .user(user)
                 .build();
@@ -47,7 +46,6 @@ public class CartService implements ICartService {
         Cart cart = getCartById(cartId);
 
         // Update the cart fields based on the updatedData
-        cart.setQuantity(cartDTO.getQuantity());
         cart.setTotalMoney(cartDTO.getTotalMoney());
 
         // Assuming you have a method to get User by userId

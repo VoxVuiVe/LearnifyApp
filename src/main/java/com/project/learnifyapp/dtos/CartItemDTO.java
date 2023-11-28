@@ -23,10 +23,12 @@ public class CartItemDTO {
     private Float totalPrice;
 
     @NotNull
+    @JsonProperty("unit_price")
+    private Float unitPrice;
+
     @JsonProperty("cart_id")
     private Long cartId;
 
-    @NotNull
     @JsonProperty("course_id")
     private Long courseId;
 }

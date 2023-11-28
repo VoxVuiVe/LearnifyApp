@@ -41,6 +41,9 @@ public class CourseDTO implements Serializable {
     @JsonProperty("thumbnail")
     private String thumbnail;
 
+    @JsonProperty("is_delete")
+    private String isDelete;
+
     @JsonProperty("category_id")
     private Long categoryId;
 

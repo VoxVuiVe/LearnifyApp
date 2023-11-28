@@ -24,9 +24,8 @@ import java.util.UUID;
 @Service
 public class S3Service {
     private final Logger log = LoggerFactory.getLogger(LessonService.class);
-    private String bucketName = "video-learnify-app";
-    private String cloudFrontDomain = "https://d17xmnwkkvb7of.cloudfront.net";
-
+    private String bucketName = "";
+    private String cloudFrontDomain = "";
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -67,7 +66,6 @@ public class S3Service {
             throw new RuntimeException(e);
         }
     }
-
 
     public void deleteFile(String path) {
         DeleteObjectRequest request = DeleteObjectRequest.builder()

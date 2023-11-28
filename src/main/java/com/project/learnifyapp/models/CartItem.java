@@ -29,7 +29,7 @@ public class CartItem implements Serializable {
     @JoinColumn(name="cart_id")
     private Cart cart;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
 }
