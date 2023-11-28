@@ -2,6 +2,7 @@ package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
+import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,8 @@ public class UserController {
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 return ResponseEntity.badRequest().body("Mật khẩu không khớp nhau!!");
             }
-            userService.createUser(userDTO);
-            return ResponseEntity.ok("Đăng ký thành công!!");
+            UserDTO newUser = userService.createUser(userDTO);
+            return ResponseEntity.ok(newUser);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -49,10 +50,10 @@ public class UserController {
         //Kiểm tra thông tin đăng nhập và sinh TOKEN
         try {
             String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+            // Tra ve token trong response
             return ResponseEntity.ok(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        // Tra ve token trong response
     }
 }

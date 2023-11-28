@@ -13,8 +13,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class UserDTO {
-
-    private Long id;
     @JsonProperty("fullname")
     private String fullName;
 
@@ -27,7 +25,7 @@ public class UserDTO {
     private String email;
 
     @JsonProperty("image_url")
-    @NotBlank(message = "email number must be is required!")
+//    @NotBlank(message = "email number must be is required!")
     private String imageUrl;
 
     private String address;
@@ -50,4 +48,7 @@ public class UserDTO {
     @NotNull(message = "Role ID is required")
     @JsonProperty("role_id")
     private Long roleId;
+
+    @JsonProperty("cart_id")
+    private Long cartId;
 }

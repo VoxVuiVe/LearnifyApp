@@ -8,6 +8,7 @@ import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.RoleRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IUserService;
+import com.project.learnifyapp.service.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,26 +32,32 @@ public class UserService implements IUserService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final UserMapper userMapper;
+
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException { //REGISTER USER
+    public UserDTO createUser(UserDTO userDTO) throws DataNotFoundException { //REGISTER USER
         //Register user
         String email = userDTO.getEmail();
         //Kiểm tra số điện thoại đã tồn tại hay chưa
         if(userRepository.existsByEmail(email)) {
             throw new DataIntegrityViolationException("Email đã tồn tại");
         }
+        //-> Cach 1:
         //Convert UserDTO -> User
-        User newUser = User.builder()
-                .fullName(userDTO.getFullName())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .password(userDTO.getPassword())
-                .address(userDTO.getAddress())
-                .email(userDTO.getEmail())
-                .imageUrl(userDTO.getImageUrl())
-                .dateOfBirth(userDTO.getDateOfBirth())
-                .facebookAccountId(userDTO.getFacebookAccountId())
-                .googleAccountId(userDTO.getGoogleAccountId())
-                .build();
+//        User newUser = User.builder()
+//                .fullName(userDTO.getFullName())
+//                .phoneNumber(userDTO.getPhoneNumber())
+//                .password(userDTO.getPassword())
+//                .address(userDTO.getAddress())
+//                .email(userDTO.getEmail())
+//                .imageUrl(userDTO.getImageUrl())
+//                .dateOfBirth(userDTO.getDateOfBirth())
+//                .facebookAccountId(userDTO.getFacebookAccountId())
+//                .googleAccountId(userDTO.getGoogleAccountId())
+//                .build();
+        //Cach 2:
+        User newUser = userMapper.toEntity(userDTO);
+        
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException("Role không được tìm thấy!"));
         newUser.setRole(role); //Tim dc ra role trong csdl se add cho newUser
@@ -62,7 +69,9 @@ public class UserService implements IUserService {
             String encodePassword = passwordEncoder.encode(password);
             newUser.setPassword(encodePassword);
         }
-        return userRepository.save(newUser);
+        newUser = userRepository.save(newUser);
+        return userMapper.toDTO(newUser);
+//        return userRepository.save(newUser); //chuyen UserDTO -> User
     }
 
     @Override
@@ -80,7 +89,8 @@ public class UserService implements IUserService {
             }
         }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                email, password
+                email, password,
+                existingUser.getAuthorities()
         );
         //Authenticate with Java Spring Security
         authenticationManager.authenticate(authenticationToken);

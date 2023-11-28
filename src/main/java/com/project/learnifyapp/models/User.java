@@ -77,7 +77,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private List<SocialAccount> socialAccounts;
 
     @OneToOne
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @Override
