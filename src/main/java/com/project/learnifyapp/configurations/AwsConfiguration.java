@@ -15,7 +15,7 @@ public class AwsConfiguration {
     private String accessKey = "";
     private String secretKey = "";
     // xác định khu vực
-    private Region region = Region.AP_SOUTHEAST_1;
+    private Region region;
 
     /*
      * cấu hình và tạo đối tượng S3Client để tương tác với Amazon S3
