@@ -16,7 +16,7 @@ public class FavouriteDTO implements Serializable {
 
     private Long id;
 
-    @NotNull(message = "isActive cannot be null")
+    @JsonProperty("is_active")
     private Boolean isActive;
 
     @NotNull(message = "User ID cannot be null")
