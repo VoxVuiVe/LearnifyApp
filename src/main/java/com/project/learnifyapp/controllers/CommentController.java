@@ -17,16 +17,16 @@ import jakarta.validation.Valid;
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentsService commentsService;
 
     @PostMapping("/comment")
-    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO){
+    public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO) throws DataNotFoundException {
         if (commentDTO.getId() != null) {
-            throw new BadRequestAlertException("A new Comment cannot already have an Id", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("A new Comment cannot already have an Id", ENTITY_NAME, "id exists");
         }
         CommentDTO result = commentsService.save(commentDTO);
         return ResponseEntity
@@ -37,10 +37,10 @@ public class CommentController {
     @PutMapping("/comment/{id}")
     public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) throws DataNotFoundException {
         if (commentDTO.getId() != null && !Objects.equals(id, commentDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
         }
         if (!commentsService.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
         }
 
         CommentDTO result = commentsService.update(id, commentDTO);
@@ -58,7 +58,7 @@ public class CommentController {
     }
 
     @GetMapping("/comment/{id}")
-    public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id){
+    public ResponseEntity<CommentDTO> getCommentById(@PathVariable Long id) throws DataNotFoundException {
         CommentDTO commentDTO = commentsService.getComment(id);
         return ResponseEntity
                 .ok()
