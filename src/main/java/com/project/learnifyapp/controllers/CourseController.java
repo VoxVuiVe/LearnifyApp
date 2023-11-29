@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/")
 public class CourseController {
     private final Logger log = LoggerFactory.getLogger(CourseController.class);
 

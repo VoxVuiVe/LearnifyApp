@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/payment-history")
+@RequestMapping("${api.prefix}/payment-history")
 @RequiredArgsConstructor
 public class PaymentHistoryController {
     private final IPaymentHistoryService paymentHistoryService;
