@@ -4,9 +4,12 @@ import com.project.learnifyapp.dtos.PaymentHistoryDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.PaymentHistory;
 
+import java.util.List;
+
 public interface IPaymentHistoryService {
-    PaymentHistory createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException;
-    PaymentHistory getPaymentHistoryById(Long paymentHistoryId) throws DataNotFoundException;
-    PaymentHistory updatePaymentHistory(Long paymentHistoryId, PaymentHistoryDTO updatedData) throws DataNotFoundException;
-    void deletePaymentHistory(Long paymentHistoryId);
+    PaymentHistoryDTO createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws Exception;
+    PaymentHistoryDTO getPaymentHistory(Long id) throws DataNotFoundException;
+//    PaymentHistoryDTO updatePaymentHistory(Long id, PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException;
+    void deleteById(Long id);
+    List<PaymentHistory> findByPaymentId(Long paymentId);
 }
