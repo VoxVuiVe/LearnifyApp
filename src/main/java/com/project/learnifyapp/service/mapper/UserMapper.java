@@ -5,14 +5,12 @@ import com.project.learnifyapp.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {RoleMapper.class, CartMapper.class})
+@Mapper(componentModel = "spring", uses = {RoleMapper.class})
 public interface UserMapper extends EntityMapper<UserDTO, User>{
 
     @Mapping(source = "role.id", target = "roleId")
-    @Mapping(source = "cart.id", target = "cartId")
     UserDTO toDTO(User entity);
 
     @Mapping(source = "roleId", target = "role.id")
-//    @Mapping(source = "cartId", target = "cart.id")
     User toEntity(UserDTO dto);
 }
