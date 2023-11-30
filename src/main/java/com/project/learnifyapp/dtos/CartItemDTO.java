@@ -15,18 +15,16 @@ public class CartItemDTO {
     private Long id;
 
     @NotNull
-    @JsonProperty("quantity")
-    private Integer quantity;
-
-    @NotNull
     @JsonProperty("total_price")
     private Float totalPrice;
 
     @NotNull
-    @JsonProperty("cart_id")
-    private Long cartId;
+    @JsonProperty("user_id")
+    private Long userId;
+
+    private String cartData;
 
     @NotNull
     @JsonProperty("course_id")
-    private Long courseId;
+    private String courseId;
 }

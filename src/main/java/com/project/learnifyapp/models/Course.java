@@ -32,7 +32,7 @@ public class Course extends BaseEntity implements Serializable {
     private String title;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private Float price;
 
     @Column(name = "teacher", nullable = false, length = 50)
     private String teacher;
@@ -57,7 +57,7 @@ public class Course extends BaseEntity implements Serializable {
     private Category category;
 
     @OneToMany(mappedBy = "course", orphanRemoval = true)
-    private List<Cart> carts;
+    private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DiscountCourse> discountCourses;

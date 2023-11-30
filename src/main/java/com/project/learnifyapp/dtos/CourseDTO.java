@@ -1,14 +1,11 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.learnifyapp.models.Cart;
-import com.project.learnifyapp.models.Favourite;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +21,7 @@ public class CourseDTO implements Serializable {
     private String title;
 
     @JsonProperty("price")
-    private Double price;
+    private Float price;
 
     @JsonProperty("teacher")
     private String teacher;
@@ -44,7 +41,7 @@ public class CourseDTO implements Serializable {
     @JsonProperty("category_id")
     private Long categoryId;
 
-    private List<Cart> carts;
+    private List<CartItemDTO> cartItemDTOs;
 
     private List<DiscountCourseDTO> discountCourses;
 

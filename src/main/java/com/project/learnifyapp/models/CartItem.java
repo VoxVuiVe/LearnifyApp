@@ -19,17 +19,14 @@ public class CartItem implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "quantity")
-    private Integer quantity;
-
     @Column(name = "total_price")
     private Float totalPrice;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="cart_id")
-    private Cart cart;
+    @JoinColumn(name="user_id")
+    private User user;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
 }
