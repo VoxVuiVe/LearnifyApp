@@ -32,7 +32,7 @@ public class Course extends BaseEntity implements Serializable {
     private String title;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private Float price;
 
     @Column(name = "teacher", nullable = false, length = 50)
     private String teacher;

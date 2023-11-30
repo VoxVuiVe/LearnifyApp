@@ -57,7 +57,7 @@ public class UserService implements IUserService {
 //                .build();
         //Cach 2:
         User newUser = userMapper.toEntity(userDTO);
-        
+
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException("Role không được tìm thấy!"));
         newUser.setRole(role); //Tim dc ra role trong csdl se add cho newUser

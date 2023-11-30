@@ -24,7 +24,7 @@ public class CourseDTO implements Serializable {
     private String title;
 
     @JsonProperty("price")
-    private Double price;
+    private Float price;
 
     @JsonProperty("teacher")
     private String teacher;

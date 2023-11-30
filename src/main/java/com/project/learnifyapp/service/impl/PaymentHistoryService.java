@@ -1,5 +1,6 @@
 package com.project.learnifyapp.service.impl;
 
+import com.project.learnifyapp.dtos.PaymentDTO;
 import com.project.learnifyapp.dtos.PaymentHistoryDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
@@ -11,63 +12,74 @@ import com.project.learnifyapp.repository.PaymentHistoryRepository;
 import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IPaymentHistoryService;
+import com.project.learnifyapp.service.mapper.PaymentHistoryMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentHistoryService implements IPaymentHistoryService {
     private final PaymentHistoryRepository paymentHistoryRepository;
-    private final CourseRepository courseRepository;
+
     private final PaymentRepository paymentRepository;
 
+    private final CourseRepository courseRepository;
+
+    private final PaymentHistoryMapper paymentHistoryMapper;
+
     @Override
-    public PaymentHistory createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException {
-        Long courseId = paymentHistoryDTO.getCourseId();
-        Long paymentId = paymentHistoryDTO.getPaymentId();
+    public PaymentHistoryDTO createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws Exception {
+        Payment payment = paymentRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
+                new DataNotFoundException("Cannot find Payment with ID: " + paymentHistoryDTO.getPaymentId()));
 
-        // Kiểm tra sự tồn tại của Course và User
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new DataNotFoundException("Course không tồn tại"));
+        Course course = courseRepository.findById(paymentHistoryDTO.getCourseId()).orElseThrow(() ->
+                new DataNotFoundException("Cannot find Course with ID: " + paymentHistoryDTO.getCourseId()));
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new DataNotFoundException("User không tồn tại"));
-
-        // Convert PaymentHistoryDTO -> PaymentHistory
-        PaymentHistory newPaymentHistory = PaymentHistory.builder()
-                .totalMoney(paymentHistoryDTO.getTotalMoney())
-                .numberOfCourse(paymentHistoryDTO.getNumberOfCourse())
-                .transactionId(paymentHistoryDTO.getTransactionId())
-                .price(paymentHistoryDTO.getPrice())
-                .course(course)
-                .payment(payment)
-                .build();
-
-        return paymentHistoryRepository.save(newPaymentHistory);
+        PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
+        paymentHistory.setCourse(course);
+        paymentHistory.setPayment(payment);
+        paymentHistory.setTransactionId(paymentHistoryDTO.generateTransactionId());
+        paymentHistory = paymentHistoryRepository.save(paymentHistory);
+        return paymentHistoryMapper.toDTO(paymentHistory);
     }
 
     @Override
-    public PaymentHistory getPaymentHistoryById(Long paymentHistoryId) throws DataNotFoundException {
-        return paymentHistoryRepository.findById(paymentHistoryId)
-                .orElseThrow(() -> new DataNotFoundException("Payment History không tồn tại!"));
+    public PaymentHistoryDTO getPaymentHistory(Long id) {
+        PaymentHistory paymentHistoryResponse = paymentHistoryRepository.findById(id).orElse(null);
+        return paymentHistoryMapper.toDTO(paymentHistoryResponse);
     }
 
     @Override
-    public PaymentHistory updatePaymentHistory(Long paymentHistoryId, PaymentHistoryDTO updatedData) throws DataNotFoundException {
-        PaymentHistory paymentHistory = getPaymentHistoryById(paymentHistoryId);
-
-        paymentHistory.setTotalMoney(updatedData.getTotalMoney());
-        paymentHistory.setNumberOfCourse(updatedData.getNumberOfCourse());
-        paymentHistory.setTransactionId(updatedData.getTransactionId());
-        paymentHistory.setPrice(updatedData.getPrice());
-
-        return paymentHistoryRepository.save(paymentHistory);
+    public void deleteById(Long id) {
+        paymentHistoryRepository.deleteById(id);
     }
 
+    //Có thể sửa lại là findByUserId thay vì findByPaymentId
     @Override
-    public void deletePaymentHistory(Long paymentHistoryId) {
-        paymentHistoryRepository.deleteById(paymentHistoryId);
+    public List<PaymentHistory> findByPaymentId(Long paymentId) {
+        return paymentHistoryRepository.findByPaymentId(paymentId);
     }
+
+//    @Override
+//    public PaymentHistoryDTO updatePaymentHistory(Long id, PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException {
+//        PaymentHistory existingPaymentHistory = paymentHistoryRepository.findById(id).orElseThrow(() ->
+//                new DataNotFoundException("Cannot find Payment History with ID: " + id));
+//        Payment existingPayment = paymentRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
+//                new DataNotFoundException("Cannot find Payment History with ID: " + paymentHistoryDTO.getPaymentId()));
+//
+//        Course existingCourse = courseRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
+//                new DataNotFoundException("Cannot find Payment History with ID: " + paymentHistoryDTO.getPaymentId()));
+//
+//        existingPaymentHistory.setPayment(existingPayment);
+//        existingPaymentHistory.setCourse(existingCourse);
+//        existingPaymentHistory.setTotalMoney();
+//        paymentHistoryRepository.save(existingPaymentHistory);
+//        return paymentHistoryMapper.toDTO(existingPaymentHistory);
+//    }
 }
