@@ -31,7 +31,7 @@ import java.util.Optional;
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/")
 @RequiredArgsConstructor
 public class DiscountController {
     private final IDiscountService discountService;

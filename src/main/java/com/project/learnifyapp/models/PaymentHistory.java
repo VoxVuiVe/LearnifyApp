@@ -1,4 +1,5 @@
 package com.project.learnifyapp.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,22 +21,21 @@ public class PaymentHistory implements Serializable {
     private Long id;
 
     @Column(name = "total_money", nullable = false)
-    private Double totalMoney;
+    private Float totalMoney;
 
     @Column(name = "number_of_course", nullable = false)
     private Integer numberOfCourse;
 
-    @Column(name = "price", nullable = false)
-    private Float price;
-
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id")
     private String transactionId;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "course_id")
     private Course course;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "payment_id")
     private Payment payment;
 }

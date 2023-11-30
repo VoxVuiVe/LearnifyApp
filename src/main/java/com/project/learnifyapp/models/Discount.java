@@ -1,5 +1,6 @@
 package com.project.learnifyapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +36,7 @@ public class Discount implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DiscountCourse> discountCourses;
 }

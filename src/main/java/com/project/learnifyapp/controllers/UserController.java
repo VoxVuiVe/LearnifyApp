@@ -2,6 +2,7 @@ package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
+import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 public class UserController {
     private final IUserService userService;
@@ -36,8 +37,8 @@ public class UserController {
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 return ResponseEntity.badRequest().body("Mật khẩu không khớp nhau!!");
             }
-            userService.createUser(userDTO);
-            return ResponseEntity.ok("Đăng ký thành công!!");
+            UserDTO newUser = userService.createUser(userDTO);
+            return ResponseEntity.ok(newUser);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -45,11 +46,14 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO
-    ) {
+            @Valid @RequestBody UserLoginDTO userLoginDTO) {
         //Kiểm tra thông tin đăng nhập và sinh TOKEN
-        String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
-        // Tra ve token trong response
-        return ResponseEntity.ok(token);
+        try {
+            String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+            // Tra ve token trong response
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

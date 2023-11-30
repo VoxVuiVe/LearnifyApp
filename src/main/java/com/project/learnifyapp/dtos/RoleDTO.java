@@ -15,6 +15,5 @@ public class RoleDTO {
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("role")
     private List<User> user;
 }

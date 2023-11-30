@@ -3,10 +3,10 @@ package com.project.learnifyapp.service.impl;
 import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Comment;
-import com.project.learnifyapp.models.Lesson;
+import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.CommentRepository;
-import com.project.learnifyapp.repository.LessonRepository;
+import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.ICommentsService;
 import com.project.learnifyapp.service.mapper.CommentMapper;
@@ -29,25 +29,23 @@ public class CommentsService implements ICommentsService {
 
     private final CommentRepository commentRepository;
 
-    private final LessonRepository lessonRepository;
+    private final CourseRepository courseRepository;
 
     private final UserRepository userRepository;
 
     private final CommentMapper commentMapper;
 
-    @SneakyThrows
     @Override
-    public CommentDTO save(CommentDTO commentDTO){
+    public CommentDTO save(CommentDTO commentDTO) throws DataNotFoundException {
         log.debug("Save new comment: {}", commentDTO);
-
-        Lesson lesson = lessonRepository.findById(commentDTO.getLessonId())
-                .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
+        Course course = courseRepository.findById(commentDTO.getCourseId())
+                .orElseThrow(() -> new DataNotFoundException("Course not found"));
 
         User user = userRepository.findById(commentDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Comment comment = commentMapper.toEntity(commentDTO);
-        comment.setLesson(lesson);
+        comment.setCourse(course);
         comment.setUser(user);
 
         Comment saveComment = commentRepository.save(comment);
@@ -64,14 +62,14 @@ public class CommentsService implements ICommentsService {
         Comment existingComment = commentRepository.findById(Id)
                 .orElseThrow(() -> new DataNotFoundException("Comment not found"));
 
-        Lesson lesson = lessonRepository.findById(commentDTO.getLessonId())
-                .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
+        Course course = courseRepository.findById(commentDTO.getCourseId())
+                .orElseThrow(() -> new DataNotFoundException("Course not found"));
 
         User user = userRepository.findById(commentDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         commentMapper.updateCommentFromDTO(commentDTO, existingComment);
-        existingComment.setLesson(lesson);
+        existingComment.setCourse(course);
         existingComment.setUser(user);
 
         Comment updatedComment = commentRepository.save(existingComment);
@@ -93,9 +91,8 @@ public class CommentsService implements ICommentsService {
         log.debug("Comment removed: {}", comment);
     }
 
-    @SneakyThrows
     @Override
-    public CommentDTO getComment(Long Id){
+    public CommentDTO getComment(Long Id) throws DataNotFoundException {
         log.debug("Fetching comment with ID: {}", Id);
 
         Comment comment = commentRepository.findById(Id)

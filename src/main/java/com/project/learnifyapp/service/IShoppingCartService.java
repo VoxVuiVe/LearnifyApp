@@ -1,16 +1,18 @@
 package com.project.learnifyapp.service;
 
-import com.project.learnifyapp.dtos.CartDTO;
-import com.project.learnifyapp.exceptions.DataNotFoundException;
-import com.project.learnifyapp.models.Cart;
+import com.project.learnifyapp.dtos.CartItemDTO;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface ICartService {
+import java.util.List;
+import java.util.Optional;
 
-    Cart createCart(CartDTO cartDTO) throws DataNotFoundException;
+public interface IShoppingCartService {
 
-    Cart getCartById(Long cartId) throws DataNotFoundException;
+    List<CartItemDTO> saveShoppingCart(CartItemDTO request);
 
-    Cart updateCart(Long cartId, CartDTO updatedData) throws DataNotFoundException;
-    
-    void deleteCart(Long cartId) throws DataNotFoundException;
+    List<CartItemDTO> findAll(Long userId);
+
+    Optional<CartItemDTO> findOneCartItemById(Long cartItemId);
+
+    void deleteCartItem(Long cartItemId);
 }

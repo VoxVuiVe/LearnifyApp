@@ -1,56 +1,99 @@
 package com.project.learnifyapp.controllers;
 
+
 import com.project.learnifyapp.dtos.RatingDTO;
-import com.project.learnifyapp.service.IRatingService;
-
+import com.project.learnifyapp.exceptions.BadRequestAlertException;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.service.impl.RatingService;
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+
+import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
-@RequestMapping("/api/ratings")
+@RequestMapping("${api.prefix}/")
+@RequiredArgsConstructor
 public class RatingController {
 
-    private final IRatingService ratingService;
+    private final RatingService ratingService;
 
-    @Autowired
-    public RatingController(IRatingService ratingService) {
-        this.ratingService = ratingService;
+    @PostMapping("/rating")
+    public ResponseEntity<RatingDTO> createRating(@Valid @RequestBody RatingDTO ratingDTO) throws BadRequestAlertException, DataNotFoundException {
+        if (ratingDTO.getId() != null) {
+            throw new BadRequestAlertException("A new rating cannot already have an Id", ENTITY_NAME, "id exits");
+        }
+        RatingDTO result = ratingService.save(ratingDTO);
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
-//    @PostMapping
-//    public ResponseEntity<RatingDTO> addRating(@RequestBody @Valid RatingDTO ratingDTO) {
-//        RatingDTO savedRating = ratingService.addRating(ratingDTO);
-//        return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
-//    }
-//
-//    @GetMapping("/{ratingId}")
-//    public ResponseEntity<RatingDTO> getRating(@PathVariable Long ratingId) throws NotFoundException {
-//        RatingDTO ratingDTO = ratingService.getRating(ratingId);
-//        return ResponseEntity.ok(ratingDTO);
-//    }
-//
-//    @PutMapping("/{ratingId}")
-//    public ResponseEntity<RatingDTO> updateRating(@PathVariable Long ratingId, @RequestBody @Valid RatingDTO ratingDTO) throws NotFoundException {
-//        RatingDTO updatedRating = ratingService.updateRating(ratingId, ratingDTO);
-//        return ResponseEntity.ok(updatedRating);
-//    }
-//
-//    @DeleteMapping("/{ratingId}")
-//    public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
-//        ratingService.deleteRating(ratingId);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @GetMapping("/all")
-//    public ResponseEntity<List<RatingDTO>> getAllRatings() {
-//        List<RatingDTO> allRatings = ratingService.getAllRatings();
-//        return ResponseEntity.ok(allRatings);
-//    }
+    @PutMapping("/rating/{id}")
+    public ResponseEntity<RatingDTO> updateRating(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody RatingDTO ratingDTO) throws DataNotFoundException {
+        if (ratingDTO.getId() != null && !Objects.equals(id, ratingDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
+        }
+
+        if (!ratingService.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
+        }
+
+        RatingDTO result = ratingService.update(id, ratingDTO);
+        return ResponseEntity
+                .ok()
+                .body(result);
+    }
+
+    @DeleteMapping("/rating/{id}")
+    public ResponseEntity<Void> deleteRating(@PathVariable Long id) throws DataNotFoundException {
+        ratingService.remove(id);
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
+    @GetMapping("/rating/{id}")
+    public ResponseEntity<RatingDTO> getRatingById(@PathVariable Long id) throws DataNotFoundException {
+        RatingDTO ratingDTO = ratingService.getRating(id);
+        return ResponseEntity
+                .ok()
+                .body(ratingDTO);
+    }
+
+    @GetMapping("/ratings")
+    public ResponseEntity<List<RatingDTO>> getAllRatings() {
+        List<RatingDTO> ratings = ratingService.getAllRatings();
+        return ResponseEntity
+                .ok(ratings);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

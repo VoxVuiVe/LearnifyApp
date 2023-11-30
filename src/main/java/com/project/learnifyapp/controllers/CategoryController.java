@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/")
 public class CategoryController {
     private final Logger log = LoggerFactory.getLogger(CategoryController.class);
 
