@@ -21,9 +21,6 @@ public class CommentDTO {
     private LocalDateTime createDate = LocalDateTime.now();
 
     @JsonProperty("comment")
-    @NotNull
-    @NotEmpty
-    @Size(max = 250)
     private String comment;
 
     @JsonProperty("quantity_like")
@@ -35,8 +32,8 @@ public class CommentDTO {
     @JsonProperty("user_id")
     private Long userId;
 
-    @JsonProperty("lesson_id")
-    private Long lessonId;
-    
+    @JsonProperty("course_id")
+    private Long courseId;
+
 }
 

@@ -16,7 +16,7 @@ import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/")
 public class FavouriteController {
 
     private final FavouriteService favouriteService;
@@ -25,7 +25,7 @@ public class FavouriteController {
     @PostMapping("/favourite")
     public ResponseEntity<FavouriteDTO> createFavourite(@Valid @RequestBody FavouriteDTO favouriteDTO){
         if (favouriteDTO.getId() != null) {
-            throw new BadRequestAlertException("A new Favourite cannot already have an Id", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("A new Favourite cannot already have an Id", ENTITY_NAME, "id exists");
         }
 
         FavouriteDTO result = favouriteService.save(favouriteDTO);
@@ -37,11 +37,11 @@ public class FavouriteController {
     @PutMapping("/favourite/{id}")
     public ResponseEntity<FavouriteDTO> updateFavourite(@PathVariable Long id, @Valid @RequestBody FavouriteDTO favouriteDTO) throws DataNotFoundException {
         if (favouriteDTO.getId() != null && !Objects.equals(id, favouriteDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
         }
 
         if (!favouriteService.exitsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnot found");
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
         }
 
         FavouriteDTO result = favouriteService.update(id, favouriteDTO);

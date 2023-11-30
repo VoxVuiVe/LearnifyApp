@@ -6,17 +6,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class,LessonMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class,CourseMapper.class})
 public interface CommentMapper extends EntityMapper<CommentDTO, Comment>{
 
     @Override
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "lesson.id", target = "lessonId")
+    @Mapping(source = "course.id", target = "courseId")
     CommentDTO toDTO(Comment entity);
 
     @Override
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(source = "lessonId", target = "lesson.id")
+    @Mapping(source = "courseId", target = "course.id")
     Comment toEntity(CommentDTO dto);
 
     @Mapping(target = "id", ignore = true)

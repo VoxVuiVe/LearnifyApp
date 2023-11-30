@@ -1,86 +1,117 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.RatingDTO;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Rating;
 import com.project.learnifyapp.models.User;
+import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.repository.RatingRepositoty;
+import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IRatingService;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import com.project.learnifyapp.service.mapper.RatingMapper;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class RatingService implements IRatingService {
 
-//    private final RatingRepositoty ratingRepository;
-//
-//    @Autowired
-//    public RatingService (RatingRepositoty ratingRepository) {
-//        this.ratingRepository = ratingRepository;
-//    }
-//
-//    private RatingDTO convertToRatingDTO(Rating rating) {
-//        RatingDTO ratingDTO = new RatingDTO();
-//        ratingDTO.setUserId(rating.getUser().getId());
-//        ratingDTO.setCourseId(rating.getCourse().getId());
-//        ratingDTO.setRating(rating.getRating());
-//        ratingDTO.setContent(rating.getContent());
-//        ratingDTO.setCreateDate(rating.getCreateDate());
-//        return ratingDTO;
-//    }
-//
-//    @Override
-//    public RatingDTO addRating(RatingDTO ratingDTO) {
-//        Rating rating = new Rating();
-//        // Set user and course based on IDs from DTO
-//        rating.setUser(new User());
-//        rating.setCourse(new Course());
-//        rating.setRating(ratingDTO.getRating());
-//        rating.setContent(ratingDTO.getContent());
-//        rating.setCreateDate(ratingDTO.getCreateDate());
-//
-//        Rating savedRating = ratingRepository.save(rating);
-//        return convertToRatingDTO(savedRating);
-//    }
-//
-//    @Override
-//    public RatingDTO getRating(Long ratingId) throws NotFoundException {
-//        Rating rating = ratingRepository.findById(ratingId)
-//                .orElseThrow(() -> new NotFoundException());
-//        return convertToRatingDTO(rating);
-//    }
-//
-//    @Override
-//    public RatingDTO updateRating(Long ratingId, RatingDTO ratingDTO) throws NotFoundException {
-//        Rating existingRating = ratingRepository.findById(ratingId)
-//                .orElseThrow(() -> new NotFoundException());
-//
-//        // Update fields
-//        existingRating.setUser(new User());
-//        existingRating.setCourse(new Course());
-//        existingRating.setRating(ratingDTO.getRating());
-//        existingRating.setContent(ratingDTO.getContent());
-//        existingRating.setCreateDate(ratingDTO.getCreateDate());
-//
-//        Rating updatedRating = ratingRepository.save(existingRating);
-//        return convertToRatingDTO(updatedRating);
-//    }
-//
-//    @Override
-//    public void deleteRating(Long ratingId) {
-//        ratingRepository.deleteById(ratingId);
-//    }
-//
-//    @Override
-//    public List<RatingDTO> getAllRatings() {
-//        List<Rating> ratings = ratingRepository.findAll();
-//        return ratings.stream()
-//                .map(this::convertToRatingDTO)
-//                .collect(Collectors.toList());
-//    }
+    private final Logger log = LoggerFactory.getLogger(CommentsService.class);
+
+    private final RatingRepositoty ratingRepositoty;
+
+    private final RatingMapper ratingMapper;
+
+    private final CourseRepository courseRepository;
+
+    private final UserRepository userRepository;
+
+    @Override
+    public RatingDTO save(RatingDTO ratingDTO) throws DataNotFoundException {
+        log.debug("Save new Rating: {}", ratingDTO);
+
+        Course course = courseRepository.findById(ratingDTO.getCourseId())
+                .orElseThrow(() -> new DataNotFoundException("Course not found"));
+
+        User user = userRepository.findById(ratingDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        Rating rating = ratingMapper.toEntity(ratingDTO);
+        rating.setCourse(course);
+        rating.setUser(user);
+
+        Rating saveRating = ratingRepositoty.save(rating);
+
+        log.debug("New rating saved: {}", saveRating);
+
+        return ratingMapper.toDTO(saveRating);
+    }
+
+    @Override
+    public RatingDTO update(Long Id, RatingDTO ratingDTO) throws DataNotFoundException {
+        log.debug("Update rating with ID: {}", Id);
+
+        Rating exitingRating = ratingRepositoty.findById(Id)
+                .orElseThrow(() -> new DataNotFoundException("Rating not found"));
+
+        Course course = courseRepository.findById(ratingDTO.getCourseId())
+                .orElseThrow(() -> new DataNotFoundException("Course not found"));
+
+        User user = userRepository.findById(ratingDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        ratingMapper.updateCommentFromDTO(ratingDTO, exitingRating);
+        exitingRating.setCourse(course);
+        exitingRating.setUser(user);
+
+        Rating updateRating = ratingRepositoty.save(exitingRating);
+
+        log.debug("Update rating: {}", updateRating);
+
+        return ratingMapper.toDTO(updateRating);
+    }
+
+    @Override
+    public RatingDTO remove(Long Id) throws DataNotFoundException {
+        log.debug("Remove rating with ID: {}", Id);
+
+        Rating rating = ratingRepositoty.findById(Id)
+                .orElseThrow(() -> new DataNotFoundException("Rating not found"));
+
+        ratingRepositoty.delete(rating);
+
+        log.debug("Rating remove: {}", rating);
+
+        return ratingMapper.toDTO(rating);
+    }
+
+    public RatingDTO getRating(Long Id) throws DataNotFoundException {
+        log.debug("Fetching comment with ID: {}", Id);
+
+        Rating rating = ratingRepositoty.findById(Id)
+                .orElseThrow(() -> new DataNotFoundException("Rating not found"));
+
+        log.debug("Fetched rating: {}", rating);
+
+        return ratingMapper.toDTO(rating);
+    }
+
+    @Override
+    public List<RatingDTO> getAllRatings() {
+        return ratingRepositoty.findAll().stream().map(ratingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return ratingRepositoty.existsById(id);
+    }
 }

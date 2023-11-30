@@ -1,16 +1,9 @@
 package com.project.learnifyapp.models;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
@@ -24,18 +17,19 @@ public class Rating extends BaseEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name ="id")
 	private Long id;
-	
+
+	@Column(name ="number_rating")
+	private Integer numberRating;
+
+	@Lob
+	@Column(name ="description")
+	private String description;
+
 	@ManyToOne
 	@JoinColumn(name ="user_id")
 	private User user;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	private Course course;
-	
-	@Column(name ="number_rating")
-	private Integer numberRating;
-	
-	@Column(name ="description")
-	private String description;
 }
