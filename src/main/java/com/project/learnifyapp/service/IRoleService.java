@@ -4,9 +4,13 @@ import com.project.learnifyapp.dtos.RoleDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Role;
 
+import java.util.List;
+
 public interface IRoleService {
-    Role createRole(RoleDTO roleDTO);
-    Role getRoleById(Long roleId) throws DataNotFoundException;
-    Role updateRole(Long roleId, RoleDTO updatedData) throws DataNotFoundException;
-    void deleteRole(Long roleId) throws DataNotFoundException;
+    RoleDTO save(RoleDTO roleDTO);
+    RoleDTO update(Long roleId, RoleDTO updatedData) throws DataNotFoundException;
+    void remove(Long roleId) throws DataNotFoundException;
+    Role getRole(Long roleId) throws DataNotFoundException;
+    List<RoleDTO> getAllRoles();
+
 }
