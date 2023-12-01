@@ -2,14 +2,13 @@ package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.PaymentDTO;
 import com.project.learnifyapp.dtos.PaymentHistoryDTO;
+import com.project.learnifyapp.dtos.UserCourseDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
-import com.project.learnifyapp.models.Course;
-import com.project.learnifyapp.models.Payment;
-import com.project.learnifyapp.models.PaymentHistory;
-import com.project.learnifyapp.models.User;
+import com.project.learnifyapp.models.*;
 import com.project.learnifyapp.repository.*;
 import com.project.learnifyapp.service.IPaymentHistoryService;
 import com.project.learnifyapp.service.mapper.PaymentHistoryMapper;
+import com.project.learnifyapp.service.mapper.UserCourseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,8 @@ public class PaymentHistoryService implements IPaymentHistoryService {
 
     private final PaymentHistoryMapper paymentHistoryMapper;
 
+    private final UserCourseMapper userCourseMapper;
+
     @Override
     public PaymentHistoryDTO createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws Exception {
         Payment payment = paymentRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
@@ -48,6 +49,15 @@ public class PaymentHistoryService implements IPaymentHistoryService {
         paymentHistory.setPayment(payment);
         paymentHistory.setTransactionId(paymentHistoryDTO.generateTransactionId());
         paymentHistory = paymentHistoryRepository.save(paymentHistory);
+
+        // is the payment is successful, create a new UserCourse
+        if (payment.getStatus().equals(PaymentStatus.SUCCESS)){
+            UserCourse userCourse = new UserCourse();
+            userCourse.setUser(paymentHistory.getPayment().getUser());
+            userCourse.setCourse(course);
+            userCourse.setPaymentStatus(true);
+            userCourseRepository.save(userCourse);
+        }
         return paymentHistoryMapper.toDTO(paymentHistory);
     }
 

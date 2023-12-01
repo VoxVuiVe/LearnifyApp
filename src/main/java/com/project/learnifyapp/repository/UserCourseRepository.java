@@ -13,4 +13,5 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long>{
     List<UserCourse> findByUserIdAndPaymentStatus(Long userId, boolean paymentStatus);
 
     UserCourse findOneByUserIdAndCourseIdAndPaymentStatus(Long userId, Long courseId, boolean paymentStatus);
+
 }

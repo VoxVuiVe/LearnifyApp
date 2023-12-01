@@ -5,6 +5,7 @@ import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentStatus;
 import com.project.learnifyapp.models.User;
+import com.project.learnifyapp.models.UserCourse;
 import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.repository.UserRepository;
