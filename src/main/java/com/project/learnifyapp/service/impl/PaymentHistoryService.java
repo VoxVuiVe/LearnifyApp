@@ -7,10 +7,7 @@ import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentHistory;
 import com.project.learnifyapp.models.User;
-import com.project.learnifyapp.repository.CourseRepository;
-import com.project.learnifyapp.repository.PaymentHistoryRepository;
-import com.project.learnifyapp.repository.PaymentRepository;
-import com.project.learnifyapp.repository.UserRepository;
+import com.project.learnifyapp.repository.*;
 import com.project.learnifyapp.service.IPaymentHistoryService;
 import com.project.learnifyapp.service.mapper.PaymentHistoryMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +28,8 @@ public class PaymentHistoryService implements IPaymentHistoryService {
 
     private final CourseRepository courseRepository;
 
+    private final UserCourseRepository userCourseRepository;
+
     private final PaymentHistoryMapper paymentHistoryMapper;
 
     @Override
@@ -40,6 +39,9 @@ public class PaymentHistoryService implements IPaymentHistoryService {
 
         Course course = courseRepository.findById(paymentHistoryDTO.getCourseId()).orElseThrow(() ->
                 new DataNotFoundException("Cannot find Course with ID: " + paymentHistoryDTO.getCourseId()));
+
+        course.setEnrollmentCount(course.getEnrollmentCount() + 1);
+        courseRepository.save(course);
 
         PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
         paymentHistory.setCourse(course);

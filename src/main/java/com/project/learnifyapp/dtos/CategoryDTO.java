@@ -23,6 +23,9 @@ public class CategoryDTO implements Serializable {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("is_delete")
+    private Boolean isDelete = false;
+
     @JsonProperty("parent_id")
     private Long parentId;
 

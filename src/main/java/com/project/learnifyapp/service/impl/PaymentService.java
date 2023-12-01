@@ -6,6 +6,7 @@ import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentStatus;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.PaymentRepository;
+import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IPaymentService;
 import com.project.learnifyapp.service.mapper.PaymentMapper;
@@ -24,6 +25,8 @@ public class PaymentService implements IPaymentService {
     private final UserRepository userRepository;
 
     private final PaymentRepository paymentRepository;
+
+    private final UserCourseRepository userCourseRepository;
 
     private final PaymentMapper paymentMapper;
 
