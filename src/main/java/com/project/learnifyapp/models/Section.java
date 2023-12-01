@@ -3,6 +3,7 @@ package com.project.learnifyapp.models;
 import lombok.*;
 import jakarta.persistence.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,7 +19,9 @@ public class Section implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @NotNull
+    @Lob
+    @Column(name = "title", nullable = false, length = 150)
     private String title;
 
     @Column(name = "quantity_lesson")
@@ -34,6 +37,6 @@ public class Section implements Serializable {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
     private List<Lesson> lesson;
 }

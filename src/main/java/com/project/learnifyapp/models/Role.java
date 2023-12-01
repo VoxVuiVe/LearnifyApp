@@ -12,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @Entity
+@ToString
 @Table(name = "roles")
 public class Role implements Serializable {
     @Id
@@ -23,7 +23,7 @@ public class Role implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<User> user;
 }
 
