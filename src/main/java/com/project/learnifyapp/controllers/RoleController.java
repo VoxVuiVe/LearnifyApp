@@ -22,17 +22,17 @@ public class RoleController {
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{roleId}")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long roleId) throws DataNotFoundException {
-        Role role = roleService.getRoleById(roleId);
-        return new ResponseEntity<>(role, HttpStatus.OK);
-    }
-
     @PutMapping("/{roleId}")
     public ResponseEntity<Role> updateRole(@PathVariable Long roleId, @RequestBody RoleDTO updatedData)
             throws DataNotFoundException {
         Role updatedRole = roleService.updateRole(roleId, updatedData);
         return new ResponseEntity<>(updatedRole, HttpStatus.OK);
+    }
+
+    @GetMapping("/{roleId}")
+    public ResponseEntity<Role> getRoleById(@PathVariable Long roleId) throws DataNotFoundException {
+        Role role = roleService.getRoleById(roleId);
+        return new ResponseEntity<>(role, HttpStatus.OK);
     }
 
     @DeleteMapping("/{roleId}")

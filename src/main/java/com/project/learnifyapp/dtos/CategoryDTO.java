@@ -20,7 +20,6 @@ public class CategoryDTO implements Serializable {
 
     private Long id;
 
-    @NotNull(message = "Category name cannot be null")
     @JsonProperty("name")
     private String name;
 

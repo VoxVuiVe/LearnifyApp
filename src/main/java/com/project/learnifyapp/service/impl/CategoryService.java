@@ -1,7 +1,6 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.CategoryDTO;
-import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.models.Category;
 import com.project.learnifyapp.repository.CategoryReponsitory;
 import com.project.learnifyapp.service.ICategoryService;
@@ -9,8 +8,10 @@ import com.project.learnifyapp.service.mapper.CategoryMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,12 +32,25 @@ public class CategoryService implements ICategoryService {
         this.categoryMapper = categoryMapper;
     }
 
-    public CategoryDTO save(CategoryDTO categoryDTO){
-        log.debug("Request to save category: {}", categoryDTO);
-        Category category = categoryMapper.toEntity(categoryDTO);
+    public CategoryDTO save(CategoryDTO categoryDTO) {
+        Category category;
+        if (categoryDTO.getId() != null) {
+            category = categoryReponsitory.findById(categoryDTO.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+            category.setName(categoryDTO.getName());
+        } else {
+            category = new Category();
+            category.setName(categoryDTO.getName());
+            if (categoryDTO.getParentId() != null) {
+                Category parent = categoryReponsitory.findById(categoryDTO.getParentId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Parent category not found"));
+                category.setParent(parent);
+            }
+        }
         category = categoryReponsitory.save(category);
         return categoryMapper.toDTO(category);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -53,4 +67,15 @@ public class CategoryService implements ICategoryService {
         Optional<Category> category = categoryReponsitory.findById(id);
         return category.map(categoryMapper::toDTO).orElse(null);
     }
+
+    @Override
+    public void deleteCategory(Long id) {
+        Category category = categoryReponsitory.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+        if (!category.getCourses().isEmpty() || !category.getChildren().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category has courses or children");
+        }
+        categoryReponsitory.delete(category);
+    }
+
 }
