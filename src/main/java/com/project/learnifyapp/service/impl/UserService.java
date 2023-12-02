@@ -3,6 +3,7 @@ package com.project.learnifyapp.service.impl;
 import com.project.learnifyapp.components.JwtTokenUtil;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.exceptions.PermissionDeniedException;
 import com.project.learnifyapp.models.Role;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.RoleRepository;
@@ -35,12 +36,17 @@ public class UserService implements IUserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) throws DataNotFoundException { //REGISTER USER
+    public UserDTO createUser(UserDTO userDTO) throws Exception { //REGISTER USER
         //Register user
         String email = userDTO.getEmail();
         //Kiểm tra số điện thoại đã tồn tại hay chưa
         if(userRepository.existsByEmail(email)) {
             throw new DataIntegrityViolationException("Email đã tồn tại");
+        }
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException("Role không được tìm thấy!"));
+        if(role.getName().toUpperCase().equals(Role.ADMIN)) {
+            throw new PermissionDeniedException("You cannot register an admin account!");
         }
         //-> Cach 1:
         //Convert UserDTO -> User
@@ -58,8 +64,6 @@ public class UserService implements IUserService {
         //Cach 2:
         User newUser = userMapper.toEntity(userDTO);
 
-        Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException("Role không được tìm thấy!"));
         newUser.setRole(role); //Tim dc ra role trong csdl se add cho newUser
 
         //Kiểm tra nếu có accountId, không yêu cầu password.

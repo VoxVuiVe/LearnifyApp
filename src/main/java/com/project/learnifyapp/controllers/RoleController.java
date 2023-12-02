@@ -4,6 +4,7 @@ import com.project.learnifyapp.dtos.RoleDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Role;
 import com.project.learnifyapp.service.IRoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class RoleController {
     private final IRoleService roleService;
 
     @PostMapping
-    public ResponseEntity<Role> createRole(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<Role> createRole(@Valid @RequestBody RoleDTO roleDTO) {
         Role createdRole = roleService.createRole(roleDTO);
         return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
     }

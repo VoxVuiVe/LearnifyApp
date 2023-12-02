@@ -4,6 +4,7 @@ import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.service.IUserService;
+import com.project.learnifyapp.service.impl.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.List;
 @RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final IUserService userService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,

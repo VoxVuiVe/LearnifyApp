@@ -25,5 +25,9 @@ public class Role implements Serializable {
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> user;
+
+    public static String ADMIN = "ADMIN";
+    public static String USER = "USER";
+    public static String TEACHER = "TEACHER";
 }
 
