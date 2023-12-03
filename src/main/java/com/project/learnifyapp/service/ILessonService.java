@@ -15,4 +15,5 @@ public interface ILessonService {
     Optional<LessonDTO> findOne(Long id);
 
     void deleteLesson(Long id);
+
 }

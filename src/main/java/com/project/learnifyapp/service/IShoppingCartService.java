@@ -1,0 +1,18 @@
+package com.project.learnifyapp.service;
+
+import com.project.learnifyapp.dtos.CartItemDTO;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface IShoppingCartService {
+
+    List<CartItemDTO> saveShoppingCart(CartItemDTO request);
+
+    List<CartItemDTO> findAll(Long userId);
+
+    Optional<CartItemDTO> findOneCartItemById(Long cartItemId);
+
+    void deleteCartItem(Long cartItemId);
+}

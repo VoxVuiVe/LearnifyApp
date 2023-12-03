@@ -5,24 +5,28 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Entity
+@ToString
 @Data
-@Getter
 @Setter
+@Getter
 @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "course_cart")
-public class CourseCart implements Serializable {
+@Table(name="cart_item")
+public class CartItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @Column(name = "total_price")
+    private Float totalPrice;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
 }

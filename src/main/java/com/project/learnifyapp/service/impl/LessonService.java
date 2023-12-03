@@ -87,14 +87,17 @@ public class LessonService implements ILessonService {
         try {
             Optional<Lesson> lessonOptional = lessonRepository.findById(id);
             lessonOptional.ifPresent(lesson -> {
-                // Xóa video từ S3
                 s3Service.deleteFile(lesson.getVideoUrl());
-                // Xóa bài học từ cơ sở dữ liệu
                 lessonRepository.deleteById(id);
             });
         } catch (Exception e) {
             log.error("Failed to delete lesson", e);
             throw new RuntimeException("Failed to delete lesson: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isLessonExists(Long lessonId) {
+        return lessonRepository.existsById(lessonId);
     }
 }

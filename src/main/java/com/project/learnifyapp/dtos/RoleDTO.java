@@ -22,6 +22,5 @@ public class RoleDTO extends Role implements Serializable {
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("role")
     private List<User> user;
 }

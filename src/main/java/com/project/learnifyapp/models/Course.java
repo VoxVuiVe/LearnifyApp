@@ -2,10 +2,12 @@ package com.project.learnifyapp.models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +32,7 @@ public class Course extends BaseEntity implements Serializable {
     private String title;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private Float price;
 
     @Column(name = "teacher", nullable = false, length = 50)
     private String teacher;
@@ -47,10 +49,20 @@ public class Course extends BaseEntity implements Serializable {
     @Column(name = "thumbnail")
     private String thumbnail;
 
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CourseCart> courseCarts;
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CartItem> cartItems;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<DiscountCourse> discountCourses;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Favourite> favourites;
+
 }

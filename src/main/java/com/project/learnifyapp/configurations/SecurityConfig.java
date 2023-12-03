@@ -14,14 +14,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration1231231
+@Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserRepository userRepository;
     //user's detail object (42. 4:09)
     @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> userRepository
+    public UserDetailsService userDetailsService() { //interface -> return ve 1 func
+        return email -> userRepository //unique field of user object
                 .findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Cannot find user with email: " + email));
@@ -33,7 +33,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider() { //
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());

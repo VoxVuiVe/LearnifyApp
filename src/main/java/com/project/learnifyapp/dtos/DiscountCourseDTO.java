@@ -1,5 +1,8 @@
 package com.project.learnifyapp.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.Discount;
 import jakarta.persistence.JoinColumn;
 import lombok.*;
 
@@ -12,9 +15,13 @@ import lombok.*;
 public class DiscountCourseDTO {
     private Long id;
 
-    @JoinColumn(name = "course_id")
+    @JsonProperty("is_delete")
+    private Boolean isDelete;
+
+    @JsonProperty("course_id")
     private Long courseId;
 
-    @JoinColumn(name = "discount_id")
+    @JsonProperty("discount_id")
     private Long discountId;
+
 }
