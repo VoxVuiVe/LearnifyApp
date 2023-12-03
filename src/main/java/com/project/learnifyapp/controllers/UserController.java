@@ -52,7 +52,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "uploads/{id}",
+    @PostMapping(value = "/uploads/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     //POST http://localhost:8080/v1/api/user/profile
