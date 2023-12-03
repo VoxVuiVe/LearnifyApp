@@ -37,10 +37,6 @@ public class CategoryController {
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         log.debug("REST request to save Category: {}", categoryDTO);
-        if (categoryDTO.getParentId() != null){
-            Optional<Category> parentCategory = categoryReponsitory.findById(categoryDTO.getParentId());
-            parentCategory.isPresent();
-        }
         CategoryDTO result = categoryService.save(categoryDTO);
         return ResponseEntity.ok().body(result);
     }
@@ -75,6 +71,12 @@ public class CategoryController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

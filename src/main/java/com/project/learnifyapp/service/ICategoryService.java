@@ -9,4 +9,5 @@ public interface ICategoryService {
 
     CategoryDTO findOne(Long id);
 
+    void deleteCategory(Long id);
 }

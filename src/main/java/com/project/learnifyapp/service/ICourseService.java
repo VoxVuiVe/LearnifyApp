@@ -13,4 +13,6 @@ public interface ICourseService {
 
     @Transactional(readOnly = true)
     CourseDTO findOne(Long id);
+
+    void deleteCourse(Long id);
 }

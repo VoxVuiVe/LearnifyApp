@@ -7,6 +7,7 @@ import com.project.learnifyapp.service.impl.CourseService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,6 @@ public class CourseController {
     @PostMapping("/courses")
     public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CourseDTO courseDTO){
         log.debug("REST request to save Course: {}", courseDTO);
-        if (courseDTO.getId() != null){
-            throw new BadRequestAlertException("A new course cannot already have an ID", ENTITY_NAME, "idexists");
-        }
         CourseDTO result = courseService.save(courseDTO);
         return ResponseEntity.ok()
                 .header(ENTITY_NAME, result.getId().toString())
@@ -55,7 +53,9 @@ public class CourseController {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idNotFound");
         }
         CourseDTO result = courseService.save(courseDTO);
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok()
+                .header(ENTITY_NAME, result.getId().toString())
+                .body(result);
     }
 
     @GetMapping("/courses")
@@ -73,4 +73,15 @@ public class CourseController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping("/courses/{id}")
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+        try {
+            courseService.deleteCourse(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }
