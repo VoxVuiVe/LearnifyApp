@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${api.prefix}/shoppingCarts")
 @RequiredArgsConstructor
 public class ShoppingCartController {
 
@@ -23,32 +23,29 @@ public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
     private final CartItemRepository cartItemRepository;
 
-    @PostMapping("/shoppingCarts")
+    @PostMapping("")
     public ResponseEntity<List<CartItemDTO>> saveShoppingCart(@RequestBody CartItemDTO request) {
         log.debug("REST request to save cartItem: {}", request);
         List<CartItemDTO> cartItems = shoppingCartService.saveShoppingCart(request);
         return ResponseEntity.ok(cartItems);
     }
 
-    @GetMapping("/shoppingCarts")
-    public ResponseEntity<List<CartItemDTO>> findAll(@RequestParam Long userId) {
+    @GetMapping("")
+    public ResponseEntity<?> findAll(@RequestParam Long userId) {
+        log.debug("REQUEST find all cart by userid: ", userId);
         List<CartItemDTO> cartItems = shoppingCartService.findAll(userId);
         return ResponseEntity.ok(cartItems);
     }
 
-    @GetMapping("/shoppingCarts/{id}")
-    public ResponseEntity<CartItemDTO> findOneCartItemById(@RequestParam Long cartItemId) {
-        Optional<CartItemDTO> cartItem = shoppingCartService.findOneCartItemById(cartItemId);
+    @GetMapping("{id}")
+    public ResponseEntity<CartItemDTO> findOneCartItemById(@RequestParam Long userId) {
+        Optional<CartItemDTO> cartItem = shoppingCartService.findOneCartItemById(userId);
         return cartItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<CartItemDTO> deleteCartItem(@RequestParam Long cartItemId) {
-        try {
-            shoppingCartService.deleteCartItem(cartItemId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CartItemDTO> deleteCartItem(@RequestParam Long id) {
+            shoppingCartService.deleteCartItem(id);
             return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 }

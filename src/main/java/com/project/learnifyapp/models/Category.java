@@ -32,6 +32,9 @@ public class Category implements Serializable {
     @JoinColumn(name="parent_id")
     private Category parent;
 
+    @Column(name = "is_Delete")
+    private Boolean isDelete = false;
+
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Category> children = new ArrayList<>();
 

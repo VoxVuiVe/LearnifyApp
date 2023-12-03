@@ -1,12 +1,11 @@
 package com.project.learnifyapp.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,6 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "user_courses")
+@ToString
 public class UserCourse implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,7 @@ public class UserCourse implements Serializable {
 
     @Column (name = "enrollment_date")
     private Date enrollmentDate;
+
+    @Column (name = "payment_status")
+    private Boolean paymentStatus;
 }

@@ -1,6 +1,7 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,36 +18,45 @@ public class CourseDTO implements Serializable {
 
     private Long id;
 
+    @NotNull
     @JsonProperty("title")
     private String title;
 
+    @NotNull
     @JsonProperty("price")
     private Float price;
 
-    @JsonProperty("teacher")
-    private String teacher;
-
     @JsonProperty("start_time")
-    private LocalDateTime startTime;
+    private LocalDateTime startTime = LocalDateTime.now();
 
     @JsonProperty("end_time")
-    private LocalDateTime endTime;
+    private LocalDateTime endTime = LocalDateTime.now();
 
     @JsonProperty("enrollment_count")
-    private Integer enrollmentCount;
+    private Integer enrollmentCount = 0;
 
+    @NotNull
     @JsonProperty("thumbnail")
     private String thumbnail;
 
     @JsonProperty("is_delete")
-    private String isDelete;
+    private Boolean isDelete = false;
 
     @JsonProperty("category_id")
     private Long categoryId;
 
-    private List<CartItemDTO> cartItemDTOs;
+    @JsonProperty("user_id")
+    private Long userId;
+
+    @NotNull
+    @JsonProperty("description")
+    private String description;
+
+    private List<CartItemDTO> cartItems;
 
     private List<DiscountCourseDTO> discountCourses;
 
     private List<FavouriteDTO> favourites;
+
+    private List<RatingDTO> ratings;
 }

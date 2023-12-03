@@ -80,6 +80,9 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private List<UserImage> userImage;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> courses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
 
     @Override

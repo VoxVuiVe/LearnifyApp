@@ -7,6 +7,7 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -15,12 +16,21 @@ import java.util.List;
 @Builder
 public class SectionDTO {
     private Long id;
-    @NotNull
+
     private String title;
+
+    @JsonProperty("quantity_lesson")
     private Integer quantityLesson;
+
+    @JsonProperty("total_minutes")
     private Integer totalMinutes;
+
+    @JsonProperty("resource")
     private String resource;
+
     @JsonProperty("course_id")
     private Long courseId;
+
+    @JsonProperty("lesson")
     private List<Lesson> lesson;
 }

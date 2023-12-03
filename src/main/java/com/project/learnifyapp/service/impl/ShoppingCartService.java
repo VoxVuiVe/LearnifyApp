@@ -59,7 +59,6 @@ public class ShoppingCartService implements IShoppingCartService {
         }
 
         List<CartItemDTO> newCartItem = new ArrayList<>();
-        float totalPrice = 0;
 
         for (Course course : listCourse) {
             // Check if the course already exists in the cart
@@ -69,10 +68,8 @@ public class ShoppingCartService implements IShoppingCartService {
                 continue;
             }
 
-            totalPrice += course.getPrice(); // Assuming Course has a getPrice() method
-
             CartItemDTO cartItemDTO = CartItemDTO.builder()
-                    .totalPrice(totalPrice)
+                    .totalPrice(course.getPrice())
                     .courseId(String.valueOf(course.getId()))
                     .userId(request.getUserId())
                     .build();
@@ -94,25 +91,17 @@ public class ShoppingCartService implements IShoppingCartService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<CartItemDTO> findOneCartItemById(Long cartItemId) {
-        return cartItemRepository.findById(cartItemId).map(cartItemMapper::toDTO);
+    public Optional<CartItemDTO> findOneCartItemById(Long userId) {
+        return cartItemRepository.findById(userId).map(cartItemMapper::toDTO);
     }
 
     @Override
-    public void deleteCartItem(Long cartItemId){
-        try{
-            Optional<CartItem> cartItemOptional = cartItemRepository.findById(cartItemId);
-            cartItemOptional.ifPresent(carts ->{
-                Course course = courseRepository.findById(Long.valueOf(carts.getCourse().getId())).orElse(null);
-                if (course != null) {
-                    carts.setTotalPrice(carts.getTotalPrice() - course.getPrice());
-                    cartItemRepository.save(carts);
-                }
-                cartItemRepository.deleteById(cartItemId);
-            });
-        } catch (Exception e){
+    public void deleteCartItem(Long id) {
+        try {
+            cartItemRepository.deleteById(id);
+        } catch (Exception e) {
             log.debug("Failed to delete cartItem", e);
-            throw  new RuntimeException("Failed to delete cartItem: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to delete cartItem: " + e.getMessage(), e);
         }
     }
 }

@@ -34,35 +34,42 @@ public class Course extends BaseEntity implements Serializable {
     @Column(name = "price", nullable = false)
     private Float price;
 
-    @Column(name = "teacher", nullable = false, length = 50)
-    private String teacher;
-
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalDateTime startTime = LocalDateTime.now();
 
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalDateTime endTime = LocalDateTime.now();
 
     @Column(name = "enrollment_count")
-    private Integer enrollmentCount;
+    private Integer enrollmentCount = 0;
 
     @Column(name = "thumbnail")
     private String thumbnail;
 
     @Column(name = "is_delete")
-    private Boolean isDelete;
+    private Boolean isDelete = false;
+
+    @Column(name = "description", length = 1000)
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    @OneToMany(mappedBy = "course" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private List<CartItem> cartItems;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private List<DiscountCourse> discountCourses;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private List<Favourite> favourites;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    private List<Rating> ratings;
 
 }
