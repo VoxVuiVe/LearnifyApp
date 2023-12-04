@@ -1,6 +1,7 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.UserCourseDTO;
+import com.project.learnifyapp.models.UserCourse;
 import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.service.IUserCourseService;
 import com.project.learnifyapp.service.mapper.UserCourseMapper;
@@ -23,8 +24,11 @@ public class UserCourseService implements IUserCourseService {
 
     private final UserCourseMapper userCourseMapper;
 
+
+    @Override
     @Transactional(readOnly = true)
-    public List<UserCourseDTO> findAllUserByIdAnd(){
-        return null;
+    public List<UserCourseDTO> findAllUserByIdAnd(Long userId){
+        List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+        return userCourseMapper.toDTO(userCourses);
     }
 }

@@ -10,8 +10,7 @@ import java.util.List;
 @Repository
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long>{
 
-    List<UserCourse> findByUserIdAndPaymentStatus(Long userId, boolean paymentStatus);
+    List<UserCourse> findByUserId(Long userId);
 
-    UserCourse findOneByUserIdAndCourseIdAndPaymentStatus(Long userId, Long courseId, boolean paymentStatus);
 
 }
