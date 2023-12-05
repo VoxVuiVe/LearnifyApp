@@ -23,7 +23,7 @@ public class Role implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private List<User> user;
 
     public static String ADMIN = "ADMIN";
