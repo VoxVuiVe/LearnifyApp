@@ -9,11 +9,11 @@ import org.mapstruct.Mapping;
 public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment>{
     @Override
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "course.id", target = "courseId")
+    @Mapping(source = "cartItem.id", target = "cartItemId")
     PaymentDTO toDTO(Payment entity);
 
     @Override
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(source = "courseId", target = "course.id")
+    @Mapping(source = "cartItemId", target = "cartItem.id")
     Payment toEntity(PaymentDTO dto);
 }

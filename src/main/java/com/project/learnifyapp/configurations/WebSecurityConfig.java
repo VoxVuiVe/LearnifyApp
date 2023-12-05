@@ -40,10 +40,10 @@ public class WebSecurityConfig {
                             )
                             .permitAll()
                             //Payment
-                            .requestMatchers(HttpMethod.POST, String.format("%s/payment/**", apiPrefix)).hasAnyRole(Role.USER)
+                            .requestMatchers(HttpMethod.POST, String.format("%s/payment**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.PUT, String.format("%s/payment/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/payment/**", apiPrefix)).hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.GET, String.format("%s/payment**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.USER)
+                            .requestMatchers(HttpMethod.GET, String.format("%s/payment**", apiPrefix)).permitAll()
                             //Payment-History
                             .requestMatchers(HttpMethod.POST, String.format("%s/payment_history/**", apiPrefix)).hasAnyRole(Role.USER)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/payment_history/**", apiPrefix)).hasRole(Role.ADMIN)
@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.GET, String.format("%s/categories**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.USER, Role.TEACHER)
+                            .requestMatchers(HttpMethod.GET, String.format("%s/categories**", apiPrefix)).permitAll()
                             //Course
                             .requestMatchers(HttpMethod.POST, String.format("%s/courses/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/courses/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
@@ -93,7 +93,8 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST, String.format("%s/role/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/role/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/role/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.GET, String.format("%s/role**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.USER, Role.TEACHER)
+                            .requestMatchers(HttpMethod.GET, String.format("%s/roles**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET, String.format("%s/role**", apiPrefix)).permitAll()
                             //User
                             .requestMatchers(HttpMethod.POST, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)

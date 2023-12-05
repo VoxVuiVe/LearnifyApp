@@ -33,8 +33,8 @@ public class PaymentDTO {
     @JsonProperty("user_id")
     private Long userId;
 
-    @JsonProperty("course_id")
-    private Long courseId;
+    @JsonProperty("cart_item_id")
+    private Long cartItemId;
 
     private String vnPayUrl;
 }

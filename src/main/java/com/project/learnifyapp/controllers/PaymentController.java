@@ -1,9 +1,12 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.PaymentDTO;
+import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentStatus;
+import com.project.learnifyapp.models.UserCourse;
 import com.project.learnifyapp.repository.PaymentRepository;
+import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.service.impl.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,6 +28,8 @@ public class PaymentController {
 
     private final PaymentRepository paymentRepository;
 
+    private final UserCourseRepository userCourseRepository;
+
     @PostMapping("/create")
     public ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO,
                                            BindingResult result) {
@@ -36,27 +41,19 @@ public class PaymentController {
             }
             PaymentDTO paymentResponse = paymentService.createPayment(paymentDTO);
             return ResponseEntity.ok(paymentResponse);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping("/info")
+    @PutMapping("/info")
     public ResponseEntity<?> handlePaymentReturn(HttpServletRequest request) {
         try {
             int result = paymentService.orderReturn(request);
 
             // Kiểm tra kết quả và trả về phản hồi phù hợp
             if (result == 1) {
-                // Nếu giao dịch thành công, cập nhật UserCourse và trạng thái Payment
-                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
-                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
-                if (payment != null) {
-                    // Cập nhật trạng thái Payment
-                    payment.setStatus(PaymentStatus.SUCCESS);
-                    paymentRepository.save(payment);
-                }
-
                 return ResponseEntity.ok("Payment was successful.");
             } else if (result == 0) {
                 return ResponseEntity.ok("Payment failed.");

@@ -43,7 +43,7 @@ public class PaymentHistoryService implements IPaymentHistoryService {
         paymentHistory = paymentHistoryRepository.save(paymentHistory);
 
         // is the payment is successful, create a new UserCourse
-        if (payment.getStatus().equals(PaymentStatus.SUCCESS)){
+        if (payment.getTransactionStatus().equals(PaymentStatus.SUCCESS)){
             UserCourse userCourse = new UserCourse();
             userCourse.setUser(paymentHistory.getPayment().getUser());
             userCourse.setPaymentStatus(true);

@@ -24,22 +24,29 @@ public class Payment implements Serializable {
     @Column(name="payment_date")
     private Date paymentDate;
 
-    @Column(name = "status")
-    private String status;
-
     @Column(name = "total_money")
     private Float totalMoney;
 
+    private String transactionStatus;
 
-    @Column(name = "payment_method")
-    private String paymentMethod;
+    private String bankCode;
+
+    private String transactionNo;
+
+    private String vnp_TxnRef;
+
+    private String vnPayUrl;
 
     @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "course_id")
-    private Course course;
+    @JoinColumn(name = "cart_item_id")
+    private CartItem cartItem;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 }
+//
+//    @ManyToOne
+//    @JsonIgnore
+//    @JoinColumn(name = "course_id")
+//    private Course course;

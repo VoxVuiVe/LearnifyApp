@@ -1,17 +1,25 @@
 package com.project.learnifyapp.service;
 
 import com.project.learnifyapp.configurations.VNPayConfiguration;
+import com.project.learnifyapp.dtos.PaymentDTO;
+import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.models.CartItem;
 import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentStatus;
+import com.project.learnifyapp.models.User;
+import com.project.learnifyapp.repository.CartItemRepository;
 import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserCourseRepository;
+import com.project.learnifyapp.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -25,6 +33,10 @@ public class VNPayService {
     private final PaymentRepository paymentRepository;
 
     private final UserCourseRepository userCourseRepository;
+
+    private final CartItemRepository cartItemRepository;
+
+    private final UserRepository userRepository;
 
     public String createOrder(Payment payment){
         String vnp_Version = "2.1.0";
@@ -41,6 +53,7 @@ public class VNPayService {
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
+
 
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toán đơn hàng: " + vnp_TxnRef);
@@ -121,12 +134,31 @@ public class VNPayService {
         }
         String signValue = VNPayConfiguration.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+            if (PaymentStatus.SUCCESS.equals(request.getParameter("vnp_TransactionStatus"))) {
                 // Nếu giao dịch thành công, cập nhật trạng thái thanh toán trong cơ sở dữ liệu
-                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
-                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
+//                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
+//                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
+                Payment payment = new Payment();
                 if (payment != null) {
-                    payment.setStatus(PaymentStatus.SUCCESS);
+                    payment.setPaymentDate((Date) fields.get("vnp_PayDate"));
+                    String dateString = (String) fields.get("vnp_PayDate");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); // Thay đổi định dạng này theo định dạng của dateString
+                    Date date = null;
+                    try {
+                        date = formatter.parse(dateString);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        // Xử lý ngoại lệ ở đây
+                    }
+                    if (date != null) {
+                        payment.setPaymentDate(date);
+                    }
+                    payment.setBankCode((String) fields.get("vnp_BankCode"));
+                    payment.setTransactionNo((String) fields.get("vnp_TransactionNo"));
+                    payment.setTransactionStatus((String) fields.get("vnp_TransactionStatus"));
+                    String totalMoneyString = (String) fields.get("vnp_Amount");
+                    Float totalMoney = Float.parseFloat(totalMoneyString);
+                    payment.setTotalMoney(totalMoney);
                     paymentRepository.save(payment);
                 }
                 return 1;
@@ -135,7 +167,6 @@ public class VNPayService {
                 String vnp_TxnRef = request.getParameter("vnp_TxnRef");
                 Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
                 if (payment != null) {
-                    payment.setStatus(PaymentStatus.FAILED);
                     paymentRepository.save(payment);
                 }
                 return 0;
