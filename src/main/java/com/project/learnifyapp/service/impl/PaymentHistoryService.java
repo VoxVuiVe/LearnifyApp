@@ -37,24 +37,15 @@ public class PaymentHistoryService implements IPaymentHistoryService {
     public PaymentHistoryDTO createPaymentHistory(PaymentHistoryDTO paymentHistoryDTO) throws Exception {
         Payment payment = paymentRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
                 new DataNotFoundException("Cannot find Payment with ID: " + paymentHistoryDTO.getPaymentId()));
-
-        Course course = courseRepository.findById(paymentHistoryDTO.getCourseId()).orElseThrow(() ->
-                new DataNotFoundException("Cannot find Course with ID: " + paymentHistoryDTO.getCourseId()));
-
-        course.setEnrollmentCount(course.getEnrollmentCount() + 1);
-        courseRepository.save(course);
-
+//
         PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
-        paymentHistory.setCourse(course);
         paymentHistory.setPayment(payment);
-        paymentHistory.setTransactionId(paymentHistoryDTO.generateTransactionId());
         paymentHistory = paymentHistoryRepository.save(paymentHistory);
 
         // is the payment is successful, create a new UserCourse
         if (payment.getStatus().equals(PaymentStatus.SUCCESS)){
             UserCourse userCourse = new UserCourse();
             userCourse.setUser(paymentHistory.getPayment().getUser());
-            userCourse.setCourse(course);
             userCourse.setPaymentStatus(true);
             userCourseRepository.save(userCourse);
         }
@@ -78,20 +69,4 @@ public class PaymentHistoryService implements IPaymentHistoryService {
         return paymentHistoryRepository.findByPaymentId(paymentId);
     }
 
-//    @Override
-//    public PaymentHistoryDTO updatePaymentHistory(Long id, PaymentHistoryDTO paymentHistoryDTO) throws DataNotFoundException {
-//        PaymentHistory existingPaymentHistory = paymentHistoryRepository.findById(id).orElseThrow(() ->
-//                new DataNotFoundException("Cannot find Payment History with ID: " + id));
-//        Payment existingPayment = paymentRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
-//                new DataNotFoundException("Cannot find Payment History with ID: " + paymentHistoryDTO.getPaymentId()));
-//
-//        Course existingCourse = courseRepository.findById(paymentHistoryDTO.getPaymentId()).orElseThrow(() ->
-//                new DataNotFoundException("Cannot find Payment History with ID: " + paymentHistoryDTO.getPaymentId()));
-//
-//        existingPaymentHistory.setPayment(existingPayment);
-//        existingPaymentHistory.setCourse(existingCourse);
-//        existingPaymentHistory.setTotalMoney();
-//        paymentHistoryRepository.save(existingPaymentHistory);
-//        return paymentHistoryMapper.toDTO(existingPaymentHistory);
-//    }
 }

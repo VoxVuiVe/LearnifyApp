@@ -25,7 +25,7 @@ public class UserCourseController {
     @GetMapping("/user-courses/{userId}")
     public ResponseEntity<List<UserCourseDTO>> getUserCourses(@PathVariable Long userId) {
         log.debug("Request get purchased course by userId: {}", userId);
-        List<UserCourseDTO> userCourses = userCourseService.findAllUserByIdAnd(userId);
+        List<UserCourseDTO> userCourses = userCourseService.findAllUserById(userId);
         return ResponseEntity.ok().body(userCourses);
     }
 }

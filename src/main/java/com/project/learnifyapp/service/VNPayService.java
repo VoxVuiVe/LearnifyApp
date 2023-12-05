@@ -1,7 +1,12 @@
 package com.project.learnifyapp.service;
 
 import com.project.learnifyapp.configurations.VNPayConfiguration;
+import com.project.learnifyapp.models.Payment;
+import com.project.learnifyapp.models.PaymentStatus;
+import com.project.learnifyapp.repository.PaymentRepository;
+import com.project.learnifyapp.repository.UserCourseRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -12,30 +17,39 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class VNPayService {
-    public String createOrder(int total, String orderInfor, String urlReturn){
+
+    private final VNPayConfiguration vnPayConfiguration;
+
+    private final PaymentRepository paymentRepository;
+
+    private final UserCourseRepository userCourseRepository;
+
+    public String createOrder(Payment payment){
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        String vnp_TxnRef = VNPayConfiguration.getRandomNumber(8);
+        String vnp_TxnRef = vnPayConfiguration.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
-        String vnp_TmnCode = VNPayConfiguration.vnp_TmnCode;
+        String vnp_TmnCode = vnPayConfiguration.vnp_TmnCode;
         String orderType = "order-type";
+        long amount = (long) (Float.parseFloat(payment.getTotalMoney().toString()) * 100);
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(total*100));
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
 
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", orderInfor);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toán đơn hàng: " + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        urlReturn += VNPayConfiguration.vnp_Returnurl;
+        String urlReturn = vnPayConfiguration.vnp_Returnurl;
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -76,9 +90,9 @@ public class VNPayService {
             }
         }
         String queryUrl = query.toString();
-        String vnp_SecureHash = VNPayConfiguration.hmacSHA512(VNPayConfiguration.vnp_HashSecret, hashData.toString());
+        String vnp_SecureHash = vnPayConfiguration.hmacSHA512(vnPayConfiguration.vnp_HashSecret, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = VNPayConfiguration.vnp_PayUrl + "?" + queryUrl;
+        String paymentUrl = vnPayConfiguration.vnp_PayUrl + "?" + queryUrl;
         return paymentUrl;
     }
 
@@ -108,8 +122,22 @@ public class VNPayService {
         String signValue = VNPayConfiguration.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                // Nếu giao dịch thành công, cập nhật trạng thái thanh toán trong cơ sở dữ liệu
+                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
+                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
+                if (payment != null) {
+                    payment.setStatus(PaymentStatus.SUCCESS);
+                    paymentRepository.save(payment);
+                }
                 return 1;
             } else {
+                // Nếu giao dịch không thành công, cập nhật trạng thái thanh toán trong cơ sở dữ liệu
+                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
+                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
+                if (payment != null) {
+                    payment.setStatus(PaymentStatus.FAILED);
+                    paymentRepository.save(payment);
+                }
                 return 0;
             }
         } else {

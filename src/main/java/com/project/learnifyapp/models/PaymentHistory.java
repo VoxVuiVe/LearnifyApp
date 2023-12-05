@@ -20,19 +20,14 @@ public class PaymentHistory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @Column(name = "total_money", nullable = false)
     private Float totalMoney;
 
-    @Column(name = "number_of_course", nullable = false)
-    private Integer numberOfCourse;
-
-    @Column(name = "transaction_id")
-    private String transactionId;
-
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "course_id")
-    private Course course;
+    @Column(name = "transaction_date")
+    private String transactionDate;
 
     @ManyToOne
     @JsonIgnore

@@ -27,7 +27,7 @@ public class UserCourseService implements IUserCourseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserCourseDTO> findAllUserByIdAnd(Long userId){
+    public List<UserCourseDTO> findAllUserById(Long userId){
         List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
         return userCourseMapper.toDTO(userCourses);
     }

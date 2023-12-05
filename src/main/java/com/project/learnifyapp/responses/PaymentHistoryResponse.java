@@ -29,14 +29,4 @@ public class PaymentHistoryResponse {
     @JsonProperty("course_id")
     private Long courseId;
 
-    public static PaymentHistoryResponse fromPaymentHistory(PaymentHistory paymentHistory) {
-        return PaymentHistoryResponse.builder()
-                .id(paymentHistory.getId())
-                .paymentId(paymentHistory.getPayment().getId())
-                .courseId(paymentHistory.getCourse().getId())
-                .totalMoney(paymentHistory.getTotalMoney())
-                .numberOfCourse(paymentHistory.getNumberOfCourse())
-                .transactionId(paymentHistory.getTransactionId())
-                .build();
-    }
 }

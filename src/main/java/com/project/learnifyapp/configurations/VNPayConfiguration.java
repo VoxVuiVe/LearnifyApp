@@ -1,6 +1,8 @@
 package com.project.learnifyapp.configurations;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -11,10 +13,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-@Component
+@Configuration
 public class VNPayConfiguration {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_Returnurl = "/vnpay-payment";
+    public static String vnp_Returnurl = "http://localhost:8080/api/v1/payment/info";
     public static String vnp_TmnCode = "SE43QYX7";
     public static String vnp_HashSecret = "YNDEEGLZNPSKNZIADIXJREZEOLIDSEJQ";
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

@@ -6,6 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface IUserCourseService {
-    @Transactional(readOnly = true)
-    List<UserCourseDTO> findAllUserByIdAnd(Long userId);
+
+    List<UserCourseDTO> findAllUserById(Long userId);
 }

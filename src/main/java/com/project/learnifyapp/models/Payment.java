@@ -21,21 +21,6 @@ public class Payment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "fullname", length = 100)
-    private String fullName;
-
-    @Column(name = "email", nullable = false, length = 100)
-    private String email;
-
-    @Column(name = "phone_number", length = 100)
-    private String phoneNumber;
-
-    @Column(name = "address", length = 100)
-    private String address;
-
-    @Column(name = "note", length = 100)
-    private String note;
-
     @Column(name="payment_date")
     private Date paymentDate;
 
@@ -43,13 +28,16 @@ public class Payment implements Serializable {
     private String status;
 
     @Column(name = "total_money")
-    private Integer totalMoney;
+    private Float totalMoney;
+
 
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "active")
-    private Boolean active; //thuộc về admin
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

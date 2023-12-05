@@ -1,6 +1,7 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.PaymentDTO;
+import com.project.learnifyapp.dtos.PaymentHistoryDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Payment;
 import com.project.learnifyapp.models.PaymentStatus;
@@ -10,10 +11,11 @@ import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IPaymentService;
+import com.project.learnifyapp.service.VNPayService;
 import com.project.learnifyapp.service.mapper.PaymentMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,30 +29,68 @@ public class PaymentService implements IPaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    private final PaymentHistoryService paymentHistoryService;
+
     private final UserCourseRepository userCourseRepository;
 
     private final PaymentMapper paymentMapper;
 
     private final ModelMapper modelMapper;
 
+    private final VNPayService vnPayService;
+
     @Override
     public PaymentDTO createPayment(PaymentDTO paymentDTO) throws Exception {
         User existingUser = userRepository.findById(paymentDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with ID: " + paymentDTO.getUserId()));
 
-//        Payment payment = paymentMapper.toEntity(paymentDTO);
-        //Tạo 1 luồng ánh xạ riêng để kiếm soát việc ánh xạ.
-        modelMapper.typeMap(PaymentDTO.class, Payment.class).addMappings(mapper -> mapper.skip(Payment::setId));
-        //Cập nhật các trường của thanh toán từ paymentDTO
-//        Payment payment = new Payment();
-//        modelMapper.map(paymentDTO, payment);
+        // Map từ PaymentDTO sang Payment entity
         Payment payment = paymentMapper.toEntity(paymentDTO);
         payment.setUser(existingUser);
         payment.setPaymentDate(new Date());
         payment.setStatus(PaymentStatus.PENDING);
-        payment.setActive(true);
+
+        // Tạo đơn hàng trên VNPay và lấy URL thanh toán
+        String vnPayUrl = vnPayService.createOrder(payment);
+
         payment = paymentRepository.save(payment);
-        return paymentMapper.toDTO(payment);
+
+        // Tạo PaymentHistory
+        PaymentHistoryDTO paymentHistoryDTO = new PaymentHistoryDTO();
+        paymentHistoryDTO.setPaymentId(payment.getId());
+        paymentHistoryDTO.setStatus(payment.getStatus());
+        paymentHistoryDTO.setTransactionDate(payment.getPaymentDate().toString());
+        paymentHistoryDTO.setTotalMoney(payment.getTotalMoney());
+        paymentHistoryService.createPaymentHistory(paymentHistoryDTO);
+
+        // Tạo một PaymentDTO mới để trả về, bao gồm cả URL thanh toán từ VNPay
+        PaymentDTO paymentResponse = paymentMapper.toDTO(payment);
+        paymentResponse.setPaymentMethod(vnPayUrl);
+
+        return paymentResponse;
+    }
+    @Override
+    public int orderReturn(HttpServletRequest request) {
+        // Gọi phương thức orderReturn của VNPayService
+        int result = vnPayService.orderReturn(request);
+
+        // Kiểm tra kết quả
+        if (result == 1) {
+            // Nếu giao dịch thành công, cập nhật UserCourse
+            String vnp_TxnRef = request.getParameter("vnp_TxnRef");
+            Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
+            if (payment != null) {
+                UserCourse userCourse = new UserCourse();
+                userCourse.setUser(payment.getUser());
+                userCourse.setCourse(payment.getCourse());
+                userCourse.setEnrollmentDate(payment.getPaymentDate());
+                userCourse.setPaymentStatus(true);
+
+                userCourseRepository.save(userCourse);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -81,7 +121,6 @@ public class PaymentService implements IPaymentService {
     public void deletePayment(Long id) {
         Payment existingPayment = paymentRepository.findById(id).orElse(null);
         if(existingPayment != null) {
-            existingPayment.setActive(false);
             paymentRepository.save(existingPayment);
         }
     }
