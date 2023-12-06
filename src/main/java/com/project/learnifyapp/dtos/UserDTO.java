@@ -18,7 +18,6 @@ public class UserDTO {
     private String fullName;
 
     @JsonProperty("phone_number")
-    @NotBlank(message = "Phone can't be empty")
     private String phoneNumber;
 
     @JsonProperty("email")
@@ -26,7 +25,6 @@ public class UserDTO {
     private String email;
 
     @JsonProperty("image_url")
-//    @NotBlank(message = "email number must be is required!")
     private String imageUrl;
 
     private String address;
