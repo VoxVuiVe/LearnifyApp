@@ -1,5 +1,7 @@
 package com.project.learnifyapp.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.project.learnifyapp.configurations.VNPayConfiguration;
 import com.project.learnifyapp.dtos.PaymentDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
@@ -106,6 +108,11 @@ public class VNPayService {
         String vnp_SecureHash = vnPayConfiguration.hmacSHA512(vnPayConfiguration.vnp_HashSecret, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = vnPayConfiguration.vnp_PayUrl + "?" + queryUrl;
+        JsonObject job = new JsonObject();
+        job.addProperty("code", "00");
+        job.addProperty("message", PaymentStatus.SUCCESS);
+        job.addProperty("data", paymentUrl);
+        System.out.println(job);
         return paymentUrl;
     }
 

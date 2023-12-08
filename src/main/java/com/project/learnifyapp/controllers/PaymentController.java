@@ -47,11 +47,10 @@ public class PaymentController {
         }
     }
 
-    @PutMapping("/info")
-    public ResponseEntity<?> handlePaymentReturn(HttpServletRequest request) {
+    @GetMapping("/info")
+    public ResponseEntity<?> handlePaymentReturn(@RequestBody HttpServletRequest request) {
         try {
             int result = paymentService.orderReturn(request);
-
             // Kiểm tra kết quả và trả về phản hồi phù hợp
             if (result == 1) {
                 return ResponseEntity.ok("Payment was successful.");

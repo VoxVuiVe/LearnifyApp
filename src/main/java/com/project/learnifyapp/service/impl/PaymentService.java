@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,9 +54,9 @@ public class PaymentService implements IPaymentService {
         payment.setTransactionStatus(PaymentStatus.PENDING);
         payment.setCartItem(existingCartItem);
 
+        Payment savePayment = paymentRepository.save(payment);
         // Tạo đơn hàng trên VNPay và lấy URL thanh toán
-        String vnPayUrl = vnPayService.createOrder(payment);
-
+        String vnPayUrl = vnPayService.createOrder(savePayment);
 //        // Tạo PaymentHistory
 //        PaymentHistoryDTO paymentHistoryDTO = new PaymentHistoryDTO();
 //        paymentHistoryDTO.setPaymentId(payment.getId());

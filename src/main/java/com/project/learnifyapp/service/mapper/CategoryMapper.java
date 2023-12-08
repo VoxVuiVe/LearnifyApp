@@ -8,7 +8,7 @@ import org.mapstruct.Mappings;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {CourseMapper.class})
+@Mapper(componentModel = "spring", uses = {})
 public interface CategoryMapper extends EntityMapper<CategoryDTO, Category> {
     @Mappings({@Mapping(source = "parent.id", target = "parentId")})
     CategoryDTO toDTO(Category category);
