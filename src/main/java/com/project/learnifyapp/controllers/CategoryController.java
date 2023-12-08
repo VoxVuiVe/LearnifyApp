@@ -1,25 +1,31 @@
 package com.project.learnifyapp.controllers;
 
+import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.CategoryDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
-import com.project.learnifyapp.models.Category;
 import com.project.learnifyapp.repository.CategoryReponsitory;
+import com.project.learnifyapp.responses.UpdateCategoryResponse;
 import com.project.learnifyapp.service.impl.CategoryService;
+import com.project.learnifyapp.utils.MessageKeys;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.http.ResponseUtil;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("${api.prefix}/")
+@RequiredArgsConstructor
 public class CategoryController {
     private final Logger log = LoggerFactory.getLogger(CategoryController.class);
 
@@ -29,10 +35,7 @@ public class CategoryController {
 
     private final CategoryReponsitory categoryReponsitory;
 
-    public CategoryController(CategoryService categoryService, CategoryReponsitory categoryReponsitory){
-        this.categoryService = categoryService;
-        this.categoryReponsitory = categoryReponsitory;
-    }
+    private final LocalizationUtils localizationUtils;
 
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
@@ -42,7 +45,8 @@ public class CategoryController {
     }
 
     @PutMapping("/categories/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody CategoryDTO categoryDTO){
+    public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody CategoryDTO categoryDTO,
+                                                                 HttpServletRequest request){
         log.debug("REST request to update Category: {}", categoryDTO);
         if (categoryDTO.getId() == null){
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idNull");
@@ -53,8 +57,8 @@ public class CategoryController {
         if (!categoryReponsitory.existsById(id)){
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idNotFound");
         }
-        CategoryDTO result = categoryService.save(categoryDTO);
-        return ResponseEntity.ok().body(result);
+        categoryService.save(categoryDTO);
+        return ResponseEntity.ok(UpdateCategoryResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_CATEGORY_SUCCESSFULLY)).build());
     }
 
     @GetMapping(value = "/categories")

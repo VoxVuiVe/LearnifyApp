@@ -1,12 +1,12 @@
 package com.project.learnifyapp.service.impl;
 
-import com.project.learnifyapp.components.JwtTokenUtil;
+import com.project.learnifyapp.components.JwtTokenUtils;
+import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.exceptions.InvalidParamException;
 import com.project.learnifyapp.exceptions.PermissionDeniedException;
-import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.models.Role;
 import com.project.learnifyapp.models.User;
@@ -15,6 +15,7 @@ import com.project.learnifyapp.repository.UserImageRepository;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.IUserService;
 import com.project.learnifyapp.service.mapper.UserMapper;
+import com.project.learnifyapp.utils.MessageKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,13 +46,16 @@ public class UserService implements IUserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtil;
 
     private final AuthenticationManager authenticationManager;
 
     private final UserMapper userMapper;
 
+    private final LocalizationUtils localizationUtils;
+
     private static String UPLOADS_FOLDER = "uploads";
+
 
     @Override
     public UserDTO createUser(UserDTO userDTO) throws Exception { //REGISTER USER
@@ -97,7 +101,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String login(String email, String password) throws Exception { //Kieu String de tra ve token_key
+    public String login(String email, String password, Long roleId) throws Exception { //Kieu String de tra ve token_key
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isEmpty()) {
             throw new DataNotFoundException("Invalid email or password!");
@@ -110,6 +114,16 @@ public class UserService implements IUserService {
                 throw new BadCredentialsException("Wrong email or password!");
             }
         }
+
+        Optional<Role> optionalRole = roleRepository.findById(roleId);
+        if(optionalRole.isEmpty() || !roleId.equals(existingUser.getRole().getId())) {
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS));
+        }
+
+//        if(!optionalUser.get().isActive()) {
+//            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
+//        }
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 email, password,
                 existingUser.getAuthorities()
@@ -194,4 +208,6 @@ public class UserService implements IUserService {
             throw new FileNotFoundException("File not found: " + filename);
         }
     }
+
+
 }
