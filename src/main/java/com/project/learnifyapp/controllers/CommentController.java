@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @RestController
-@RequestMapping("${api.prefix}/")
+@RequestMapping("${api.prefix}")
 @RequiredArgsConstructor
 public class CommentController {
 

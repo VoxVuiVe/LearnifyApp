@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface IUserService {
     UserDTO createUser(UserDTO userDTO) throws Exception;
 
-    String login(String number, String password) throws Exception; //Kieu String de tra ve token key
+    String login(String email, String password, Long roleId) throws Exception; //Kieu String de tra ve token key
 
     UserImage createUserImage(
             Long courseId,

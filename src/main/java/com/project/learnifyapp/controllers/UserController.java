@@ -7,11 +7,14 @@ import com.project.learnifyapp.dtos.UserLoginDTO;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.UserRepository;
+import com.project.learnifyapp.responses.LoginResponse;
 import com.project.learnifyapp.service.IUserService;
 import com.project.learnifyapp.service.impl.UserService;
 import com.project.learnifyapp.utils.MessageKeys;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +22,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class UserController {
     private final UserService userService;
 
@@ -44,7 +49,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
             }
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-                return ResponseEntity.badRequest().body("Mật khẩu không khớp nhau!!");
+                return ResponseEntity.badRequest().body(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH));
             }
             UserDTO newUser = userService.createUser(userDTO);
             return ResponseEntity.ok(newUser);
@@ -103,15 +108,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
         //Kiểm tra thông tin đăng nhập và sinh TOKEN
         try {
-            String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+            String token = userService.login(userLoginDTO.getEmail(),
+                    userLoginDTO.getPassword(),
+                    userLoginDTO.getRoleId());
             // Tra ve token trong response
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
+                    .token(token).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())).build());
         }
     }
 }

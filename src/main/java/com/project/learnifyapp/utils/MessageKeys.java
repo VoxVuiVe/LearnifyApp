@@ -16,6 +16,6 @@ public class MessageKeys {
     public static final String DELETE_PAYMENT_SUCCESSFULLY = "payment.delete_payment.delete_successfully";
     public static final String DELETE_PAYMENT_HISTORY_SUCCESSFULLY = "payment_history.delete_payment_history.delete_successfully";
     public static final String INSERT_CATEGORY_FAILED = "category.create_category.create_failed";
-    public static final String WRONG_PHONE_PASSWORD = "user.login.wrong_phone_password";
+    public static final String WRONG_EMAIL_PASSWORD = "user.login.wrong_email_password";
     public static final String ROLE_DOES_NOT_EXISTS = "user.login.role_not_exist";
 }

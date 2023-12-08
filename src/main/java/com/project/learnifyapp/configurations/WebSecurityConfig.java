@@ -1,6 +1,5 @@
 package com.project.learnifyapp.configurations;
 
-import com.project.learnifyapp.components.JwtTokenUtil;
 import com.project.learnifyapp.filters.JwtTokenFilter;
 import com.project.learnifyapp.models.Role;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,9 +81,9 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/section/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.GET, String.format("%s/section**", apiPrefix)).permitAll()
                             //Comments
-                            .requestMatchers(HttpMethod.POST, String.format("%s/comment/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER, Role.USER)
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/comment/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER, Role.USER)
-                            .requestMatchers(HttpMethod.DELETE, String.format("%s/comment/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER, Role.USER)
+                            .requestMatchers(HttpMethod.POST, String.format("%s/comment**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.PUT, String.format("%s/comment**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.DELETE, String.format("%s/comment**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/comment**", apiPrefix)).permitAll()
                             //Favourite
                             .requestMatchers(HttpMethod.POST, String.format("%s/favourite/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER, Role.USER)
@@ -98,12 +96,10 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/ratings/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.GET, String.format("%s/ratings**", apiPrefix)).permitAll()
                             //Role
-                            .requestMatchers(HttpMethod.POST, String.format("%s/role/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/role/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-
+//                            .requestMatchers(HttpMethod.POST, String.format("%s/role/**", apiPrefix)).permitAll()
+//                            .requestMatchers(HttpMethod.PUT, String.format("%s/role/**", apiPrefix)).permitAll()
+//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/role/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/roles**", apiPrefix)).permitAll()
-                            .requestMatchers(HttpMethod.GET, String.format("%s/role**", apiPrefix)).permitAll()
-                            .requestMatchers(HttpMethod.GET, String.format("%s/roles/**", apiPrefix)).permitAll()
                             //User
                             .requestMatchers(HttpMethod.POST, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)

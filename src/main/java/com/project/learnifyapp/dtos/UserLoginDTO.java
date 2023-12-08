@@ -1,22 +1,23 @@
 package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
-@Getter
-@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class UserLoginDTO {
-
-    private Long id;
     @JsonProperty("email")
-    @NotBlank(message = "Email must be is required!")
+    @NotBlank(message = "email is required")
     private String email;
 
-    @NotBlank(message = "Password can't be empty")
+    @NotBlank(message = "Password cannot be blank")
     private String password;
+
+    @Min(value = 1, message = "You must enter role's Id")
+    @JsonProperty("role_id")
+    private Long roleId;
 }

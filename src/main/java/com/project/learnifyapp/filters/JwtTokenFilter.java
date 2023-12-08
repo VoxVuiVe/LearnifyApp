@@ -1,6 +1,6 @@
 package com.project.learnifyapp.filters;
 
-import com.project.learnifyapp.components.JwtTokenUtil;
+import com.project.learnifyapp.components.JwtTokenUtils;
 import com.project.learnifyapp.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 
     private final UserDetailsService userDetailsService;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtil;
 
     //Filter theo từng request. Cứ mỗi request đều phải đi qua OncePerRequestFilter để kiểm tra
     //trừ Login vs Register là k kiểm tra còn lại hầu như đều có kiểm tra
@@ -72,6 +72,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
     private boolean isByPassToken(@NotNull HttpServletRequest request) {
         //Những request không yêu cầu token
         final List<Pair<String, String>> bypassTokens = Arrays.asList(
+                Pair.of(String.format("%s/roles", apiPrefix), "GET"),
                 Pair.of(String.format("%s/courses", apiPrefix), "GET"),
                 Pair.of(String.format("%s/categories", apiPrefix), "GET"),
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
