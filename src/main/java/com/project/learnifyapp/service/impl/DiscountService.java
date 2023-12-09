@@ -1,23 +1,18 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.DiscountDTO;
-import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Discount;
-import com.project.learnifyapp.models.DiscountCourse;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.repository.DiscountCourseRepository;
 import com.project.learnifyapp.repository.DiscountRepository;
 import com.project.learnifyapp.service.IDiscountService;
 import com.project.learnifyapp.service.mapper.DiscountMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,6 +45,11 @@ public class DiscountService implements IDiscountService {
     @Override
     public List<DiscountDTO> getAllDiscount() {
         return discountRepository.findAll().stream().map(discountMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Discount findName(String code) {
+        return discountRepository.findByCode(code);
     }
 
     @Override

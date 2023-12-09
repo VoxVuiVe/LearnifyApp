@@ -36,7 +36,4 @@ public class Discount implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<DiscountCourse> discountCourses;
 }
