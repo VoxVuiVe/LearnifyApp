@@ -38,13 +38,6 @@ public class CourseService implements ICourseService {
         Course savedCourse = courseRepository.saveAndFlush(course);
         try {
             if (savedCourse.getId() != null) {
-//                List<CartItem> cartItems = cartItemRepository.f(savedCourse.getId());
-//                for (CartItem item : cartItems) {
-//                    item.setCartData(String.valueOf(savedCourse.getId()));
-//                    item.setTotalPrice(savedCourse.getPrice());
-//                    cartItemRepository.save(item);
-//                }
-
                 savedCourse = courseRepository.save(savedCourse);
                 CourseDTO result = courseMapper.toDTO(savedCourse);
                 return result;

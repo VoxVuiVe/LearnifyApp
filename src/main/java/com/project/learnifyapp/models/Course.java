@@ -60,16 +60,4 @@ public class Course extends BaseEntity implements Serializable {
     @JoinColumn(name = "category_id")
     private Category category;
 
-//    @OneToMany(mappedBy = "course" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-//    private List<CartItem> cartItems;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-    private List<DiscountCourse> discountCourses;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-    private List<Favourite> favourites;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-    private List<Rating> ratings;
-
 }
