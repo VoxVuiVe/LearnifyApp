@@ -1,24 +1,17 @@
 package com.project.learnifyapp.controllers;
 
-import com.project.learnifyapp.dtos.CourseDTO;
-import com.project.learnifyapp.dtos.DiscountCourseDTO;
 import com.project.learnifyapp.dtos.DiscountDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
-import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Discount;
-import com.project.learnifyapp.models.DiscountCourse;
 import com.project.learnifyapp.repository.DiscountCourseRepository;
 import com.project.learnifyapp.repository.DiscountRepository;
-import com.project.learnifyapp.service.ICourseService;
 import com.project.learnifyapp.service.IDiscountService;
 import com.project.learnifyapp.service.impl.CourseService;
+import com.project.learnifyapp.service.impl.DiscountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.internal.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +26,9 @@ import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 @RestController
 @RequestMapping("${api.prefix}/")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class DiscountController {
-    private final IDiscountService discountService;
+    private final DiscountService discountService;
     private final DiscountRepository discountRepository;
     private final CourseService courseService;
     private final DiscountCourseRepository discountCourseRepository;
@@ -69,6 +63,11 @@ public class DiscountController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/discounts/code/{code}")
+    public ResponseEntity<Discount> getDiscountByName(@PathVariable String code){
+        Discount discountDTO = discountService.findName(code);
+        return  ResponseEntity.ok().body(discountDTO);
+    }
 
     @DeleteMapping("/discounts/{id}")
     @Transactional
@@ -79,11 +78,12 @@ public class DiscountController {
     }
 
     @GetMapping("/discounts/pages")
-    public ResponseEntity<Page<Discount>> getDiscountsPage(
+    public ResponseEntity<List<Discount>> getDiscountsPage(
             @RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size
     ){
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Discount> discounts = discountService.getDiscountPage(pageRequest);
+        Page<Discount> discountsPage = discountService.getDiscountPage(pageRequest);
+        List<Discount> discounts = discountsPage.getContent();
         return ResponseEntity.ok().body(discounts);
     }
 
