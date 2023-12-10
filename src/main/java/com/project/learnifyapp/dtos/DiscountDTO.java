@@ -25,13 +25,13 @@ public class DiscountDTO {
     @JsonProperty("percentage")
     private Float percentage;
 
-    @JsonProperty("start_date")
+    @JsonProperty("startDate")
     private LocalDateTime startDate;
 
-    @JsonProperty("start_end")
+    @JsonProperty("startEnd")
     private LocalDateTime startEnd;
 
-    @JsonProperty("is_active")
+    @JsonProperty("isActive")
     private Boolean isActive;
 
 }
