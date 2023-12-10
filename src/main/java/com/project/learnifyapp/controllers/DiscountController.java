@@ -72,8 +72,7 @@ public class DiscountController {
     @DeleteMapping("/discounts/{id}")
     @Transactional
     public void deleteDiscourse(@PathVariable long id){
-        long existing = discountCourseRepository.findByDiscountId(id);
-        this.discountCourseRepository.deleteAllDiscountId(existing);
+        this.discountCourseRepository.deleteAllDiscountId(id);
         discountService.deleteDiscourse(id);
     }
 

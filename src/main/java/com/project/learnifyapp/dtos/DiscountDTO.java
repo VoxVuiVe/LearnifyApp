@@ -34,4 +34,5 @@ public class DiscountDTO {
     @JsonProperty("isActive")
     private Boolean isActive;
 
+    private List<DiscountCourseDTO> discountCourses;
 }

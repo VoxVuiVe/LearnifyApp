@@ -5,4 +5,5 @@ import com.project.learnifyapp.models.DiscountCourse;
 
 public interface IDiscountCourseService {
     DiscountCourseDTO createDiscountCourse(DiscountCourseDTO discountCourseDTO);
+    void deleteDiscountCourse(Long id);
 }
