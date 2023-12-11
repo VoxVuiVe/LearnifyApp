@@ -105,7 +105,8 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST, String.format("%s/users/uploads/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.GET, String.format("%s/users**", apiPrefix)).permitAll()
+//                            .requestMatchers(HttpMethod.GET, String.format("%s/users**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET, String.format("%s/users/**", apiPrefix)).permitAll()
                             .anyRequest()
                             .authenticated();
                 });

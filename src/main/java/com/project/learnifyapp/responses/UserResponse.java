@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.learnifyapp.models.User;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -19,11 +20,10 @@ public class UserResponse extends BaseResponse{
     private String email;
     private String address;
     private String password;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private int facebookAccountId;
     private int googleAccountId;
 
-    @JsonIgnore
     @JsonProperty("role_id")
     private Long roleId;
 
@@ -42,6 +42,7 @@ public class UserResponse extends BaseResponse{
                 .dateOfBirth(user.getDateOfBirth())
                 .facebookAccountId(user.getFacebookAccountId())
                 .googleAccountId(user.getGoogleAccountId())
+                .roleId(user.getRole().getId())
                 .build();
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());

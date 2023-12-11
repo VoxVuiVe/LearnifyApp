@@ -35,6 +35,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("${api.prefix}/users")
@@ -131,6 +132,17 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) throws Exception {
+        try {
+            User existingUser = userService.getUserById(id);
+            return ResponseEntity.ok(existingUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @PostMapping("/login")
