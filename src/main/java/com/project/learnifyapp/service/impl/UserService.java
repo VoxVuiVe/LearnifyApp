@@ -13,11 +13,14 @@ import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.repository.RoleRepository;
 import com.project.learnifyapp.repository.UserImageRepository;
 import com.project.learnifyapp.repository.UserRepository;
+import com.project.learnifyapp.responses.UserResponse;
 import com.project.learnifyapp.service.IUserService;
 import com.project.learnifyapp.service.mapper.UserMapper;
 import com.project.learnifyapp.utils.MessageKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -166,6 +169,22 @@ public class UserService implements IUserService {
         }
         throw new DataNotFoundException("Cannot find user with ID: " + userId);
     }
+
+    @Override
+    public Page<UserResponse> getAllUsers(String keyword, PageRequest pageRequest) {
+        if(keyword.equals("")) {
+            keyword = null;
+        }
+        Page<User> userPage;
+        userPage = userRepository.searchUsers(keyword, pageRequest);
+        return userPage.map(UserResponse::fromUser);
+    }
+
+//    @Override
+//    public List<UserDTO> getAllUsers() {
+//        List<UserDTO> userDTO = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
+//        return userDTO;
+//    }
 
     private boolean isImageFile(MultipartFile file) {
         String contentType = file.getContentType();

@@ -8,13 +8,20 @@ import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.responses.LoginResponse;
+import com.project.learnifyapp.responses.UserListResponse;
+import com.project.learnifyapp.responses.UserResponse;
 import com.project.learnifyapp.service.IUserService;
 import com.project.learnifyapp.service.impl.UserService;
 import com.project.learnifyapp.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +35,14 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
 
     private final LocalizationUtils localizationUtils;
@@ -56,6 +66,23 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping("")
+    public ResponseEntity<UserListResponse> getAllUsers(@RequestParam(defaultValue = "") String keyword,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "12")  int limit) {
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
+        logger.info(String.format("keyword = %s, page = %d, limit = %d",
+                keyword, page, limit));
+        Page<UserResponse> usersPage = userService.getAllUsers(keyword, pageRequest);
+        int totalPages = usersPage.getTotalPages();
+        List<UserResponse> users = usersPage.getContent();
+        return ResponseEntity.ok(UserListResponse
+                        .builder()
+                        .users(users)
+                        .totalPages(totalPages)
+                        .build());
     }
 
     @PostMapping(value = "/uploads/{id}",
@@ -105,6 +132,17 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) throws Exception {
+        try {
+            User existingUser = userService.getUserById(id);
+            return ResponseEntity.ok(existingUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @PostMapping("/login")
