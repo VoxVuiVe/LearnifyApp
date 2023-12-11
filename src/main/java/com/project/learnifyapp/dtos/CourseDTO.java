@@ -40,7 +40,7 @@ public class CourseDTO implements Serializable {
     private String thumbnail;
 
     @JsonProperty("is_delete")
-    private Boolean isDelete = false;
+    private Boolean isDelete = true;
 
     @JsonProperty("category_id")
     private Long categoryId;

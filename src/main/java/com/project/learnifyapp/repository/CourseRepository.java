@@ -11,6 +11,6 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findAllByIsDeleteFalse();
+    List<Course> findAllByIsDeleteTrue();
     Optional<Course> findByIdAndIsDeleteFalse(Long id);
 }

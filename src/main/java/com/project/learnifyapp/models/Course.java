@@ -47,7 +47,7 @@ public class Course extends BaseEntity implements Serializable {
     private String thumbnail;
 
     @Column(name = "is_delete")
-    private Boolean isDelete = false;
+    private Boolean isDelete = true;
 
     @Column(name = "description", length = 1000)
     private String description;
