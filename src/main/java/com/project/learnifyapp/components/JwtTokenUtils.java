@@ -34,6 +34,7 @@ public class JwtTokenUtils {
         Map<String, Object> claims = new HashMap<>(); //tạo ra 1 claims để hứng các thuộc tính bên trong user java spring
         //this.generateSecretKey(); Say nay can thi uncommet lay ra dung
         claims.put("email", user.getEmail());
+        claims.put("userId", user.getId());
         try {
             String token = Jwts.builder()
                     .setClaims(claims) //lam sao de trich xuat duoc tu claims ?

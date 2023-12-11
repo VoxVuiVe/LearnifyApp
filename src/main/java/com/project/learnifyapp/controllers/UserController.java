@@ -134,11 +134,22 @@ public class UserController {
         }
     }
 
+    @PostMapping("/details")
+    public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String token) {
+        try {
+            String extractedToken = token.substring(7);
+            User user = userService.getUserDetailsFromToken(extractedToken);
+            return ResponseEntity.ok(UserResponse.fromUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<?> getUserById(@PathVariable("id") Long id) throws Exception {
         try {
             User existingUser = userService.getUserById(id);
-            return ResponseEntity.ok(existingUser);
+            return ResponseEntity.ok(UserResponse.fromUser(existingUser));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -150,9 +161,10 @@ public class UserController {
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
         //Kiểm tra thông tin đăng nhập và sinh TOKEN
         try {
-            String token = userService.login(userLoginDTO.getEmail(),
+            String token = userService.login(
+                    userLoginDTO.getEmail(),
                     userLoginDTO.getPassword(),
-                    userLoginDTO.getRoleId());
+                    userLoginDTO.getRoleId() == null ? 1 : userLoginDTO.getRoleId());
             // Tra ve token trong response
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
                     .token(token).build());
