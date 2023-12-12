@@ -52,7 +52,7 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseDTO> findAll(){
-        List<Course> courses = courseRepository.findAllByIsDeleteFalse();
+        List<Course> courses = courseRepository.findAllByIsDeleteTrue();
         return courses.stream()
                 .map(courseMapper::toDTO)
                 .collect(Collectors.toList());
