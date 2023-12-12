@@ -28,8 +28,4 @@ public class CategoryDTO implements Serializable {
 
     @JsonProperty("parent_id")
     private Long parentId;
-
-    private List<CategoryDTO> children;
-
-    private List<CourseDTO> courses;
 }

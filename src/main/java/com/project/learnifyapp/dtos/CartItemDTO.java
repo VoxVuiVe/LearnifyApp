@@ -24,6 +24,7 @@ public class CartItemDTO {
 
     private String cartData;
 
-    @JsonProperty("course_id")
-    private String courseId;
+    private String status;
+//    @JsonProperty("course_id")
+//    private String courseId;
 }

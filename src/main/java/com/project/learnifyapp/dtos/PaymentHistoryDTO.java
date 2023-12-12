@@ -16,24 +16,19 @@ public class PaymentHistoryDTO {
     @JsonProperty("total_money")
     private Float totalMoney;
 
+    @JsonProperty("status")
+    private String status;
+
     @Min(value = 1, message = "Number of course must be >= 1")
     @JsonProperty("number_of_course")
     private Integer numberOfCourse;
 
-    @JsonProperty("transaction_id")
-    private String transactionId;
+    @JsonProperty("transaction_Date")
+    private String transactionDate;
 
     @JsonProperty("payment_id")
     @Min(value = 1, message = "Payment's ID must be > 0")
     private Long paymentId;
 
-    @JsonProperty("course_id")
-    @Min(value = 1, message = "Product's ID must be > 0")
-    private Long courseId;
 
-    public String generateTransactionId() {
-        String newTransactionId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10).toUpperCase();
-        setTransactionId(newTransactionId);
-        return newTransactionId;
-    }
 }

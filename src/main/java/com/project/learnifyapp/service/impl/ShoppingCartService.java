@@ -62,15 +62,15 @@ public class ShoppingCartService implements IShoppingCartService {
 
         for (Course course : listCourse) {
             // Check if the course already exists in the cart
-            CartItem existingCartItem = cartItemRepository.findByUserIdAndCourseId(request.getUserId(), course.getId());
-            if (existingCartItem != null) {
-                log.info("Course {} already exists in the cart", course.getId());
-                continue;
-            }
+//            CartItem existingCartItem = cartItemRepository.findByUserIdAndCourseId(request.getUserId(), course.getId());
+//            if (existingCartItem != null) {
+//                log.info("Course {} already exists in the cart", course.getId());
+//                continue;
+//            }
 
             CartItemDTO cartItemDTO = CartItemDTO.builder()
                     .totalPrice(course.getPrice())
-                    .courseId(String.valueOf(course.getId()))
+                    .cartData(cartData)
                     .userId(request.getUserId())
                     .build();
 

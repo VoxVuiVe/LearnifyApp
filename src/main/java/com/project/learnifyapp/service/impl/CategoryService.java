@@ -38,9 +38,16 @@ public class CategoryService implements ICategoryService {
             category = categoryReponsitory.findById(categoryDTO.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
             category.setName(categoryDTO.getName());
+            category.setIsDelete(categoryDTO.getIsDelete()); // Thêm dòng này
+            if (categoryDTO.getParentId() != null && (category.getParent() == null || !category.getParent().getId().equals(categoryDTO.getParentId()))) {
+                Category parent = categoryReponsitory.findById(categoryDTO.getParentId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Parent category not found"));
+                category.setParent(parent);
+            }
         } else {
             category = new Category();
             category.setName(categoryDTO.getName());
+            category.setIsDelete(categoryDTO.getIsDelete()); // Thêm dòng này
             if (categoryDTO.getParentId() != null) {
                 Category parent = categoryReponsitory.findById(categoryDTO.getParentId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Parent category not found"));
@@ -73,7 +80,7 @@ public class CategoryService implements ICategoryService {
         Category category = categoryReponsitory.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         if (!category.getCourses().isEmpty() || !category.getChildren().isEmpty() || category.getParent() != null) {
-            category.setIsDelete(true);
+            category.setIsDelete(false);
             categoryReponsitory.save(category);
         } else {
             categoryReponsitory.delete(category);

@@ -38,13 +38,6 @@ public class CourseService implements ICourseService {
         Course savedCourse = courseRepository.saveAndFlush(course);
         try {
             if (savedCourse.getId() != null) {
-                List<CartItem> cartItems = cartItemRepository.findByCourseId(savedCourse.getId());
-                for (CartItem item : cartItems) {
-                    item.setCourse(savedCourse);
-                    item.setTotalPrice(savedCourse.getPrice());
-                    cartItemRepository.save(item);
-                }
-
                 savedCourse = courseRepository.save(savedCourse);
                 CourseDTO result = courseMapper.toDTO(savedCourse);
                 return result;
@@ -59,7 +52,7 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseDTO> findAll(){
-        List<Course> courses = courseRepository.findAllByIsDeleteFalse();
+        List<Course> courses = courseRepository.findAllByIsDeleteTrue();
         return courses.stream()
                 .map(courseMapper::toDTO)
                 .collect(Collectors.toList());

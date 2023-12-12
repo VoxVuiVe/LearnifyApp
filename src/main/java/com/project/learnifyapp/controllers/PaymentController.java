@@ -1,8 +1,14 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.PaymentDTO;
+import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Payment;
+import com.project.learnifyapp.models.PaymentStatus;
+import com.project.learnifyapp.models.UserCourse;
+import com.project.learnifyapp.repository.PaymentRepository;
+import com.project.learnifyapp.repository.UserCourseRepository;
 import com.project.learnifyapp.service.impl.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +23,14 @@ import java.util.List;
 @RequestMapping("${api.prefix}/payment")
 @RequiredArgsConstructor
 public class PaymentController {
+
     private final PaymentService paymentService;
 
-    @PostMapping("")
+    private final PaymentRepository paymentRepository;
+
+    private final UserCourseRepository userCourseRepository;
+
+    @PostMapping("/create")
     public ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO,
                                            BindingResult result) {
         try {
@@ -30,12 +41,30 @@ public class PaymentController {
             }
             PaymentDTO paymentResponse = paymentService.createPayment(paymentDTO);
             return ResponseEntity.ok(paymentResponse);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //get Payment theo userID
+    @GetMapping("/info")
+    public ResponseEntity<?> handlePaymentReturn(@RequestBody HttpServletRequest request) {
+        try {
+            int result = paymentService.orderReturn(request);
+            // Kiểm tra kết quả và trả về phản hồi phù hợp
+            if (result == 1) {
+                return ResponseEntity.ok("Payment was successful.");
+            } else if (result == 0) {
+                return ResponseEntity.ok("Payment failed.");
+            } else {
+                return ResponseEntity.status(400).body("Invalid VNPay response.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
     @GetMapping("/user/{user_id}")
     public ResponseEntity<?> getPayments(@PathVariable("user_id") Long userId) {
         try {

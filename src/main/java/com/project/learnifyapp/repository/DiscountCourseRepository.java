@@ -17,4 +17,12 @@ public interface DiscountCourseRepository extends JpaRepository<DiscountCourse, 
     @Query(value = "delete from discount_courses dc where dc.discount_id = :id", nativeQuery = true)
     @Modifying
     void deleteAllDiscountId(@Param("id") Long id);
+
+    @Modifying
+    @Query(value = "UPDATE discount_courses SET is_delete = :isDelete WHERE id = :id", nativeQuery = true)
+    void updateIsDeleteById(@Param("id") Long id, @Param("isDelete") Boolean isDelete);
+
+    @Query("DELETE FROM DiscountCourse dc WHERE dc.id = :id")
+    @Modifying
+    void deleteDiscountCourseById(@Param("id") Long id);
 }

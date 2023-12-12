@@ -10,11 +10,9 @@ public interface PaymentHistoryMapper extends EntityMapper<PaymentHistoryDTO, Pa
 
     @Override
     @Mapping(source = "payment.id", target = "paymentId")
-    @Mapping(source = "course.id", target = "courseId")
     PaymentHistoryDTO toDTO(PaymentHistory entity);
 
     @Override
     @Mapping(source = "paymentId", target = "payment.id")
-    @Mapping(source = "courseId", target = "course.id")
     PaymentHistory toEntity(PaymentHistoryDTO dto);
 }

@@ -51,12 +51,4 @@ public class CourseDTO implements Serializable {
     @NotNull
     @JsonProperty("description")
     private String description;
-
-    private List<CartItemDTO> cartItems;
-
-    private List<DiscountCourseDTO> discountCourses;
-
-    private List<FavouriteDTO> favourites;
-
-    private List<RatingDTO> ratings;
 }

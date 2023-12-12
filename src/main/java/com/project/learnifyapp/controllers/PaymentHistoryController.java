@@ -44,12 +44,12 @@ public class PaymentHistoryController {
         return ResponseEntity.status(HttpStatus.OK).body(paymentHistory);
     }
 
-    @GetMapping("/payment/{paymentId}")
-    public ResponseEntity<?> getPaymentHistories(@PathVariable("paymentId") Long paymentId) {
-        List<PaymentHistory> paymentHistories = paymentHistoryService.findByPaymentId(paymentId);
-        List<PaymentHistoryResponse> paymentHistoryResponses = paymentHistories.stream().map(PaymentHistoryResponse::fromPaymentHistory).toList();
-        return ResponseEntity.ok(paymentHistoryResponses);
-    }
+//    @GetMapping("/payment/{paymentId}")
+//    public ResponseEntity<?> getPaymentHistories(@PathVariable("paymentId") Long paymentId) {
+//        List<PaymentHistory> paymentHistories = paymentHistoryService.findByPaymentId(paymentId);
+//        List<PaymentHistoryResponse> paymentHistoryResponses = paymentHistories.stream().map(PaymentHistoryResponse::fromPaymentHistory).toList();
+//        return ResponseEntity.ok(paymentHistoryResponses);
+//    }
 
 //    @PutMapping("/{id}")
 //    public ResponseEntity<?> updatePaymentHistory(@Valid @PathVariable Long id, @RequestBody PaymentHistoryDTO paymentHistoryDTO) {
