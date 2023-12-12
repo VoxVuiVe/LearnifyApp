@@ -5,9 +5,12 @@ import com.project.learnifyapp.models.Category;
 import com.project.learnifyapp.repository.CategoryReponsitory;
 import com.project.learnifyapp.service.ICategoryService;
 import com.project.learnifyapp.service.mapper.CategoryMapper;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
 
     private final Logger log = LoggerFactory.getLogger(CategoryService.class);
@@ -25,12 +29,6 @@ public class CategoryService implements ICategoryService {
     private final CategoryReponsitory categoryReponsitory;
 
     private final CategoryMapper categoryMapper;
-
-    @Autowired
-    public CategoryService(CategoryReponsitory categoryReponsitory, CategoryMapper categoryMapper){
-        this.categoryReponsitory = categoryReponsitory;
-        this.categoryMapper = categoryMapper;
-    }
 
     public CategoryDTO save(CategoryDTO categoryDTO) {
         Category category;
@@ -58,6 +56,16 @@ public class CategoryService implements ICategoryService {
         return categoryMapper.toDTO(category);
     }
 
+    @Override
+    public Page<CategoryDTO> findAllPage(String keyword, PageRequest pageRequest) {
+        if(keyword.equals("")) {
+            keyword = null;
+        }
+
+        Page<Category> categoryPage = categoryReponsitory.searchCategory(keyword, pageRequest);
+        Page<CategoryDTO> dtoPage = categoryPage.map(this::convertToDto);
+        return dtoPage;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -66,6 +74,17 @@ public class CategoryService implements ICategoryService {
         return categories.stream()
                 .map(categoryMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    private CategoryDTO convertToDto(Category category) {
+        CategoryDTO dto = new CategoryDTO();
+        dto.setId(category.getId());
+        dto.setName(category.getName());
+        dto.setIsDelete(category.getIsDelete());
+        if (category.getParent() != null) {
+            dto.setParentId(category.getParent().getId());
+        }
+        return dto;
     }
 
     @Override
