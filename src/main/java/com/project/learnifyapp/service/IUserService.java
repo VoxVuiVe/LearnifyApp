@@ -23,6 +23,8 @@ public interface IUserService {
 
     User getUserById(Long id) throws Exception;
 
+    User getUserDetailsFromToken(String token) throws Exception;
+
     Page<UserResponse> getAllUsers(String keyword, PageRequest pageRequest);
 
     String storeFile(MultipartFile file) throws IOException;

@@ -15,11 +15,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class User extends BaseEntity implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     @Column(name = "password", length = 200, nullable = false)
     private String password;
 
-    @Column(name = "active")
+    @Column(name = "is_active")
     private Boolean active;
 
     @Column(name = "image_url")
@@ -118,4 +118,5 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true;
     }
+
 }

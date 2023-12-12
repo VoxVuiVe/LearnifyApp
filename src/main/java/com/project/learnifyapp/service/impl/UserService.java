@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
 
+import javax.swing.text.html.Option;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -168,6 +169,21 @@ public class UserService implements IUserService {
             return optionalUser.get();
         }
         throw new DataNotFoundException("Cannot find user with ID: " + userId);
+    }
+
+    @Override
+    public User getUserDetailsFromToken(String token) throws Exception {
+        if(jwtTokenUtil.isTokenExpired((token))) {
+            throw new Exception("Token is expired!");
+        }
+        String email = jwtTokenUtil.extractEmail(token);
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if(user.isPresent()) {
+            return user.get();
+        } else {
+            throw new Exception("User not found!");
+        }
     }
 
     @Override

@@ -49,4 +49,9 @@ public class DiscountCourseService implements IDiscountCourseService {
             }
         }
     }
+
+    @Override
+    public void updateDiscountCourse(Long id, Boolean isDelete) {
+        discountCourseRepository.updateIsDeleteById(id,isDelete);
+    }
 }

@@ -28,6 +28,8 @@ public class UserDTO {
     @JsonProperty("image_url")
     private String imageUrl;
 
+    private boolean active;
+
     private String address;
 
     @NotBlank(message = "Password can't be empty")
