@@ -85,7 +85,7 @@ public class SectionService implements ISectionService {
         Lesson sectionId =  lessonRepository.findBySectionId(id);
 
         if(sectionId != null){
-            sectionRepository.updateIsDeleteById(id,true);
+            sectionRepository.updateIsDeleteById(id,false);
             return null;
         }
 
