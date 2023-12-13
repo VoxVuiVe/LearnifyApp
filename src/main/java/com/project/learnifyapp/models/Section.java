@@ -1,5 +1,6 @@
 package com.project.learnifyapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -33,10 +34,14 @@ public class Section implements Serializable {
     @Column(name = "resource")
     private String resource;
 
+    @Column(name = "is_delete")
+    private Boolean isDelete;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
     private List<Lesson> lesson;
 }

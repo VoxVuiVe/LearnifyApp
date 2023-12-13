@@ -1,10 +1,13 @@
 package com.project.learnifyapp.service.impl;
 
+import com.project.learnifyapp.dtos.LessonDTO;
 import com.project.learnifyapp.dtos.SectionDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.models.Section;
 import com.project.learnifyapp.repository.CourseRepository;
+import com.project.learnifyapp.repository.LessonRepository;
 import com.project.learnifyapp.repository.SectionRepository;
 import com.project.learnifyapp.service.ISectionService;
 import com.project.learnifyapp.service.mapper.SectionMapper;
@@ -29,6 +32,8 @@ public class SectionService implements ISectionService {
 
     private final CourseRepository courseRepository;
 
+    private  final LessonRepository lessonRepository;
+
 
     @Override
     public SectionDTO save(SectionDTO sectionDTO) throws DataNotFoundException {
@@ -38,11 +43,9 @@ public class SectionService implements ISectionService {
                 .orElseThrow(() -> new DataNotFoundException("Course not found"));
 
         Section section = sectionMapper.toEntity(sectionDTO);
+        section.setQuantityLesson(0);
+        section.setTotalMinutes(0);
         section.setCourse(course);
-
-        int newQuantityLesson = sectionDTO.getLesson().size();
-        section.setQuantityLesson(newQuantityLesson);
-
 
         Section saveSection = sectionRepository.save(section);
 
@@ -79,10 +82,14 @@ public class SectionService implements ISectionService {
         Section section = sectionRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Section not found"));
 
+        Lesson sectionId =  lessonRepository.findBySectionId(id);
+
+        if(sectionId != null){
+            sectionRepository.updateIsDeleteById(id,true);
+            return null;
+        }
+
         sectionRepository.delete(section);
-
-        log.debug("Section remove: {}", section);
-
         return sectionMapper.toDTO(section);
     }
 
