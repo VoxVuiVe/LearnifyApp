@@ -13,18 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QPageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.LocaleResolver;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
-@RequestMapping("${api.prefix}/")
+@RequestMapping("${api.prefix}/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final Logger log = LoggerFactory.getLogger(CategoryController.class);
@@ -37,16 +39,16 @@ public class CategoryController {
 
     private final LocalizationUtils localizationUtils;
 
-    @PostMapping("/categories")
+    @PostMapping("")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         log.debug("REST request to save Category: {}", categoryDTO);
         CategoryDTO result = categoryService.save(categoryDTO);
         return ResponseEntity.ok().body(result);
     }
 
-    @PutMapping("/categories/{id}")
-    public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody CategoryDTO categoryDTO,
-                                                                 HttpServletRequest request){
+    @PutMapping("/{id}")
+    public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable("id") Long id,
+                                                                 @Valid @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
         log.debug("REST request to update Category: {}", categoryDTO);
         if (categoryDTO.getId() == null){
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idNull");
@@ -61,13 +63,29 @@ public class CategoryController {
         return ResponseEntity.ok(UpdateCategoryResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_CATEGORY_SUCCESSFULLY)).build());
     }
 
-    @GetMapping(value = "/categories")
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+    @GetMapping(value = "")
+    public ResponseEntity<List<CategoryDTO>> getAllCate() {
         List<CategoryDTO> categoryDTOs = categoryService.findAll();
         return ResponseEntity.ok(categoryDTOs);
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping(value = "/page")
+    public ResponseEntity<Map<String, Object>> getAllCategories(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<CategoryDTO> categories = categoryService.findAllPage(keyword, pageRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("categories", categories.getContent());
+        response.put("totalPages", categories.getTotalPages());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoriesById(@PathVariable Long id){
         CategoryDTO categoryDTO = categoryService.findOne(id);
         if (categoryDTO != null) {
@@ -77,7 +95,7 @@ public class CategoryController {
         }
     }
 
-    @DeleteMapping("/categories/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();

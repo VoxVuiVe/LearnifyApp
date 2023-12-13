@@ -56,25 +56,25 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/payment_history/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.GET, String.format("%s/payment_history?**", apiPrefix)).permitAll()
                             //Categories
-                            .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/categories/**", apiPrefix)).permitAll()
                             //Course
                             .requestMatchers(HttpMethod.POST, String.format("%s/courses/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/courses/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/courses/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-                            .requestMatchers(HttpMethod.GET, String.format("%s/courses**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET, String.format("%s/courses/**", apiPrefix)).permitAll()
                             //Discount
                             .requestMatchers(HttpMethod.POST, String.format("%s/discounts**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.PUT, String.format("%s/discounts/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/discounts/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.GET, String.format("%s/discounts**", apiPrefix)).permitAll()
                             //Lesson
-//                            .requestMatchers(HttpMethod.POST, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.PUT, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.GET, String.format("%s/lessons**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.PUT, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.DELETE, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.GET, String.format("%s/lessons**", apiPrefix)).permitAll()
                             //Section
                             .requestMatchers(HttpMethod.POST, String.format("%s/section/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/section/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
@@ -105,7 +105,6 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST, String.format("%s/users/uploads/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-//                            .requestMatchers(HttpMethod.GET, String.format("%s/users**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/users/**", apiPrefix)).permitAll()
                             .anyRequest()
                             .authenticated();

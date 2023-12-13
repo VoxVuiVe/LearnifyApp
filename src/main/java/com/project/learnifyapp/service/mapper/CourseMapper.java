@@ -5,7 +5,7 @@ import com.project.learnifyapp.models.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class, CartItemMapper.class, DiscountCourseMapper.class, FavouriteMapper.class, RatingMapper.class,UserMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, UserMapper.class, SectionMapper.class})
 public interface CourseMapper extends EntityMapper<CourseDTO, Course>{
 
     @Override
