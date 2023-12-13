@@ -1,7 +1,6 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.LessonDTO;
-import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.repository.LessonRepository;
 import com.project.learnifyapp.service.ILessonService;
@@ -10,6 +9,8 @@ import com.project.learnifyapp.service.mapper.LessonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,6 +76,32 @@ public class LessonService implements ILessonService {
         return lessonRepository.findAll().stream().map(lessonMapper::toDTO).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<LessonDTO> findAllPage(String keyword, PageRequest pageRequest){
+        if (keyword.equals("")){
+            keyword = null;
+        }
+        Page<Lesson> lessonPage = lessonRepository.searchLesson(keyword, pageRequest);
+        Page<LessonDTO> dtoPage = lessonPage.map(this::convertToDto);
+        return dtoPage;
+    }
+
+    private LessonDTO convertToDto(Lesson lesson){
+        LessonDTO dto = new LessonDTO();
+        dto.setId(lesson.getId());
+        dto.setTitle(lesson.getTitle());
+        dto.setTime(lesson.getTime());
+        dto.setVideoUrl(lesson.getVideoUrl());
+        dto.setQuestionAndAnswer(lesson.getQuestionAndAnswer());
+        dto.setOverview(lesson.getOverview());
+        dto.setNote(lesson.getNote());
+        dto.setComment(lesson.getComment());
+        if (lesson.getSection() != null){
+            dto.setSectionId(lesson.getSection().getId());
+        }
+        return dto;
+    }
     @Override
     @Transactional(readOnly = true)
     public Optional<LessonDTO> findOne(Long id) {
