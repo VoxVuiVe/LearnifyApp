@@ -2,6 +2,7 @@ package com.project.learnifyapp.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.learnifyapp.models.Lesson;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -28,9 +29,10 @@ public class SectionDTO {
     @JsonProperty("resource")
     private String resource;
 
+    @JsonProperty("is_delete")
+    private Boolean isDelete;
+
     @JsonProperty("course_id")
     private Long courseId;
 
-    @JsonProperty("lesson")
-    private List<Lesson> lesson;
 }

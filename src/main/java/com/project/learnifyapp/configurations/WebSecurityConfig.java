@@ -71,10 +71,10 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.DELETE, String.format("%s/discounts/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.GET, String.format("%s/discounts**", apiPrefix)).permitAll()
                             //Lesson
-//                            .requestMatchers(HttpMethod.POST, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.PUT, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
-//                            .requestMatchers(HttpMethod.GET, String.format("%s/lessons**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.PUT, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.DELETE, String.format("%s/lessons/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
+                            .requestMatchers(HttpMethod.GET, String.format("%s/lessons**", apiPrefix)).permitAll()
                             //Section
                             .requestMatchers(HttpMethod.POST, String.format("%s/section/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
                             .requestMatchers(HttpMethod.PUT, String.format("%s/section/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.TEACHER)
