@@ -1,5 +1,6 @@
 package com.project.learnifyapp.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -38,6 +39,7 @@ public class LessonDTO implements Serializable {
 
     @JsonProperty("comment")
     private String comment;
+
     @NotNull
     @JsonProperty("section_id")
     private Long sectionId;

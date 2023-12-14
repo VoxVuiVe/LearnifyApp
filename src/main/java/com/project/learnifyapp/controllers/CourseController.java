@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("${api.prefix}/")
+@RequestMapping("${api.prefix}/courses")
 public class CourseController {
     private final Logger log = LoggerFactory.getLogger(CourseController.class);
 
@@ -30,7 +30,7 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @PostMapping("/courses")
+    @PostMapping("")
     public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CourseDTO courseDTO){
         log.debug("REST request to save Course: {}", courseDTO);
         CourseDTO result = courseService.save(courseDTO);
@@ -39,7 +39,7 @@ public class CourseController {
                 .body(result);
     }
 
-    @PutMapping("/courses/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable(value = "id", required = false) final Long id,
                                                   @Valid @RequestBody CourseDTO courseDTO){
         log.debug("REST request to update course: {}", courseDTO);
@@ -58,13 +58,13 @@ public class CourseController {
                 .body(result);
     }
 
-    @GetMapping("/courses")
+    @GetMapping("")
     public ResponseEntity<List<CourseDTO>> getAllCourse(){
         List<CourseDTO> courseDTOS = courseService.findAll();
         return ResponseEntity.ok(courseDTOS);
     }
 
-    @GetMapping("/courses/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id){
         CourseDTO courseDTO = courseService.findOne(id);
         if (courseDTO != null){
@@ -79,5 +79,4 @@ public class CourseController {
         courseService.deleteCourse(id);
         return ResponseEntity.ok().build();
     }
-
 }

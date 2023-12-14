@@ -1,5 +1,6 @@
 package com.project.learnifyapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import jakarta.persistence.*;
