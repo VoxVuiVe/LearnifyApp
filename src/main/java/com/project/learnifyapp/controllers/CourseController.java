@@ -75,13 +75,9 @@ public class CourseController {
     }
 
     @DeleteMapping("/courses/{id}")
-    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
-        try {
-            courseService.deleteCourse(id);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return ResponseEntity.ok().build();
     }
 
 }

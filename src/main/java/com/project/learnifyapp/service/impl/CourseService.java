@@ -10,8 +10,10 @@ import com.project.learnifyapp.service.mapper.CourseMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +54,7 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseDTO> findAll(){
-        List<Course> courses = courseRepository.findAllByIsDeleteTrue();
+        List<Course> courses = courseRepository.findAll();
         return courses.stream()
                 .map(courseMapper::toDTO)
                 .collect(Collectors.toList());
@@ -61,19 +63,19 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public CourseDTO findOne(Long id){
-        Optional<Course> course = courseRepository.findByIdAndIsDeleteFalse(id);
+        Optional<Course> course = courseRepository.findById(id);
         return course.map(courseMapper::toDTO).orElse(null);
     }
 
     @Override
     public void deleteCourse(Long id) {
-        Optional<Course> course = courseRepository.findById(id);
-        if (course.isPresent()) {
-            Course existingCourse = course.get();
-            existingCourse.setIsDelete(true);
-            courseRepository.save(existingCourse);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+        if (!course.getSection().isEmpty()) {
+            course.setIsDelete(false);
+            courseRepository.save(course);
         } else {
-            throw new RuntimeException("ERROR: Course not found");
+            courseRepository.delete(course);
         }
     }
 }

@@ -7,13 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +18,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
+@ToString
 @Table(name = "courses")
 public class Course extends BaseEntity implements Serializable {
     @Id
@@ -56,8 +53,11 @@ public class Course extends BaseEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Section> section = new ArrayList<>();
 }
