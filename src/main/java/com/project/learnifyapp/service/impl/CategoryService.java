@@ -98,7 +98,7 @@ public class CategoryService implements ICategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryReponsitory.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-        if (!category.getCourses().isEmpty() || !category.getChildren().isEmpty() || category.getParent() != null) {
+        if (!category.getCourses().isEmpty() || !category.getChildren().isEmpty()) {
             category.setIsDelete(false);
             categoryReponsitory.save(category);
         } else {

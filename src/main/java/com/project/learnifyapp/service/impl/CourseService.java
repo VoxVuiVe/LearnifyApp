@@ -54,7 +54,7 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseDTO> findAll(){
-        List<Course> courses = courseRepository.findAllByIsDeleteTrue();
+        List<Course> courses = courseRepository.findAll();
         return courses.stream()
                 .map(courseMapper::toDTO)
                 .collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public CourseDTO findOne(Long id){
-        Optional<Course> course = courseRepository.findByIdAndIsDeleteFalse(id);
+        Optional<Course> course = courseRepository.findById(id);
         return course.map(courseMapper::toDTO).orElse(null);
     }
 
