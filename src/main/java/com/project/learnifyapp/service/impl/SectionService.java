@@ -14,6 +14,8 @@ import com.project.learnifyapp.service.mapper.SectionMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -109,6 +111,28 @@ public class SectionService implements ISectionService {
     @Override
     public List<SectionDTO> getAllSections() {
         return sectionRepository.findAll().stream().map(sectionMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<SectionDTO> findAllPage(String keyword, PageRequest pageRequest) {
+        if(keyword.equals("")) {
+            keyword = null;
+        }
+        Page<Section> discountPage = sectionRepository.searchSection(keyword,pageRequest);
+        Page<SectionDTO> dtoPage = discountPage.map(this::convertToDto);
+        return dtoPage;
+    }
+
+    private SectionDTO convertToDto(Section section) {
+        SectionDTO dto = new SectionDTO();
+        dto.setId(section.getId());
+        dto.setTitle(section.getTitle());
+        dto.setQuantityLesson(section.getQuantityLesson());
+        dto.setTotalMinutes(section.getTotalMinutes());
+        dto.setResource(section.getResource());
+        dto.setIsDelete(section.getIsDelete());
+        dto.setCourseId(section.getCourse().getId());
+        return dto;
     }
 
     @Override

@@ -17,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
@@ -77,13 +75,18 @@ public class DiscountController {
     }
 
     @GetMapping("/discounts/pages")
-    public ResponseEntity<List<Discount>> getDiscountsPage(
-            @RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size
-    ){
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Discount> discountsPage = discountService.getDiscountPage(pageRequest);
-        List<Discount> discounts = discountsPage.getContent();
-        return ResponseEntity.ok().body(discounts);
+    public ResponseEntity<Map<String, Object>> getDiscountPage(
+            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size ){
+        PageRequest pageRequest = PageRequest.of(page,size);
+        Page<DiscountDTO> discounts = discountService.findAllPage(keyword,pageRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("discount",discounts.getContent());
+        response.put("totalPages",discounts.getTotalPages());
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/discounts")

@@ -6,10 +6,15 @@ import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.service.impl.SectionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
@@ -70,4 +75,20 @@ public class SectionController {
         return  ResponseEntity
                 .ok(sections);
     }
+
+    @GetMapping("/sections/pages")
+    public ResponseEntity<Map<String, Object>> getSectionPage(
+            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size ){
+        PageRequest pageRequest = PageRequest.of(page,size);
+        Page<SectionDTO> sections = sectionService.findAllPage(keyword,pageRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("section",sections.getContent());
+        response.put("totalPages",sections.getTotalPages());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
