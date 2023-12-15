@@ -26,6 +26,8 @@ public interface IUserService {
 
     User getUserDetailsFromToken(String token) throws Exception;
 
+    UserImageDTO getImageByUserId(Long userId) throws Exception;
+
     Page<UserResponse> getAllUsers(String keyword, PageRequest pageRequest);
 
     String storeFile(MultipartFile file) throws IOException;

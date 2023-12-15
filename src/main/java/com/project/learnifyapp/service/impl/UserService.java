@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -145,7 +146,7 @@ public class UserService implements IUserService {
                 .findById(userId)
                 .orElseThrow(() ->
                         new DataNotFoundException(
-                                "Cannot find product with id: "+userImageDTO.getProductId()));
+                                "Cannot find product with id: "+userImageDTO.getUserId()));
         UserImage newUserImage = UserImage.builder()
                 .user(existingUser)
                 .imageUrl(userImageDTO.getImageUrl())
@@ -162,6 +163,22 @@ public class UserService implements IUserService {
         }
         userRepository.save(existingUser);
         return userImageRepository.save(newUserImage);
+    }
+
+    @Override
+    public UserImageDTO getImageByUserId(Long userId) throws Exception {
+        List<UserImage> userImages = userImageRepository.findByUserId(userId);
+
+        if (userImages.isEmpty()) {
+            throw new DataNotFoundException("User image not found for userId: " + userId);
+        }
+        UserImage selectedImage = userImages.get(0);
+
+        UserImageDTO userImageDTO = new UserImageDTO();
+        userImageDTO.setUserId(selectedImage.getUser().getId());
+        userImageDTO.setImageUrl(selectedImage.getImageUrl());
+
+        return userImageDTO;
     }
 
     @Override
@@ -197,12 +214,6 @@ public class UserService implements IUserService {
         userPage = userRepository.searchUsers(keyword, pageRequest);
         return userPage.map(UserResponse::fromUser);
     }
-
-//    @Override
-//    public List<UserDTO> getAllUsers() {
-//        List<UserDTO> userDTO = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
-//        return userDTO;
-//    }
 
     @Transactional
     @Override
