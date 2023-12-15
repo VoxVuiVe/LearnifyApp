@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.learnifyapp.models.Role;
 import com.project.learnifyapp.models.User;
+import com.project.learnifyapp.models.UserImage;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,6 +50,9 @@ public class UserResponse extends BaseResponse{
     @JsonProperty("role_id")
     private Role roleId;
 
+    @JsonProperty("user_images")
+    private List<UserImage> userImages = new ArrayList<>();
+
     @JsonIgnore
     @JsonProperty("cart_id")
     private Long cartId;
@@ -63,6 +69,7 @@ public class UserResponse extends BaseResponse{
                 .facebookAccountId(user.getFacebookAccountId())
                 .googleAccountId(user.getGoogleAccountId())
                 .roleId(user.getRole())
+                .userImages(user.getUserImage())
                 .build();
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());

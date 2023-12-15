@@ -11,9 +11,9 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserImageDTO {
-    @JsonProperty("product_id")
-    @Min(value = 1, message = "Product's ID must be > 0")
-    private Long productId;
+    @JsonProperty("user_id")
+    @Min(value = 1, message = "User's ID must be > 0")
+    private Long userId;
 
     @Size(min = 5, max = 200, message = "Image's name")
     @JsonProperty("image_url")
