@@ -56,6 +56,7 @@ public class Course extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "category_id")
+//    @ToString.Exclude
     private Category category;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

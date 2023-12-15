@@ -4,6 +4,7 @@ import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.models.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class, UserMapper.class, SectionMapper.class})
 public interface CourseMapper extends EntityMapper<CourseDTO, Course>{
@@ -18,4 +19,7 @@ public interface CourseMapper extends EntityMapper<CourseDTO, Course>{
     @Mapping(source = "userId", target = "user.id")
     Course toEntity(CourseDTO dto);
 
+    @Mapping(target = "id", ignore = true)
+    void updateCourseFromDTO(CourseDTO courseDTO, @MappingTarget Course course);
 }
+
