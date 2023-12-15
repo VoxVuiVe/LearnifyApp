@@ -101,11 +101,13 @@ public class WebSecurityConfig {
 //                            .requestMatchers(HttpMethod.DELETE, String.format("%s/role/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/roles**", apiPrefix)).permitAll()
                             //User
-                            .requestMatchers(HttpMethod.POST, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
+                            //.requestMatchers(HttpMethod.POST, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.POST, String.format("%s/users/uploads/**", apiPrefix)).permitAll()
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.DELETE, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
+
+                            //.requestMatchers(HttpMethod.PUT, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
+                            //.requestMatchers(HttpMethod.DELETE, String.format("%s/users/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(HttpMethod.GET, String.format("%s/users/**", apiPrefix)).permitAll()
+//                            .requestMatchers(HttpMethod.GET, String.format("%s/users/image**", apiPrefix)).permitAll()
                             .anyRequest()
                             .authenticated();
                 });
