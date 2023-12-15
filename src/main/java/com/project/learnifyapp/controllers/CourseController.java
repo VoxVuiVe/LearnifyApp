@@ -7,11 +7,15 @@ import com.project.learnifyapp.service.impl.CourseService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -64,6 +68,21 @@ public class CourseController {
         return ResponseEntity.ok(courseDTOS);
     }
 
+    @GetMapping("/pages")
+    public ResponseEntity<Map<String, Object>> getCoursePage(
+            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size ){
+        PageRequest pageRequest = PageRequest.of(page,size);
+        Page<CourseDTO> courses = courseService.findAllPage(keyword,pageRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("courses",courses.getContent());
+        response.put("totalPages",courses.getTotalPages());
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id){
         CourseDTO courseDTO = courseService.findOne(id);
@@ -74,9 +93,9 @@ public class CourseController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/courses/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

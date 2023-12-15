@@ -1,6 +1,7 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.components.LocalizationUtils;
+import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
@@ -19,12 +20,15 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -134,12 +139,71 @@ public class UserController {
         }
     }
 
-    @PostMapping("/details")
-    public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String token) {
+    @GetMapping("/image/{userId}")
+    public ResponseEntity<UserImageDTO> getUserImage(@PathVariable("userId") Long userId) {
         try {
-            String extractedToken = token.substring(7);
+            UserImageDTO userImageDTO = userService.getImageByUserId(userId);
+            return ResponseEntity.ok(userImageDTO);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            // Xử lý khi không tìm thấy ảnh cho userId
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            // Xử lý các trường hợp khác
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/readImage/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/"+imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
+                //return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/details")
+    public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String extractedToken = authorizationHeader.substring(7);
+                                    //Lay chi tiet user bang token
             User user = userService.getUserDetailsFromToken(extractedToken);
             return ResponseEntity.ok(UserResponse.fromUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/details/{userId}")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<UserResponse> updateUserDetails(@PathVariable Long userId,
+                                                          @RequestBody UpdateUserDTO updateUserDTO,
+                            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        try {
+            String extractedToken = authorizationHeader.substring(7);
+                                    //Lay chi tiet user bang token
+            User user = userService.getUserDetailsFromToken(extractedToken);
+
+            //Kiểm tra user hiện tại có trùng với userId được truyền vào không? nếu đúng thì cập nhật chính mình
+            if(user.getRole().getName().equals("ADMIN") || user.getId() == userId) {
+                User updateUser = userService.updateUser(userId, updateUserDTO);
+                return ResponseEntity.ok(UserResponse.fromUser(updateUser));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -165,7 +229,7 @@ public class UserController {
                     userLoginDTO.getEmail(),
                     userLoginDTO.getPassword(),
                     userLoginDTO.getRoleId() == null ? 1 : userLoginDTO.getRoleId());
-            // Tra ve token trong response
+            //Tra ve token trong response
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
                     .token(token).build());
         } catch (Exception e) {

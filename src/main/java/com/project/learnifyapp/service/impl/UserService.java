@@ -2,6 +2,7 @@ package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.components.JwtTokenUtils;
 import com.project.learnifyapp.components.LocalizationUtils;
+import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
@@ -26,6 +27,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
 
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -143,7 +146,7 @@ public class UserService implements IUserService {
                 .findById(userId)
                 .orElseThrow(() ->
                         new DataNotFoundException(
-                                "Cannot find product with id: "+userImageDTO.getProductId()));
+                                "Cannot find product with id: "+userImageDTO.getUserId()));
         UserImage newUserImage = UserImage.builder()
                 .user(existingUser)
                 .imageUrl(userImageDTO.getImageUrl())
@@ -160,6 +163,22 @@ public class UserService implements IUserService {
         }
         userRepository.save(existingUser);
         return userImageRepository.save(newUserImage);
+    }
+
+    @Override
+    public UserImageDTO getImageByUserId(Long userId) throws Exception {
+        List<UserImage> userImages = userImageRepository.findByUserId(userId);
+
+        if (userImages.isEmpty()) {
+            throw new DataNotFoundException("User image not found for userId: " + userId);
+        }
+        UserImage selectedImage = userImages.get(0);
+
+        UserImageDTO userImageDTO = new UserImageDTO();
+        userImageDTO.setUserId(selectedImage.getUser().getId());
+        userImageDTO.setImageUrl(selectedImage.getImageUrl());
+
+        return userImageDTO;
     }
 
     @Override
@@ -196,11 +215,59 @@ public class UserService implements IUserService {
         return userPage.map(UserResponse::fromUser);
     }
 
-//    @Override
-//    public List<UserDTO> getAllUsers() {
-//        List<UserDTO> userDTO = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
-//        return userDTO;
-//    }
+    @Transactional
+    @Override
+    public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception {
+        // Find the existing user by userId
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        // Check if the email is being changed and if it already exists for another user
+//        String newEmail = updatedUserDTO.getEmail();
+//        if (!existingUser.getEmail().equals(newEmail) &&
+//                userRepository.existsByEmail(newEmail)) {
+//            throw new DataIntegrityViolationException("Email already exists");
+//        }
+
+        // Update user information based on the DTO
+//        if (newEmail != null) {
+//            existingUser.setPhoneNumber(newEmail);
+//        }
+
+        if (updatedUserDTO.getFullName() != null) {
+            existingUser.setFullName(updatedUserDTO.getFullName());
+        }
+
+        if (updatedUserDTO.getPhoneNumber() != null) {
+            existingUser.setPhoneNumber(updatedUserDTO.getPhoneNumber());
+        }
+        if (updatedUserDTO.getAddress() != null) {
+            existingUser.setAddress(updatedUserDTO.getAddress());
+        }
+        if (updatedUserDTO.getDateOfBirth() != null) {
+            existingUser.setDateOfBirth(updatedUserDTO.getDateOfBirth());
+        }
+        if (updatedUserDTO.getFacebookAccountId() > 0) {
+            existingUser.setFacebookAccountId(updatedUserDTO.getFacebookAccountId());
+        }
+        if (updatedUserDTO.getGoogleAccountId() > 0) {
+            existingUser.setGoogleAccountId(updatedUserDTO.getGoogleAccountId());
+        }
+
+        // Update the password if it is provided in the DTO
+        if (updatedUserDTO.getPassword() != null
+                && !updatedUserDTO.getPassword().isEmpty()) {
+//            if(!updatedUserDTO.getPassword().equals(updatedUserDTO.getRetypePassword())) {
+//                throw new DataNotFoundException("Password and retype password not the same");
+//            }
+            String newPassword = updatedUserDTO.getPassword();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encodedPassword);
+        }
+        //existingUser.setRole(updatedRole);
+        // Save the updated user
+        return userRepository.save(existingUser);
+    }
 
     private boolean isImageFile(MultipartFile file) {
         String contentType = file.getContentType();

@@ -1,5 +1,6 @@
 package com.project.learnifyapp.service;
 
+import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.models.User;
@@ -25,9 +26,13 @@ public interface IUserService {
 
     User getUserDetailsFromToken(String token) throws Exception;
 
+    UserImageDTO getImageByUserId(Long userId) throws Exception;
+
     Page<UserResponse> getAllUsers(String keyword, PageRequest pageRequest);
 
     String storeFile(MultipartFile file) throws IOException;
+
+    User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception;
 
     void deleteFile(String filename) throws IOException;
 }

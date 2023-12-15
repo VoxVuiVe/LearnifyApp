@@ -1,16 +1,17 @@
 package com.project.learnifyapp.repository;
 
-import com.project.learnifyapp.models.CartItem;
 import com.project.learnifyapp.models.Course;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("unused")
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findAllByIsDeleteTrue();
-    Optional<Course> findByIdAndIsDeleteFalse(Long id);
+    @Query(value= "SELECT * FROM courses cs WHERE " +
+            ":keyword IS NULL OR (cs.title LIKE CONCAT('%', :keyword, '%'))", nativeQuery = true)
+    Page<Course> searchCategory(@Param("keyword") String keyword, PageRequest pageRequest);
 }
