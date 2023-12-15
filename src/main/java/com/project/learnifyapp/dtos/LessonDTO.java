@@ -25,7 +25,6 @@ public class LessonDTO implements Serializable {
     private String time;
 
     @NotNull(message = "videoUrl cannot be null")
-    @JsonProperty("video_url")
     private String videoUrl;
 
     @JsonProperty("question_and_answer")

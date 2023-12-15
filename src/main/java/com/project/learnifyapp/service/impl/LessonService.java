@@ -43,7 +43,9 @@ public class LessonService implements ILessonService {
         Lesson lesson = lessonMapper.toEntity(lessonDTO);
 
         // Lưu entity vào cơ sở dữ liệu
+        log.debug("Trước khi lưu vào cơ sở dữ liệu: {}", lesson);
         Lesson savedLesson = lessonRepository.saveAndFlush(lesson);
+        log.debug("Sau khi lưu vào cơ sở dữ liệu: {}", savedLesson);
 
         if (videoFile != null && !videoFile.isEmpty()) {
             try {
