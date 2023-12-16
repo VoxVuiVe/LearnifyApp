@@ -37,7 +37,6 @@ public class LessonDTO implements Serializable {
     private String comment;
 
     @NotNull
-    @JsonProperty("section_id")
     private Long sectionId;
 
 }

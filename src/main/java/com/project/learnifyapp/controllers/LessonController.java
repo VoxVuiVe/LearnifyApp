@@ -6,6 +6,7 @@ import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.repository.LessonRepository;
 import com.project.learnifyapp.service.S3Service;
 import com.project.learnifyapp.service.impl.LessonService;
+import org.apache.tomcat.util.http.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -60,7 +61,7 @@ public class LessonController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LessonDTO> updateLesson(@PathVariable(value = "id", required = false) final Long id,
-                                                  @RequestBody LessonDTO lessonDTO, @RequestParam("videoFile") MultipartFile videoFile) throws Exception {
+                                                  @ModelAttribute LessonDTO lessonDTO, @RequestParam("videoFile") MultipartFile videoFile) throws Exception {
         log.debug("REST request to update Lesson :{}, {}, {}", id, lessonDTO, videoFile);
         if (lessonDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -91,13 +92,30 @@ public class LessonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LessonDTO> getLessonByID(@PathVariable Long id) {
-        Optional<LessonDTO> lessonDTO = lessonService.findOne(id);
-        if (lessonDTO.isPresent()) {
-            return new ResponseEntity<>(lessonDTO.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<LessonDTO> lessonDTO = lessonService.findOneWithPresignedURL(id);
+        return ResponseEntity.of(lessonDTO);
+//        if (lessonDTO.isPresent()) {
+//            LessonDTO lesson = lessonDTO.get();
+//            String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
+//
+//            // Kiểm tra nullability của videoKey
+//            if (videoKey != null) {
+//                // Sử dụng S3Service để lấy presigned URL
+//                String presignedURL = s3Service.getPresignedURL(videoKey);
+//
+//                // Cập nhật đường dẫn video trong lessonDTO với presigned URL
+//                lesson.setVideoUrl(presignedURL);
+//
+//                return new ResponseEntity<>(lesson, HttpStatus.OK);
+//            } else {
+//                // Xử lý trường hợp videoKey là null, nếu cần
+//                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND,lessonDTO);
+//        }
     }
+
 
     @GetMapping(value= "/page")
     public ResponseEntity<Map<String, Object>> getAllLesson(@RequestParam(name = "keyword", required = false) String keyword,

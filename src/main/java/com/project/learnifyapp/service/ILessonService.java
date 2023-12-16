@@ -20,6 +20,9 @@ public interface ILessonService {
 
     Optional<LessonDTO> findOne(Long id);
 
+    @Transactional(readOnly = true)
+    Optional<LessonDTO> findOneWithPresignedURL(Long id);
+
     void deleteLesson(Long id);
 
 }

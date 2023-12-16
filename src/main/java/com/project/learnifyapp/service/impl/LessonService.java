@@ -11,7 +11,6 @@ import com.project.learnifyapp.service.mapper.LessonMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -35,55 +34,54 @@ public class LessonService implements ILessonService {
 
 
     @Override
-        public LessonDTO save(LessonDTO lessonDTO, MultipartFile videoFile) throws Exception {
-            log.debug("Request to save Lesson: {}", lessonDTO);
+    public LessonDTO save(LessonDTO lessonDTO, MultipartFile videoFile) throws Exception {
+        log.debug("Request to save Lesson: {}", lessonDTO);
 
-            // Ánh xạ LessonDTO sang entity
-            Lesson lesson = lessonMapper.toEntity(lessonDTO);
+        // Ánh xạ LessonDTO sang entity
+        Lesson lesson = lessonMapper.toEntity(lessonDTO);
 
-            // Lưu entity vào cơ sở dữ liệu
-            Lesson savedLesson = lessonRepository.saveAndFlush(lesson);
+        // Lưu entity vào cơ sở dữ liệu
+        Lesson savedLesson = lessonRepository.saveAndFlush(lesson);
 
-            Section section = lessonRepository.findByIdWithSection(lesson.getId());
+        Section section = lessonRepository.findByIdWithSection(lesson.getId());
 
-            // Kiểm tra nullability của Section
-            if (section != null) {
-                // Tăng quantity_lesson của Section khi thêm Lesson
-                section.setQuantityLesson(section.getQuantityLesson() + 1);
+        // Kiểm tra nullability của Section
+        if (section != null && lesson.getId() != null) {
+            // Tăng quantity_lesson của Section khi thêm Lesson
+            section.setQuantityLesson(section.getQuantityLesson() + 1);
+        } else {
+            throw new RuntimeException("Section không được phép là null.");
+        }
 
-                // Tăng total_minutes của Section khi thêm Lesson
-                section.setTotalMinutes(section.getTotalMinutes() + savedLesson.getTime());
+        // Tăng total_minutes của Section khi thêm Lesson hoặc cập nhật
+        section.setTotalMinutes(section.getTotalMinutes() + savedLesson.getTime());
 
-                // Lưu Section sau khi cập nhật
-                sectionRepository.save(section);
-            } else {
-                throw new RuntimeException("Section không được phép là null.");
-            }
+        // Lưu Section sau khi cập nhật
+        sectionRepository.save(section);
 
-
-            if (videoFile != null && !videoFile.isEmpty()) {
-                try {
-                    String existingVideoUrl = savedLesson.getVideoUrl();
-                    if (existingVideoUrl != null) {
-                        s3Service.deleteFile(existingVideoUrl);
-                    }
-                    String newVideoUrl = s3Service.uploadVideoToS3(videoFile);
-                    if (newVideoUrl != null) {
-                        savedLesson.setVideoUrl(newVideoUrl);
-                        savedLesson = lessonRepository.save(savedLesson);
-                        LessonDTO result = lessonMapper.toDTO(savedLesson);
-                        return result;
-                    } else {
-                        // Xử lý trường hợp newVideoUrl là null, nếu cần
-                        throw new RuntimeException("Lỗi: videoFile không được phép là null hoặc trống.");
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException("Lỗi khi tải lên/cập nhật video lên S3: " + e.getMessage());
+        if (videoFile != null && !videoFile.isEmpty()) {
+            try {
+                String existingVideoUrl = savedLesson.getVideoUrl();
+                if (existingVideoUrl != null) {
+                    s3Service.deleteFile(existingVideoUrl);
                 }
+                String newVideoUrl = s3Service.uploadVideoToS3(videoFile);
+                if (newVideoUrl != null) {
+                    savedLesson.setVideoUrl(newVideoUrl);
+                    savedLesson = lessonRepository.save(savedLesson);
+                    LessonDTO result = lessonMapper.toDTO(savedLesson);
+                    return result;
+                } else {
+                    throw new RuntimeException("Lỗi: videoFile không được phép là null hoặc trống.");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi khi tải lên/cập nhật video lên S3: " + e.getMessage());
             }
+        }
 
         return lessonMapper.toDTO(savedLesson);
     }
+
 
 
     @Override
@@ -122,6 +120,32 @@ public class LessonService implements ILessonService {
     @Transactional(readOnly = true)
     public Optional<LessonDTO> findOne(Long id) {
         return lessonRepository.findById(id).map(lessonMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<LessonDTO> findOneWithPresignedURL(Long id) {
+        Optional<LessonDTO> lessonDTO = lessonRepository.findById(id).map(lessonMapper::toDTO);
+        if (lessonDTO.isPresent()) {
+            LessonDTO lesson = lessonDTO.get();
+            String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
+
+            // Kiểm tra nullability của videoKey
+            if (videoKey != null) {
+                // Sử dụng S3Service để lấy presigned URL
+                String presignedURL = s3Service.getPresignedURL(videoKey);
+
+                // Cập nhật đường dẫn video trong lessonDTO với presigned URL
+                lesson.setVideoUrl(presignedURL);
+
+                return Optional.of(lesson);
+            } else {
+                // Xử lý trường hợp videoKey là null, nếu cần
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
 
