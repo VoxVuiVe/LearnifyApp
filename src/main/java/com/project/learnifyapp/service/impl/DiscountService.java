@@ -38,8 +38,24 @@ public class DiscountService implements IDiscountService {
     }
 
     @Override
-    public Page<Discount> getDiscountPage(PageRequest pageRequest) {
-        return discountRepository.findAll(pageRequest);
+    public Page<DiscountDTO> findAllPage(String keyword, PageRequest pageRequest) {
+        if(keyword.equals("")) {
+            keyword = null;
+        }
+        Page<Discount> discountPage = discountRepository.searchCategory(keyword,pageRequest);
+        Page<DiscountDTO> dtoPage = discountPage.map(this::convertToDto);
+        return dtoPage;
+    }
+
+    private DiscountDTO convertToDto(Discount discount) {
+        DiscountDTO dto = new DiscountDTO();
+        dto.setId(discount.getId());
+        dto.setCode(discount.getCode());
+        dto.setPercentage(discount.getPercentage());
+        dto.setStartDate(discount.getStartDate());
+        dto.setStartEnd(discount.getStartEnd());
+        dto.setIsActive(discount.getIsActive());
+        return dto;
     }
 
     @Override

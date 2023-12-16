@@ -136,6 +136,38 @@ public class CourseService implements ICourseService {
     }
 
     @Override
+    public Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest) {
+        if(keyword.equals("")) {
+            keyword = null;
+        }
+        Page<Course> discountPage = courseRepository.searchCategory(keyword,pageRequest);
+        Page<CourseDTO> dtoPage = discountPage.map(this::convertToDto);
+        return dtoPage;
+    }
+
+    @Override
+    public List<CourseInfoDTO> courseInfo() {
+        List<Object[]> queryResult = courseRepository.getCoursesInfo();
+        System.out.println("result==" + queryResult);
+        // Ánh xạ trực tiếp trong phương thức
+        List<CourseInfoDTO> result = new ArrayList<>();
+        for (Object[] array : queryResult) {
+            CourseInfoDTO courseInfoDTO = new CourseInfoDTO();
+            courseInfoDTO.setCourseId((Long) array[0]);
+            courseInfoDTO.setThumbnail((String) array[1]);
+            courseInfoDTO.setCreateAt((String) array[2].toString());
+            courseInfoDTO.setTitle((String) array[3]);
+            courseInfoDTO.setFullname((String) array[4]);
+            courseInfoDTO.setImageUrl((String) array[5]);
+            courseInfoDTO.setSectionsId((Long) array[6]);
+            courseInfoDTO.setQuantityLesson((Integer) array[7]);
+            result.add(courseInfoDTO);
+        }
+
+        return result;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public CourseDTO findOne(Long id){
         Optional<Course> course = courseRepository.findById(id);

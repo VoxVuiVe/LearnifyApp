@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface IDiscountService {
     DiscountDTO createDiscourse(DiscountDTO discountDTO);
     Optional<DiscountDTO> getDiscourseById(long id);
-    Page<Discount> getDiscountPage (PageRequest pageRequest);
+
+    Page<DiscountDTO> findAllPage(String keyword, PageRequest pageRequest);
 
     List<DiscountDTO> getAllDiscount();
 

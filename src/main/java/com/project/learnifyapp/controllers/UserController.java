@@ -5,6 +5,7 @@ import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
+import com.project.learnifyapp.dtos.userDTO.UserTeacherInfo;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.UserRepository;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -87,16 +91,16 @@ public class UserController {
                         .build());
     }
 
-    @PostMapping(value = "/uploads/{id}",
+    @PostMapping(value = "/uploads/{token}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     //POST http://localhost:8080/v1/api/user/profile
     public ResponseEntity<?> uploadImages(
-            @PathVariable("id") Long userId,
-            @ModelAttribute("files") List<MultipartFile> files
+            @PathVariable("token") String token,
+            @RequestParam("files") List<MultipartFile> files
     ){
         try {
-            User existingUser = userService.getUserById(userId);
+            User existingUser = userService.getUserDetailsFromToken(token);
             files = files == null ? new ArrayList<>() : files;
             if(files.size() > UserImage.MAXIMUM_IMAGES_PER_PRODUCT) {
                 return ResponseEntity.badRequest().body(localizationUtils
@@ -136,7 +140,44 @@ public class UserController {
         }
     }
 
+    @GetMapping("/image/{userId}")
+    public ResponseEntity<UserImageDTO> getUserImage(@PathVariable("userId") Long userId) {
+        try {
+            UserImageDTO userImageDTO = userService.getImageByUserId(userId);
+            return ResponseEntity.ok(userImageDTO);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            // Xử lý khi không tìm thấy ảnh cho userId
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            // Xử lý các trường hợp khác
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/readImage/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/"+imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/user.jpeg").toUri()));
+                //return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/details")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")//da dung cho nay roi thui comment cho kia
+    // dạ cái đoạn đó e vừa thêm đc 2p á anh
     public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String extractedToken = authorizationHeader.substring(7);
@@ -191,11 +232,17 @@ public class UserController {
                     userLoginDTO.getEmail(),
                     userLoginDTO.getPassword(),
                     userLoginDTO.getRoleId() == null ? 1 : userLoginDTO.getRoleId());
-            // Tra ve token trong response
+            //Tra ve token trong response
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
                     .token(token).build());
         } catch (Exception e) {
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())).build());
         }
+    }
+
+    @GetMapping("/teacher-info")
+    public ResponseEntity<List<UserTeacherInfo>> getTeacherinfo(){
+        List<UserTeacherInfo> teacherInfos = userService.teacherInfo();
+        return ResponseEntity.ok(teacherInfos);
     }
 }

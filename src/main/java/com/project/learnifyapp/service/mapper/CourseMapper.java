@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class, UserMapper.class, SectionMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, UserMapper.class})
 public interface CourseMapper extends EntityMapper<CourseDTO, Course>{
 
     @Override

@@ -5,6 +5,7 @@ import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserDTO;
+import com.project.learnifyapp.dtos.userDTO.UserTeacherInfo;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.exceptions.InvalidParamException;
 import com.project.learnifyapp.exceptions.PermissionDeniedException;
@@ -37,9 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -145,7 +144,7 @@ public class UserService implements IUserService {
                 .findById(userId)
                 .orElseThrow(() ->
                         new DataNotFoundException(
-                                "Cannot find product with id: "+userImageDTO.getProductId()));
+                                "Cannot find product with id: "+userImageDTO.getUserId()));
         UserImage newUserImage = UserImage.builder()
                 .user(existingUser)
                 .imageUrl(userImageDTO.getImageUrl())
@@ -165,6 +164,22 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserImageDTO getImageByUserId(Long userId) throws Exception {
+        List<UserImage> userImages = userImageRepository.findByUserId(userId);
+
+        if (userImages.isEmpty()) {
+            throw new DataNotFoundException("User image not found for userId: " + userId);
+        }
+        UserImage selectedImage = userImages.get(0);
+
+        UserImageDTO userImageDTO = new UserImageDTO();
+        userImageDTO.setUserId(selectedImage.getUser().getId());
+        userImageDTO.setImageUrl(selectedImage.getImageUrl());
+
+        return userImageDTO;
+    }
+
+    @Override
     public User getUserById(Long userId) throws Exception {
         Optional<User> optionalUser = userRepository.getDetailUser(userId);
         if(optionalUser.isPresent()) {
@@ -175,7 +190,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserDetailsFromToken(String token) throws Exception {
-        if(jwtTokenUtil.isTokenExpired((token))) {
+        if(jwtTokenUtil.isTokenExpired(token)) {
             throw new Exception("Token is expired!");
         }
         String email = jwtTokenUtil.extractEmail(token);
@@ -197,12 +212,6 @@ public class UserService implements IUserService {
         userPage = userRepository.searchUsers(keyword, pageRequest);
         return userPage.map(UserResponse::fromUser);
     }
-
-//    @Override
-//    public List<UserDTO> getAllUsers() {
-//        List<UserDTO> userDTO = userRepository.findAll().stream().map(userMapper::toDTO).collect(Collectors.toList());
-//        return userDTO;
-//    }
 
     @Transactional
     @Override
@@ -300,5 +309,19 @@ public class UserService implements IUserService {
         }
     }
 
+    @Override
+    public List<UserTeacherInfo> teacherInfo() {
+        List<Object[]> queryResult = userRepository.getUserTeacherInfo();
 
+        List<UserTeacherInfo> result = new ArrayList<>();
+        for(Object[] array : queryResult){
+            UserTeacherInfo userTeacherInfo = new UserTeacherInfo();
+            userTeacherInfo.setId((Long) array[0]);
+            userTeacherInfo.setFullName((String) array[1]);
+            userTeacherInfo.setImage((String) array[2]);
+            userTeacherInfo.setQuantityCourse((Long) array[3]);
+            result.add(userTeacherInfo);
+        }
+        return result;
+    }
 }

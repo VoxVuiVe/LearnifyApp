@@ -27,6 +27,11 @@ public interface ICourseService {
     @Transactional(readOnly = true)
     List<CourseDTO> findAll();
 
+    Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
+
+    @Transactional(readOnly = true)
+    List<CourseInfoDTO> courseInfo();
+
     @Transactional(readOnly = true)
     CourseDTO findOne(Long id);
 
