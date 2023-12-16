@@ -28,7 +28,6 @@ public interface ICourseService {
     @Transactional(readOnly = true)
     List<CourseDTO> findAll();
 
-
     @Transactional(readOnly = true)
     List<CourseInfoDTO> courseInfo();
 

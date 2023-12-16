@@ -192,9 +192,9 @@ public class CourseService implements ICourseService {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // thêm UUID vào trước tên file để đảm bảo tên file là duy nhất
         String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
-        // đường dẫn đến sthuw mục mà bạn muốn lưu file
+        // đường dẫn đến thư mục mà bạn muốn lưu file
         java.nio.file.Path uploadDir = Paths.get(UPLOADS_FOLDER);
-        // Kiểm tra và tạo th mục nê nó không tồn tại
+        // Kiểm tra và tạo thư mục nếu nó không tồn tại
         if(!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
