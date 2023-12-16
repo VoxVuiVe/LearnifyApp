@@ -18,5 +18,5 @@ public interface RatingMapper extends EntityMapper<RatingDTO, Rating>{
     @Mapping(source = "courseId", target = "course.id")
     Rating toEntity(RatingDTO dto);
 
-    void updateCommentFromDTO(RatingDTO ratingDTO, @MappingTarget Rating rating);
+    void updateRatingFromDTO(RatingDTO ratingDTO, @MappingTarget Rating rating);
 }

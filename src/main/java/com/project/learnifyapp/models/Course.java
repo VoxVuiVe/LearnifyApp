@@ -58,6 +58,9 @@ public class Course extends BaseEntity implements Serializable {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CourseImage> courseImage;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Section> section = new ArrayList<>();
 }

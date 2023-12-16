@@ -1,6 +1,7 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.UserCourseDTO;
+import com.project.learnifyapp.repository.UserRepository;
 import com.project.learnifyapp.service.impl.UserCourseService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class UserCourseController {
     private final Logger log = LoggerFactory.getLogger(UserCourseController.class);
 
     private final UserCourseService userCourseService;
+    private  final UserRepository userRepository;
 
     @GetMapping("/user-courses/{userId}")
     public ResponseEntity<List<UserCourseDTO>> getUserCourses(@PathVariable Long userId) {
@@ -28,4 +30,7 @@ public class UserCourseController {
         List<UserCourseDTO> userCourses = userCourseService.findAllUserById(userId);
         return ResponseEntity.ok().body(userCourses);
     }
+
+//    public ResponseEntity
+
 }

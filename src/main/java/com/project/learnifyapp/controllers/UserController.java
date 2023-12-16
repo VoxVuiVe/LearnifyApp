@@ -5,6 +5,7 @@ import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
+import com.project.learnifyapp.dtos.userDTO.UserTeacherInfo;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.UserRepository;
@@ -90,16 +91,16 @@ public class UserController {
                         .build());
     }
 
-    @PostMapping(value = "/uploads/{id}",
+    @PostMapping(value = "/uploads/{token}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     //POST http://localhost:8080/v1/api/user/profile
     public ResponseEntity<?> uploadImages(
-            @PathVariable("id") Long userId,
-            @ModelAttribute("files") List<MultipartFile> files
+            @PathVariable("token") String token,
+            @RequestParam("files") List<MultipartFile> files
     ){
         try {
-            User existingUser = userService.getUserById(userId);
+            User existingUser = userService.getUserDetailsFromToken(token);
             files = files == null ? new ArrayList<>() : files;
             if(files.size() > UserImage.MAXIMUM_IMAGES_PER_PRODUCT) {
                 return ResponseEntity.badRequest().body(localizationUtils
@@ -166,7 +167,7 @@ public class UserController {
             } else {
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
-                        .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
+                        .body(new UrlResource(Paths.get("uploads/user.jpeg").toUri()));
                 //return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
@@ -175,6 +176,8 @@ public class UserController {
     }
 
     @PostMapping("/details")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")//da dung cho nay roi thui comment cho kia
+    // dạ cái đoạn đó e vừa thêm đc 2p á anh
     public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String extractedToken = authorizationHeader.substring(7);
@@ -235,5 +238,11 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())).build());
         }
+    }
+
+    @GetMapping("/teacher-info")
+    public ResponseEntity<List<UserTeacherInfo>> getTeacherinfo(){
+        List<UserTeacherInfo> teacherInfos = userService.teacherInfo();
+        return ResponseEntity.ok(teacherInfos);
     }
 }
