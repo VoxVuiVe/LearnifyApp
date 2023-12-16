@@ -60,7 +60,7 @@ public class LessonController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LessonDTO> updateLesson(@PathVariable(value = "id", required = false) final Long id,
-                                                  @ModelAttribute LessonDTO lessonDTO, @RequestParam("videoFile") MultipartFile videoFile) throws Exception {
+                                                  @RequestBody LessonDTO lessonDTO, @RequestParam("videoFile") MultipartFile videoFile) throws Exception {
         log.debug("REST request to update Lesson :{}, {}, {}", id, lessonDTO, videoFile);
         if (lessonDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
