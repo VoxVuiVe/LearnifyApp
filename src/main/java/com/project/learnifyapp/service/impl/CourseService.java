@@ -2,6 +2,7 @@ package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.dtos.CourseImageDTO;
+import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.exceptions.InvalidParamException;
 import com.project.learnifyapp.models.*;
@@ -24,10 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -184,16 +182,6 @@ public class CourseService implements ICourseService {
         } else {
             courseRepository.delete(course);
         }
-    }
-
-    @Override
-    public Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest) {
-        if(keyword.equals("")) {
-            keyword = null;
-        }
-        Page<Course> discountPage = courseRepository.searchCategory(keyword,pageRequest);
-        Page<CourseDTO> dtoPage = discountPage.map(this::convertToDto);
-        return dtoPage;
     }
 
     public boolean existsById(Long id) {
