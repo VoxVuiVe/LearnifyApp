@@ -3,6 +3,7 @@ package com.project.learnifyapp.service;
 import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.dtos.CourseImageDTO;
+import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.CourseImage;
@@ -39,5 +40,4 @@ public interface ICourseService {
 
     String storeFile(MultipartFile file) throws IOException;
 
-    Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
 }

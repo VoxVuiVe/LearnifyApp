@@ -94,26 +94,6 @@ public class LessonController {
     public ResponseEntity<LessonDTO> getLessonByID(@PathVariable Long id) {
         Optional<LessonDTO> lessonDTO = lessonService.findOneWithPresignedURL(id);
         return ResponseEntity.of(lessonDTO);
-//        if (lessonDTO.isPresent()) {
-//            LessonDTO lesson = lessonDTO.get();
-//            String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
-//
-//            // Kiểm tra nullability của videoKey
-//            if (videoKey != null) {
-//                // Sử dụng S3Service để lấy presigned URL
-//                String presignedURL = s3Service.getPresignedURL(videoKey);
-//
-//                // Cập nhật đường dẫn video trong lessonDTO với presigned URL
-//                lesson.setVideoUrl(presignedURL);
-//
-//                return new ResponseEntity<>(lesson, HttpStatus.OK);
-//            } else {
-//                // Xử lý trường hợp videoKey là null, nếu cần
-//                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//            }
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND,lessonDTO);
-//        }
     }
 
 

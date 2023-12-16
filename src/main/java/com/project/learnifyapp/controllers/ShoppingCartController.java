@@ -6,11 +6,15 @@ import com.project.learnifyapp.service.impl.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,22 +34,19 @@ public class ShoppingCartController {
         return ResponseEntity.ok(cartItems);
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> findAll(@RequestParam Long userId) {
-        log.debug("REQUEST find all cart by userid: ", userId);
-        List<CartItemDTO> cartItems = shoppingCartService.findAll(userId);
-        return ResponseEntity.ok(cartItems);
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<CartItemDTO> findOneCartItemById(@RequestParam Long userId) {
-        Optional<CartItemDTO> cartItem = shoppingCartService.findOneCartItemById(userId);
-        return cartItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/{userId}")
+    public ResponseEntity<Page<CartItemDTO>> getAllCartItemsByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<CartItemDTO> pageResult = shoppingCartService.findAllPage(userId, pageRequest);
+        return ResponseEntity.ok().body(pageResult);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CartItemDTO> deleteCartItem(@RequestParam Long id) {
-            shoppingCartService.deleteCartItem(id);
-            return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deleteCartItem(@PathVariable Long id) {
+        shoppingCartService.deleteCartItem(id);
+        return ResponseEntity.ok().build();
     }
 }

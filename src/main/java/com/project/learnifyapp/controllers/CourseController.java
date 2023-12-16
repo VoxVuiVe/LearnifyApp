@@ -4,6 +4,7 @@ import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.dtos.CourseImageDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
+import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
@@ -24,10 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -144,5 +142,11 @@ public class CourseController {
         response.put("totalPages",courses.getTotalPages());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/course-info")
+    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
+        List<CourseInfoDTO> courseInfo = courseService.courseInfo();
+        return ResponseEntity.ok(courseInfo);
     }
 }
