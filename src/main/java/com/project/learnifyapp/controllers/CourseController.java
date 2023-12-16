@@ -1,6 +1,7 @@
 package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.dtos.CourseDTO;
+import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.service.impl.CourseService;
@@ -93,7 +94,13 @@ public class CourseController {
         }
     }
 
-    @DeleteMapping("/courses/{id}")
+    @GetMapping("/course-info")
+    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
+        List<CourseInfoDTO> courseInfo = courseService.courseInfo();
+        return ResponseEntity.ok(courseInfo);
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return ResponseEntity.ok().build();

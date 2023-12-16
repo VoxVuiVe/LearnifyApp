@@ -5,6 +5,7 @@ import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserDTO;
+import com.project.learnifyapp.dtos.userDTO.UserTeacherInfo;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.exceptions.InvalidParamException;
 import com.project.learnifyapp.exceptions.PermissionDeniedException;
@@ -37,10 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -311,5 +309,19 @@ public class UserService implements IUserService {
         }
     }
 
+    @Override
+    public List<UserTeacherInfo> teacherInfo() {
+        List<Object[]> queryResult = userRepository.getUserTeacherInfo();
 
+        List<UserTeacherInfo> result = new ArrayList<>();
+        for(Object[] array : queryResult){
+            UserTeacherInfo userTeacherInfo = new UserTeacherInfo();
+            userTeacherInfo.setId((Long) array[0]);
+            userTeacherInfo.setFullName((String) array[1]);
+            userTeacherInfo.setImage((String) array[2]);
+            userTeacherInfo.setQuantityCourse((Long) array[3]);
+            result.add(userTeacherInfo);
+        }
+        return result;
+    }
 }

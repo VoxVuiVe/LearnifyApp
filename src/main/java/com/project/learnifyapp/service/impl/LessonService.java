@@ -2,7 +2,9 @@ package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.LessonDTO;
 import com.project.learnifyapp.models.Lesson;
+import com.project.learnifyapp.models.Section;
 import com.project.learnifyapp.repository.LessonRepository;
+import com.project.learnifyapp.repository.SectionRepository;
 import com.project.learnifyapp.service.ILessonService;
 import com.project.learnifyapp.service.S3Service;
 import com.project.learnifyapp.service.mapper.LessonMapper;
@@ -26,11 +28,13 @@ public class LessonService implements ILessonService {
     private final Logger log = LoggerFactory.getLogger(LessonService.class);
     private final S3Service s3Service;
     private final LessonRepository lessonRepository;
+    private final SectionRepository sectionRepository;
     private final LessonMapper lessonMapper;
 
     @Autowired
-    public LessonService(LessonRepository lessonRepository, LessonMapper lessonMapper, S3Service s3Service) {
+    public LessonService(LessonRepository lessonRepository, LessonMapper lessonMapper, S3Service s3Service, SectionRepository sectionRepository) {
         this.lessonRepository = lessonRepository;
+        this.sectionRepository = sectionRepository;
         this.s3Service = s3Service;
         this.lessonMapper = lessonMapper;
     }
@@ -38,9 +42,11 @@ public class LessonService implements ILessonService {
     @Override
     public LessonDTO save(LessonDTO lessonDTO, MultipartFile videoFile) throws Exception {
         log.debug("Request to save Lesson: {}", lessonDTO);
-
         // Ánh xạ LessonDTO sang entity
         Lesson lesson = lessonMapper.toEntity(lessonDTO);
+
+//        Section section = sectionRepository.
+
 
         // Lưu entity vào cơ sở dữ liệu
         log.debug("Trước khi lưu vào cơ sở dữ liệu: {}", lesson);

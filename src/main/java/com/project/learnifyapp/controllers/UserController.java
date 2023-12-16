@@ -5,6 +5,7 @@ import com.project.learnifyapp.dtos.UpdateUserDTO;
 import com.project.learnifyapp.dtos.UserDTO;
 import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.dtos.UserLoginDTO;
+import com.project.learnifyapp.dtos.userDTO.UserTeacherInfo;
 import com.project.learnifyapp.models.User;
 import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.UserRepository;
@@ -235,5 +236,11 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.ok(LoginResponse.builder().message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())).build());
         }
+    }
+
+    @GetMapping("/teacher-info")
+    public ResponseEntity<List<UserTeacherInfo>> getTeacherinfo(){
+        List<UserTeacherInfo> teacherInfos = userService.teacherInfo();
+        return ResponseEntity.ok(teacherInfos);
     }
 }

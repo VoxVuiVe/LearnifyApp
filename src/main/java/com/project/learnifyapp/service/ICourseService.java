@@ -1,6 +1,7 @@
 package com.project.learnifyapp.service;
 
 import com.project.learnifyapp.dtos.CourseDTO;
+import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,8 @@ public interface ICourseService {
 
     Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
 
+    @Transactional(readOnly = true)
+    List<CourseInfoDTO> courseInfo();
 
     @Transactional(readOnly = true)
     CourseDTO findOne(Long id);

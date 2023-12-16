@@ -12,8 +12,8 @@ import java.net.URISyntaxException;
 
 @Configuration
 public class AwsConfiguration {
-    private String accessKey = "";
-    private String secretKey = "";
+    private String accessKey = "AKIA52TKQFV62ILHKO5W";
+    private String secretKey = "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";
     // xác định khu vực
     private Region region = Region.AP_SOUTHEAST_1;
 

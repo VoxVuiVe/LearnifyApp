@@ -20,4 +20,5 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
     @Query(value= "SELECT * FROM sections sc WHERE :keyword IS NULL OR (sc.title LIKE CONCAT('%', :keyword, '%'))", nativeQuery = true)
     Page<Section> searchSection(@Param("keyword") String keyword, PageRequest pageRequest);
+
 }
