@@ -1,28 +1,34 @@
 package com.project.learnifyapp.controllers;
 
-import com.project.learnifyapp.dtos.CommentDTO;
+import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.CourseDTO;
+import com.project.learnifyapp.dtos.CourseImageDTO;
+import com.project.learnifyapp.dtos.UserImageDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.models.Course;
+import com.project.learnifyapp.models.CourseImage;
+import com.project.learnifyapp.models.UserImage;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.service.impl.CourseService;
+import com.project.learnifyapp.utils.MessageKeys;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
+import java.io.IOException;
+import java.util.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("${api.prefix}/courses")
 public class CourseController {
     private final Logger log = LoggerFactory.getLogger(CourseController.class);
@@ -33,10 +39,8 @@ public class CourseController {
 
     private final CourseRepository courseRepository;
 
-    public CourseController (CourseService courseService, CourseRepository courseRepository){
-        this.courseRepository = courseRepository;
-        this.courseService = courseService;
-    }
+    private final LocalizationUtils localizationUtils;
+
 
     @PostMapping("")
     public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CourseDTO courseDTO) throws DataNotFoundException {
@@ -44,6 +48,46 @@ public class CourseController {
         CourseDTO result = courseService.save(courseDTO);
         return ResponseEntity.ok()
                 .body(result);
+    }
+
+    @PostMapping(value = "/uploads/{courseId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(@PathVariable("courseId") Long courseId, @RequestParam("files")List<MultipartFile> files) throws Exception {
+        try {
+            Course existingCourse = courseService.getCourseById(courseId);
+            files = files == null ? new ArrayList<>() : files;
+            if (files.size() > CourseImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+                return ResponseEntity.badRequest().body(localizationUtils
+                        .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_1));
+            }
+            List<CourseImage> productImages = new ArrayList<>();
+            for (MultipartFile file : files) {
+                if (file.getSize() == 0) {
+                    continue;
+                }
+                //Kiểm tra kich thước file và định dạng
+                if(file.getSize() > 10 * 1024 * 1024) { // kích thước > 10mb
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                            .body(localizationUtils
+                                    .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE));
+                }
+
+                // lưu file và cập nhật thumnail trong DTO
+                String filename = courseService.storeFile(file); // Thay thế hàm này với code của bạn để lưu file
+                // lưu vào đối tượng product trong DB
+                CourseImage productImage = courseService.createCourseImage(
+                        existingCourse.getId(),
+                        CourseImageDTO.builder()
+                                .imageUrl(filename)
+                                .build()
+                );
+                productImages.add(productImage);
+            }
+            return ResponseEntity.ok().body(productImages);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @PutMapping("/{id}")
@@ -60,7 +104,6 @@ public class CourseController {
                 .ok()
                 .body(result);
     }
-
 
     @GetMapping("")
     public ResponseEntity<List<CourseDTO>> getAllCourse(){
