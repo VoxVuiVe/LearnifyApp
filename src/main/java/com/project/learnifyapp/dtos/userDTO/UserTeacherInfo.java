@@ -15,4 +15,5 @@ public class UserTeacherInfo implements Serializable {
     private String fullName;
     private String image;
     private Long quantityCourse;
+    private String roleName;
 }

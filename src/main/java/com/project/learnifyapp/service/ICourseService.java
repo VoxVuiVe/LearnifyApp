@@ -38,6 +38,4 @@ public interface ICourseService {
     void deleteCourse(Long id);
 
     String storeFile(MultipartFile file) throws IOException;
-
-    Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
 }

@@ -149,4 +149,10 @@ public class CourseController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/course-info")
+    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
+        List<CourseInfoDTO> courseInfo = courseService.courseInfo();
+        return ResponseEntity.ok(courseInfo);
+    }
 }

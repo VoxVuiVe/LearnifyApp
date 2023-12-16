@@ -175,16 +175,6 @@ public class CourseService implements ICourseService {
         }
     }
 
-    @Override
-    public Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest) {
-        if(keyword.equals("")) {
-            keyword = null;
-        }
-        Page<Course> discountPage = courseRepository.searchCategory(keyword,pageRequest);
-        Page<CourseDTO> dtoPage = discountPage.map(this::convertToDto);
-        return dtoPage;
-    }
-
     public boolean existsById(Long id) {
         return courseRepository.existsById(id);
     }

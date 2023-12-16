@@ -26,10 +26,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> searchUsers(@Param("keyword") String keyword, PageRequest pageRequest);
 
 //GetUserTeacher & TotalCourse
-@Query(value = "SELECT u.id, u.fullname, (SELECT image_url FROM user_image ui WHERE user_id = u.id LIMIT 1) AS user_image_url, COUNT(c.id) AS quantity_course " +
+@Query(value = "SELECT u.id, u.fullname, (SELECT image_url FROM user_image ui WHERE user_id = u.id LIMIT 1) AS user_image_url, COUNT(c.id) AS quantity_course, r.name AS role_name " +
         "FROM users u " +
         "LEFT JOIN courses c ON c.user_id = u.id " +
-        "WHERE u.role_id = 2 " +
+        "LEFT JOIN roles r ON r.id = u.role_id " +
+        "WHERE r.name = \"TEACHER\" " +
         "GROUP BY u.id, u.fullname", nativeQuery = true)
     List<Object[]> getUserTeacherInfo();
 }
