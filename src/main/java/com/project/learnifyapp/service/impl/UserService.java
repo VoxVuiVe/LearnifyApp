@@ -190,7 +190,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserDetailsFromToken(String token) throws Exception {
-        if(jwtTokenUtil.isTokenExpired((token))) {
+        if(jwtTokenUtil.isTokenExpired(token)) {
             throw new Exception("Token is expired!");
         }
         String email = jwtTokenUtil.extractEmail(token);

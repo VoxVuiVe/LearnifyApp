@@ -8,9 +8,9 @@ import com.project.learnifyapp.repository.SectionRepository;
 import com.project.learnifyapp.service.ILessonService;
 import com.project.learnifyapp.service.S3Service;
 import com.project.learnifyapp.service.mapper.LessonMapper;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LessonService implements ILessonService {
 
     private final Logger log = LoggerFactory.getLogger(LessonService.class);
@@ -31,27 +32,32 @@ public class LessonService implements ILessonService {
     private final SectionRepository sectionRepository;
     private final LessonMapper lessonMapper;
 
-    @Autowired
-    public LessonService(LessonRepository lessonRepository, LessonMapper lessonMapper, S3Service s3Service, SectionRepository sectionRepository) {
-        this.lessonRepository = lessonRepository;
-        this.sectionRepository = sectionRepository;
-        this.s3Service = s3Service;
-        this.lessonMapper = lessonMapper;
-    }
 
     @Override
     public LessonDTO save(LessonDTO lessonDTO, MultipartFile videoFile) throws Exception {
         log.debug("Request to save Lesson: {}", lessonDTO);
+
         // Ánh xạ LessonDTO sang entity
         Lesson lesson = lessonMapper.toEntity(lessonDTO);
 
-//        Section section = sectionRepository.
-
-
         // Lưu entity vào cơ sở dữ liệu
-        log.debug("Trước khi lưu vào cơ sở dữ liệu: {}", lesson);
         Lesson savedLesson = lessonRepository.saveAndFlush(lesson);
-        log.debug("Sau khi lưu vào cơ sở dữ liệu: {}", savedLesson);
+
+        Section section = lessonRepository.findByIdWithSection(lesson.getId());
+
+        // Kiểm tra nullability của Section
+        if (section != null && lesson.getId() != null) {
+            // Tăng quantity_lesson của Section khi thêm Lesson
+            section.setQuantityLesson(section.getQuantityLesson() + 1);
+        } else {
+            throw new RuntimeException("Section không được phép là null.");
+        }
+
+        // Tăng total_minutes của Section khi thêm Lesson hoặc cập nhật
+        section.setTotalMinutes(section.getTotalMinutes() + savedLesson.getTime());
+
+        // Lưu Section sau khi cập nhật
+        sectionRepository.save(section);
 
         if (videoFile != null && !videoFile.isEmpty()) {
             try {
@@ -66,7 +72,6 @@ public class LessonService implements ILessonService {
                     LessonDTO result = lessonMapper.toDTO(savedLesson);
                     return result;
                 } else {
-                    // Xử lý trường hợp newVideoUrl là null, nếu cần
                     throw new RuntimeException("Lỗi: videoFile không được phép là null hoặc trống.");
                 }
             } catch (Exception e) {
@@ -76,6 +81,7 @@ public class LessonService implements ILessonService {
 
         return lessonMapper.toDTO(savedLesson);
     }
+
 
 
     @Override
@@ -116,12 +122,48 @@ public class LessonService implements ILessonService {
         return lessonRepository.findById(id).map(lessonMapper::toDTO);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<LessonDTO> findOneWithPresignedURL(Long id) {
+        Optional<LessonDTO> lessonDTO = lessonRepository.findById(id).map(lessonMapper::toDTO);
+        if (lessonDTO.isPresent()) {
+            LessonDTO lesson = lessonDTO.get();
+            String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
+
+            // Kiểm tra nullability của videoKey
+            if (videoKey != null) {
+                // Sử dụng S3Service để lấy presigned URL
+                String presignedURL = s3Service.getPresignedURL(videoKey);
+
+                // Cập nhật đường dẫn video trong lessonDTO với presigned URL
+                lesson.setVideoUrl(presignedURL);
+
+                return Optional.of(lesson);
+            } else {
+                // Xử lý trường hợp videoKey là null, nếu cần
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
 
     @Override
     public void deleteLesson(Long id) {
         try {
             Optional<Lesson> lessonOptional = lessonRepository.findById(id);
             lessonOptional.ifPresent(lesson -> {
+                // Lấy section từ lesson
+                Section section = lesson.getSection();
+
+                // Cập nhật quantity_lesson và total_time trong section
+                section.setQuantityLesson(section.getQuantityLesson() - 1);
+                section.setTotalMinutes(section.getTotalMinutes() - lesson.getTime());
+
+                // Lưu section
+                sectionRepository.save(section);
+
                 s3Service.deleteFile(lesson.getVideoUrl());
                 lessonRepository.deleteById(id);
             });

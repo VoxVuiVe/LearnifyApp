@@ -24,7 +24,7 @@ public class Lesson implements Serializable {
     private String title;
 
     @Column(name = "time")
-    private String time;
+    private Integer time;
 
     @Column(name = "video_url", nullable = false, length = 350)
     private String videoUrl;
@@ -41,7 +41,7 @@ public class Lesson implements Serializable {
     @Column(name = "comment")
     private String comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "section_id")
     private Section section;
 }

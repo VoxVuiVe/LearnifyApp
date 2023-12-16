@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @EnableJpaRepositories
 public interface SectionRepository extends JpaRepository<Section, Long> {
@@ -21,4 +23,6 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     @Query(value= "SELECT * FROM sections sc WHERE :keyword IS NULL OR (sc.title LIKE CONCAT('%', :keyword, '%'))", nativeQuery = true)
     Page<Section> searchSection(@Param("keyword") String keyword, PageRequest pageRequest);
 
+    @Query(value = "SELECT se.id, se.quantity_lesson, se.total_minutes FROM sections se JOIN lessons ls ON ls.section_id = se.id WHERE ls.id = :lessonId", nativeQuery = true)
+    Section findByIdWithSection(@Param("lessonId") Long lessonId);
 }

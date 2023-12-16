@@ -69,7 +69,7 @@ public class RatingService implements IRatingService {
         User user = userRepository.findById(ratingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
 
-        ratingMapper.updateCommentFromDTO(ratingDTO, exitingRating);
+        ratingMapper.updateRatingFromDTO(ratingDTO, exitingRating);
         exitingRating.setCourse(course);
         exitingRating.setUser(user);
 
