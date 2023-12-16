@@ -40,8 +40,4 @@ public class Section implements Serializable {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
-    private List<Lesson> lesson;
 }

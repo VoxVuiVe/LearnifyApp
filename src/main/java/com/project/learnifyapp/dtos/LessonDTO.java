@@ -22,21 +22,18 @@ public class LessonDTO implements Serializable {
 
     @NotNull(message = "time cannot be null")
     @JsonProperty("time")
-    private String time;
+    private Integer time;
 
     @NotNull(message = "videoUrl cannot be null")
+    @JsonProperty("video_url")
     private String videoUrl;
 
-    @JsonProperty("question_and_answer")
     private String questionAndAnswer;
 
-    @JsonProperty("overview")
     private String overview;
 
-    @JsonProperty("note")
     private String note;
 
-    @JsonProperty("comment")
     private String comment;
 
     @NotNull
