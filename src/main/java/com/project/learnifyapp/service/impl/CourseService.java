@@ -58,19 +58,19 @@ public class CourseService implements ICourseService {
         Course course = courseMapper.toEntity(courseDTO);
 
         // Lưu entity vào cơ sở dữ liệu
-        Course savedCourse = courseRepository.saveAndFlush(course);
+//        Course savedCourse = courseRepository.saveAndFlush(course);
             // Upload ảnh lên S3
             if (imageFile != null && !imageFile.isEmpty()) {
                 try {
-                    String existingThumbnailUrl = savedCourse.getThumbnail();
+                    String existingThumbnailUrl = course.getThumbnail();
                     if (existingThumbnailUrl != null) {
                         s3Service.deleteFile(existingThumbnailUrl);
                     }
                     String newThumbnailUrl = s3Service.uploadImagesToS3(imageFile);
                     if (newThumbnailUrl != null) {
-                        savedCourse.setThumbnail(newThumbnailUrl);
-                        savedCourse = courseRepository.save(savedCourse);
-                        CourseDTO result = courseMapper.toDTO(savedCourse);
+                        course.setThumbnail(newThumbnailUrl);
+                        course = courseRepository.save(course);
+                        CourseDTO result = courseMapper.toDTO(course);
                         return result;
                     } else {
                         throw new RuntimeException("Lỗi: thumbnailFile không được phép là null hoặc trống.");
@@ -79,9 +79,8 @@ public class CourseService implements ICourseService {
                     throw new RuntimeException("Lỗi khi tải lên/cập nhật thumbnail lên S3: " + e.getMessage());
                 }
             }
-
-        log.debug("New Course saved: {}", savedCourse);
-        return courseMapper.toDTO(savedCourse);
+        log.debug("New Course saved: {}", course);
+        return courseMapper.toDTO(course);
     }
 
 //    @Override
