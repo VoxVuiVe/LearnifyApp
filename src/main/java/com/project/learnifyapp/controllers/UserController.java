@@ -20,7 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
+
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
@@ -122,9 +122,11 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                             .body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE));
                 }
+
                 // Lưu file và cập nhật thumbnail trong DTO
                 String filename = userService.storeFile(file); // Thay thế hàm này với code của bạn để lưu file
-                //lưu vào đối tượng product trong DB
+
+                //lưu vào đối tượng userImage trong DB
                 UserImage productImage = userService.createUserImage(
                         existingUser.getId(),
                         UserImageDTO.builder()
@@ -201,7 +203,7 @@ public class UserController {
             User user = userService.getUserDetailsFromToken(extractedToken);
 
             //Kiểm tra user hiện tại có trùng với userId được truyền vào không? nếu đúng thì cập nhật chính mình
-            if(user.getRole().getName().equals("ADMIN") || user.getId() == userId) {
+            if(user.getRole().getName().equals("admin") || user.getId() == userId) {
                 User updateUser = userService.updateUser(userId, updateUserDTO);
                 return ResponseEntity.ok(UserResponse.fromUser(updateUser));
             } else {

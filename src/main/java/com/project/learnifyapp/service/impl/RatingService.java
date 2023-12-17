@@ -111,6 +111,11 @@ public class RatingService implements IRatingService {
     }
 
     @Override
+    public List<RatingDTO> getAllRatingsByCourseId(Long courseId) {
+        return ratingRepositoty.getRatingByCourseId(courseId).stream().map(ratingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsById(Long id) {
         return ratingRepositoty.existsById(id);
     }

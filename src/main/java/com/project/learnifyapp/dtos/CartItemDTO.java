@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -19,12 +21,11 @@ public class CartItemDTO {
     private Float totalPrice;
 
     @NotNull
-    @JsonProperty("user_id")
     private Long userId;
 
     private String cartData;
 
     private String status;
-//    @JsonProperty("course_id")
-//    private String courseId;
+
+    private List<CourseDTO> courses;
 }
