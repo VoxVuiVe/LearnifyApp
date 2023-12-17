@@ -70,6 +70,7 @@ public class UserResponse extends BaseResponse{
                 .googleAccountId(user.getGoogleAccountId())
                 .roleId(user.getRole())
                 .userImages(user.getUserImage())
+                .active(user.getActive())
                 .build();
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());

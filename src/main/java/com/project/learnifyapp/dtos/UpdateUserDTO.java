@@ -27,6 +27,9 @@ public class UpdateUserDTO {
     @JsonProperty("password")
     private String password;
 
+    @JsonProperty("is_active")
+    private Boolean active;
+
 //    @JsonProperty("retype_password")
 //    private String retypePassword;
 

@@ -90,6 +90,7 @@ public class UserService implements IUserService {
 //                .build();
         //Cach 2:
         User newUser = userMapper.toEntity(userDTO);
+        newUser.setActive(true);
 
         newUser.setRole(role); //Tim dc ra role trong csdl se add cho newUser
 
@@ -125,9 +126,9 @@ public class UserService implements IUserService {
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS));
         }
 
-//        if(!optionalUser.get().isActive()) {
-//            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
-//        }
+        if(!optionalUser.get().getActive()) {
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 email, password,
@@ -139,6 +140,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public UserImage createUserImage(Long userId, UserImageDTO userImageDTO) throws Exception {
         User existingUser = userRepository
                 .findById(userId)
@@ -151,14 +153,21 @@ public class UserService implements IUserService {
                 .build();
         //Ko cho insert quá 5 ảnh cho 1 sản phẩm
         int size = userImageRepository.findByUserId(userId).size();
-        if(size >= UserImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-            throw new InvalidParamException(
-                    "Number of images must be <= "
-                            +UserImage.MAXIMUM_IMAGES_PER_PRODUCT);
+
+        if (existingUser.getUserImage() == null ) {
+            existingUser.setUserImage(newUserImage.getUser().getUserImage());
         }
-        if (existingUser.getImageUrl() == null ) {
-            existingUser.setImageUrl(newUserImage.getImageUrl());
+        if (existingUser.getUserImage() != null) {
+            userImageRepository.deleteImageByUserId(existingUser.getId());
         }
+
+        //Check số ảnh
+//        if(size >= UserImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+//            throw new InvalidParamException(
+//                    "Number of images must be <= "
+//                            +UserImage.MAXIMUM_IMAGES_PER_PRODUCT);
+//        }
+
         userRepository.save(existingUser);
         return userImageRepository.save(newUserImage);
     }
@@ -234,6 +243,10 @@ public class UserService implements IUserService {
 
         if (updatedUserDTO.getFullName() != null) {
             existingUser.setFullName(updatedUserDTO.getFullName());
+        }
+
+        if(updatedUserDTO.getActive() != null) {
+            existingUser.setActive(updatedUserDTO.getActive());
         }
 
         if (updatedUserDTO.getPhoneNumber() != null) {
