@@ -30,7 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         "FROM users u " +
         "LEFT JOIN courses c ON c.user_id = u.id " +
         "LEFT JOIN roles r ON r.id = u.role_id " +
-        "WHERE r.name = \"TEACHER\" " +
+        "WHERE r.name = \"teacher\" " +
         "GROUP BY u.id, u.fullname", nativeQuery = true)
     List<Object[]> getUserTeacherInfo();
 }

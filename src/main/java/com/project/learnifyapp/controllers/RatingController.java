@@ -71,6 +71,12 @@ public class RatingController {
         return ResponseEntity
                 .ok(ratings);
     }
+
+    @GetMapping("/ratings/{courseId}")
+    public ResponseEntity<List<RatingDTO>> getAllRatingByCourseId(@PathVariable Long courseId){
+        List<RatingDTO> ratings = ratingService.getAllRatingsByCourseId(courseId);
+        return ResponseEntity.ok(ratings);
+    }
 }
 
 
