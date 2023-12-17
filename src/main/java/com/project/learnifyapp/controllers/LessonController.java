@@ -6,6 +6,7 @@ import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.repository.LessonRepository;
 import com.project.learnifyapp.service.S3Service;
 import com.project.learnifyapp.service.impl.LessonService;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.util.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("${api.prefix}/lessons")
 public class LessonController {
     private final Logger log = LoggerFactory.getLogger(LessonController.class);
@@ -33,12 +35,6 @@ public class LessonController {
     private final LessonRepository lessonRepository;
 
     private final S3Service s3Service;
-
-    public LessonController(LessonService lessonService, LessonRepository lessonRepository, S3Service s3Service) {
-        this.lessonService = lessonService;
-        this.lessonRepository = lessonRepository;
-        this.s3Service = s3Service;
-    }
 
     @PostMapping("")
     public ResponseEntity<LessonDTO> createLesson(@ModelAttribute LessonDTO lessonDTO, @RequestParam("videoFile") MultipartFile videoFile) {

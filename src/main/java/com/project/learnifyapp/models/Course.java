@@ -18,7 +18,7 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
-@ToString
+//@ToString
 @Table(name = "courses")
 public class Course extends BaseEntity implements Serializable {
     @Id
@@ -53,7 +53,7 @@ public class Course extends BaseEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "category_id")
     private Category category;
