@@ -19,5 +19,9 @@ public interface IRatingService {
 
     List<RatingDTO> getAllRatings();
 
+    List<RatingDTO> getAllRatingsByCourseId(Long courseId);
+
     boolean existsById(Long id);
+
+
 }
