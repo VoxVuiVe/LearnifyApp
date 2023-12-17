@@ -121,6 +121,12 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/course-info")
+    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
+        List<CourseInfoDTO> courseInfo = courseService.courseInfo();
+        return ResponseEntity.ok(courseInfo);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
@@ -144,9 +150,4 @@ public class CourseController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/course-info")
-    public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
-        List<CourseInfoDTO> courseInfo = courseService.courseInfo();
-        return ResponseEntity.ok(courseInfo);
-    }
 }

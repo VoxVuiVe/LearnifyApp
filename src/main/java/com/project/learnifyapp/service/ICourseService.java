@@ -28,8 +28,6 @@ public interface ICourseService {
     @Transactional(readOnly = true)
     List<CourseDTO> findAll();
 
-    Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
-
     @Transactional(readOnly = true)
     List<CourseInfoDTO> courseInfo();
 
@@ -39,5 +37,4 @@ public interface ICourseService {
     void deleteCourse(Long id);
 
     String storeFile(MultipartFile file) throws IOException;
-
 }

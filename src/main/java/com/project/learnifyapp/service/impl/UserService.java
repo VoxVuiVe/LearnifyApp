@@ -320,6 +320,7 @@ public class UserService implements IUserService {
             userTeacherInfo.setFullName((String) array[1]);
             userTeacherInfo.setImage((String) array[2]);
             userTeacherInfo.setQuantityCourse((Long) array[3]);
+            userTeacherInfo.setRoleName((String) array[4]);
             result.add(userTeacherInfo);
         }
         return result;

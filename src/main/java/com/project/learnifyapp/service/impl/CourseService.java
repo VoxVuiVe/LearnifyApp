@@ -77,6 +77,7 @@ public class CourseService implements ICourseService {
                 .course(existingCourse)
                 .imageUrl(courseImageDTO.getImageUrl())
                 .build();
+
         //Ko cho insert quá 5 ảnh cho 1 sản phẩm
         int size = courseImageRepository.findByCourseId(courseId).size();
         if(size >= CourseImage.MAXIMUM_IMAGES_PER_PRODUCT) {
@@ -131,16 +132,6 @@ public class CourseService implements ICourseService {
         return courses.stream()
                 .map(courseMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest) {
-        if(keyword.equals("")) {
-            keyword = null;
-        }
-        Page<Course> discountPage = courseRepository.searchCategory(keyword,pageRequest);
-        Page<CourseDTO> dtoPage = discountPage.map(this::convertToDto);
-        return dtoPage;
     }
 
     @Override
@@ -201,9 +192,9 @@ public class CourseService implements ICourseService {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // thêm UUID vào trước tên file để đảm bảo tên file là duy nhất
         String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
-        // đường dẫn đến sthuw mục mà bạn muốn lưu file
+        // đường dẫn đến thư mục mà bạn muốn lưu file
         java.nio.file.Path uploadDir = Paths.get(UPLOADS_FOLDER);
-        // Kiểm tra và tạo th mục nê nó không tồn tại
+        // Kiểm tra và tạo thư mục nếu nó không tồn tại
         if(!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
