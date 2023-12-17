@@ -67,6 +67,38 @@ public class S3Service {
         }
     }
 
+    public String uploadImagesToS3(MultipartFile imageFile) {
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new IllegalArgumentException("Video file is null or empty.");
+        }
+        String uniqueImageName = StringUtils.getFilenameExtension(imageFile.getOriginalFilename());
+        if (StringUtils.isEmpty(uniqueImageName)) {
+            throw new IllegalArgumentException("Unable to determine video file extension.");
+        }
+
+        String s3Key = "images" + "/" + UUID.randomUUID().toString() + "." + uniqueImageName;
+
+        try {
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName) // Tên bucket S3
+                    .key(s3Key) // Đường dẫn lưu trữ trên S3
+                    .contentType(imageFile.getContentType())
+                    .build();
+
+            s3Client.putObject(request, RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize()));
+
+            log.info("Video uploaded successfully to S3. Key: {}", s3Key);
+
+            return s3Key;
+        } catch (S3Exception e) {
+            log.error("Failed to upload imageFile to S3. Error: {}", e.getMessage());
+            throw new RuntimeException("Failed to upload imageFile to S3: " + e.getMessage());
+        } catch (IOException e) {
+            log.error("IOException during imageFile upload to S3. Error: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteFile(String path) {
         DeleteObjectRequest request = DeleteObjectRequest.builder()
                 .bucket(bucketName)
@@ -75,7 +107,7 @@ public class S3Service {
         s3Client.deleteObject(request);
     }
 
-    public String getPresignedURL(String path, String keyName) {
+    public String getPresignedURL(String keyName) {
         try {
             String cloudFrontURL = cloudFrontDomain + "/" + keyName;
 
@@ -89,13 +121,14 @@ public class S3Service {
                     .getObjectRequest(objectRequest)
                     .build();
 
-            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
-            String myURL = cloudFrontURL + presignedRequest.url().toString();
-            return myURL;
+//            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+//            String presignedURL = cloudFrontURL;
+            return cloudFrontURL;
 
         } catch (S3Exception e) {
             throw new S3ServiceException("Failed to get presigned URL for " + keyName, e);
         }
     }
+
 
 }

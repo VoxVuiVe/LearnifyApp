@@ -17,16 +17,17 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ICourseService {
-    CourseDTO save(CourseDTO courseDTO) throws DataNotFoundException;
+    CourseDTO save(CourseDTO courseDTO, MultipartFile videoFile) throws DataNotFoundException;
 
-    CourseImage createCourseImage(Long courseId, CourseImageDTO courseImageDTO) throws Exception;
+//    CourseImage createCourseImage(Long courseId, CourseImageDTO courseImageDTO) throws Exception;
 
     Course getCourseById(Long courseId) throws Exception;
 
-    CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException;
+//    CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException;
 
     @Transactional(readOnly = true)
     List<CourseDTO> findAll();
+    Page<CourseDTO> findAllPage(String keyword, PageRequest pageRequest);
 
     @Transactional(readOnly = true)
     List<CourseInfoDTO> courseInfo();
@@ -36,5 +37,4 @@ public interface ICourseService {
 
     void deleteCourse(Long id);
 
-    String storeFile(MultipartFile file) throws IOException;
 }
