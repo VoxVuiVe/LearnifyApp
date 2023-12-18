@@ -28,6 +28,7 @@ public class CommentController {
         if (commentDTO.getId() != null) {
             throw new BadRequestAlertException("A new Comment cannot already have an Id", ENTITY_NAME, "id exists");
         }
+
         CommentDTO result = commentsService.save(commentDTO);
         return ResponseEntity
                 .ok()

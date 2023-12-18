@@ -2,35 +2,25 @@ package com.project.learnifyapp.controllers;
 
 import com.project.learnifyapp.components.LocalizationUtils;
 import com.project.learnifyapp.dtos.CourseDTO;
-import com.project.learnifyapp.dtos.CourseImageDTO;
-import com.project.learnifyapp.dtos.LessonDTO;
 import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.BadRequestAlertException;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
-import com.project.learnifyapp.models.Course;
-import com.project.learnifyapp.models.CourseImage;
-import com.project.learnifyapp.models.Lesson;
 import com.project.learnifyapp.repository.CourseRepository;
 import com.project.learnifyapp.service.S3Service;
 import com.project.learnifyapp.service.impl.CourseService;
-import com.project.learnifyapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -72,45 +62,45 @@ public class CourseController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CourseDTO> updateSection(@PathVariable(value = "id", required = false) final Long id,
-                                                  @ModelAttribute CourseDTO courseDTO, @RequestParam("imageFile") MultipartFile imageFile)throws Exception{
-        log.debug("REST request to update Course :{}, {}, {}", id, courseDTO, imageFile);
-        if (courseDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, courseDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
-        }
-        if (!courseRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
-        }
-        Course existingCourse = courseRepository.findById(id).orElse(null);
-
-        if (existingCourse == null) {
-            throw new RuntimeException("Unable to find old Course ID: " + id);
-        }
-
-        courseDTO.setThumbnail(existingCourse.getThumbnail());
-
-        CourseDTO result = courseService.save(courseDTO, imageFile);
-        return ResponseEntity.ok().body(result);
-    }
-
 //    @PutMapping("/{id}")
-//    public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseDTO courseDTO) throws DataNotFoundException {
-//        if (courseDTO.getId() != null && !Objects.equals(id, courseDTO.getId())) {
+//    public ResponseEntity<CourseDTO> updateSection(@PathVariable(value = "id", required = false) final Long id,
+//                                                  @ModelAttribute CourseDTO courseDTO, @RequestParam("imageFile") MultipartFile imageFile)throws Exception{
+//        log.debug("REST request to update Course :{}, {}, {}", id, courseDTO, imageFile);
+//        if (courseDTO.getId() == null) {
+//            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+//        }
+//        if (!Objects.equals(id, courseDTO.getId())) {
 //            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
 //        }
-//        if (!courseService.existsById(id)) {
+//        if (!courseRepository.existsById(id)) {
 //            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
 //        }
+//        Course existingCourse = courseRepository.findById(id).orElse(null);
 //
-//        CourseDTO result = courseService.update(id, courseDTO);
-//        return ResponseEntity
-//                .ok()
-//                .body(result);
+//        if (existingCourse == null) {
+//            throw new RuntimeException("Unable to find old Course ID: " + id);
+//        }
+//
+//        courseDTO.setThumbnail(existingCourse.getThumbnail());
+//
+//        CourseDTO result = courseService.save(courseDTO, imageFile);
+//        return ResponseEntity.ok().body(result);
 //    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseDTO courseDTO) throws DataNotFoundException {
+        if (courseDTO.getId() != null && !Objects.equals(id, courseDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
+        }
+        if (!courseService.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "id not found");
+        }
+
+        CourseDTO result = courseService.update(id, courseDTO);
+        return ResponseEntity
+                .ok()
+                .body(result);
+    }
 
     @GetMapping("")
     public ResponseEntity<List<CourseDTO>> getAllCourse(){
@@ -119,14 +109,20 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id){
-        CourseDTO courseDTO = courseService.findOne(id);
-        if (courseDTO != null){
-            return ResponseEntity.ok(courseDTO);
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id) {
+        Optional<CourseDTO> courseDTO = courseService.findOneWithPresignedImageURL(id);
+        return ResponseEntity.of(courseDTO);
     }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id){
+//        CourseDTO courseDTO = courseService.findOne(id);
+//        if (courseDTO != null){
+//            return ResponseEntity.ok(courseDTO);
+//        }else{
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @GetMapping("/course-info")
     public ResponseEntity<List<CourseInfoDTO>> getCourseInfo(){
@@ -136,7 +132,7 @@ public class CourseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
+        courseService.remove(id);
         return ResponseEntity
                 .noContent()
                 .build();

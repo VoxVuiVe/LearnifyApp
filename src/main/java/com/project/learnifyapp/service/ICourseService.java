@@ -3,6 +3,7 @@ package com.project.learnifyapp.service;
 import com.project.learnifyapp.dtos.CommentDTO;
 import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.dtos.CourseImageDTO;
+import com.project.learnifyapp.dtos.LessonDTO;
 import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
 import com.project.learnifyapp.models.Course;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface ICourseService {
     CourseDTO save(CourseDTO courseDTO, MultipartFile videoFile) throws DataNotFoundException;
@@ -23,7 +25,7 @@ public interface ICourseService {
 
     Course getCourseById(Long courseId) throws Exception;
 
-//    CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException;
+    CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException;
 
     @Transactional(readOnly = true)
     List<CourseDTO> findAll();
@@ -35,6 +37,9 @@ public interface ICourseService {
     @Transactional(readOnly = true)
     CourseDTO findOne(Long id);
 
-    void deleteCourse(Long id);
+    void remove(Long id);
+
+    @Transactional(readOnly = true)
+    Optional<CourseDTO> findOneWithPresignedImageURL(Long id);
 
 }

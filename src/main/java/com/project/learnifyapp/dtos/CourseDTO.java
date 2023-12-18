@@ -36,16 +36,20 @@ public class CourseDTO implements Serializable {
     private Integer enrollmentCount = 0;
 
     @NotNull
+    @JsonProperty("thumbnail")
     private String thumbnail;
 
     @JsonProperty("is_delete")
     private Boolean isDelete = true;
 
+    @JsonProperty("category_id")
     private Long categoryId;
 
+    @JsonProperty("user_id")
     private Long userId;
 
-    @NotNull
     @JsonProperty("description")
     private String description;
+
+
 }

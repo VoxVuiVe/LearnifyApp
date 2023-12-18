@@ -69,8 +69,9 @@ public class S3Service {
 
     public String uploadImagesToS3(MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) {
-            throw new IllegalArgumentException("Video file is null or empty.");
+            throw new IllegalArgumentException("Course file is null or empty.");
         }
+        
         String uniqueImageName = StringUtils.getFilenameExtension(imageFile.getOriginalFilename());
         if (StringUtils.isEmpty(uniqueImageName)) {
             throw new IllegalArgumentException("Unable to determine video file extension.");
@@ -87,9 +88,10 @@ public class S3Service {
 
             s3Client.putObject(request, RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize()));
 
-            log.info("Video uploaded successfully to S3. Key: {}", s3Key);
+            log.info("Course uploaded successfully to S3. Key: {}", s3Key);
 
             return s3Key;
+
         } catch (S3Exception e) {
             log.error("Failed to upload imageFile to S3. Error: {}", e.getMessage());
             throw new RuntimeException("Failed to upload imageFile to S3: " + e.getMessage());
@@ -98,6 +100,27 @@ public class S3Service {
             throw new RuntimeException(e);
         }
     }
+
+//    public String getPresignedURLImages(String keyName) {
+//        try {
+//            String cloudFrontURL = cloudFrontDomain + "/" + keyName;
+//
+//            GetObjectRequest objectRequest = GetObjectRequest.builder()
+//                    .bucket(bucketName)
+//                    .key(keyName)
+//                    .build();
+//
+//            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+//                    .signatureDuration(Duration.ofMinutes(60))
+//                    .getObjectRequest(objectRequest)
+//                    .build();
+//
+//            return cloudFrontURL;
+//
+//        } catch (S3Exception e) {
+//            throw new S3ServiceException("Failed to get presigned URL for " + keyName, e);
+//        }
+//    }
 
     public void deleteFile(String path) {
         DeleteObjectRequest request = DeleteObjectRequest.builder()

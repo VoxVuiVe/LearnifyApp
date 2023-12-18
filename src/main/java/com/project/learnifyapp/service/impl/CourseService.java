@@ -1,10 +1,8 @@
 package com.project.learnifyapp.service.impl;
 
 import com.project.learnifyapp.dtos.CourseDTO;
-import com.project.learnifyapp.dtos.CourseImageDTO;
 import com.project.learnifyapp.dtos.userDTO.CourseInfoDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
-import com.project.learnifyapp.exceptions.InvalidParamException;
 import com.project.learnifyapp.models.*;
 import com.project.learnifyapp.repository.*;
 import com.project.learnifyapp.service.ICourseService;
@@ -18,14 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,69 +37,47 @@ public class CourseService implements ICourseService {
 
     private final UserRepository userRepository;
 
-    private final CourseImageRepository courseImageRepository;
-
     private final S3Service s3Service;
-
-    private static String UPLOADS_FOLDER = "uploads";
 
     @Override
     public CourseDTO save(CourseDTO courseDTO, MultipartFile imageFile) {
         log.debug("Request to save Course: {}", courseDTO);
 
-        // Ánh xạ CourseDTO sang entity
         Course course = courseMapper.toEntity(courseDTO);
 
         // Lưu entity vào cơ sở dữ liệu
-//        Course savedCourse = courseRepository.saveAndFlush(course);
-            // Upload ảnh lên S3
-            if (imageFile != null && !imageFile.isEmpty()) {
-                try {
-                    String existingThumbnailUrl = course.getThumbnail();
-                    if (existingThumbnailUrl != null) {
-                        s3Service.deleteFile(existingThumbnailUrl);
-                    }
-                    String newThumbnailUrl = s3Service.uploadImagesToS3(imageFile);
-                    if (newThumbnailUrl != null) {
-                        course.setThumbnail(newThumbnailUrl);
-                        course = courseRepository.save(course);
-                        CourseDTO result = courseMapper.toDTO(course);
-                        return result;
-                    } else {
-                        throw new RuntimeException("Lỗi: thumbnailFile không được phép là null hoặc trống.");
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException("Lỗi khi tải lên/cập nhật thumbnail lên S3: " + e.getMessage());
-                }
-            }
+        Course savedCourse = courseRepository.saveAndFlush(course);
+
         log.debug("New Course saved: {}", course);
         return courseMapper.toDTO(course);
     }
 
-//    @Override
-//    public CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException {
-//        log.debug("Update comment with ID: {}", Id);
-//
-//        Course existingCourse = courseRepository.findById(Id)
-//                .orElseThrow(() -> new DataNotFoundException("Course not found"));
-//
-//        Category category = categoryReponsitory.findById(courseDTO.getCategoryId())
-//                .orElseThrow(() -> new DataNotFoundException("Category not found"));
-//
-//        User user = userRepository.findById(courseDTO.getUserId())
-//                .orElseThrow(() -> new DataNotFoundException("User not found"));
-//
-//        courseMapper.updateCourseFromDTO(courseDTO, existingCourse);
-//        existingCourse.setCategory(category);
-//        existingCourse.setUser(user);
-//
-//        Course updatedCourse = courseRepository.save(existingCourse);
-//
-//        log.debug("Updated comment: {}", updatedCourse);
-//
-//        return courseMapper.toDTO(updatedCourse);
-//    }
+    @Override
+    public CourseDTO update(Long Id, CourseDTO courseDTO) throws DataNotFoundException {
+        log.debug("Update comment with ID: {}", Id);
 
+        Course existingCourse = courseRepository.findById(Id)
+                .orElseThrow(() -> new DataNotFoundException("Course not found"));
+
+        Category category = categoryReponsitory.findById(courseDTO.getCategoryId())
+                .orElseThrow(() -> new DataNotFoundException("Category not found"));
+
+        User user = userRepository.findById(courseDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        courseMapper.updateCourseFromDTO(courseDTO, existingCourse);
+        existingCourse.setCategory(category);
+        existingCourse.setUser(user);
+        if(existingCourse.getThumbnail() != null) {
+            existingCourse.setThumbnail(courseDTO.getThumbnail());
+        }
+
+        Course updatedCourse = courseRepository.save(existingCourse);
+
+        log.debug("Updated comment: {}", updatedCourse);
+
+        return courseMapper.toDTO(updatedCourse);
+    }
 
     @Override
     public Course getCourseById(Long courseId) throws Exception {
@@ -115,6 +86,32 @@ public class CourseService implements ICourseService {
             return optionalCourse.get();
         }
         throw new DataNotFoundException("Cannot find course with ID: " + courseId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CourseDTO> findOneWithPresignedImageURL(Long id) {
+        Optional<CourseDTO> courseDTO = courseRepository.findById(id).map(courseMapper::toDTO);
+        if (courseDTO.isPresent()) {
+            CourseDTO course = courseDTO.get();
+            String imageKey = course.getThumbnail(); // Giả định rằng getImageUrl trả về key
+
+            // Kiểm tra nullability của videoKey
+            if (imageKey != null) {
+                // Sử dụng S3Service để lấy presigned URL
+                String getPresignedURL = s3Service.getPresignedURL(imageKey);
+
+                // Cập nhật đường dẫn image trong CourseDTO với presigned URL
+                course.setThumbnail(getPresignedURL);
+
+                return Optional.of(course);
+            } else {
+                // Xử lý trường hợp ImageKey là null, nếu cần
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -166,12 +163,15 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public void deleteCourse(Long id) {
+    public void remove(Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
         if (!course.getSection().isEmpty()) {
             course.setIsDelete(false);
+
             courseRepository.save(course);
+
+            s3Service.deleteFile(course.getThumbnail());
         } else {
             courseRepository.delete(course);
         }
@@ -180,32 +180,6 @@ public class CourseService implements ICourseService {
     public boolean existsById(Long id) {
         return courseRepository.existsById(id);
     }
-
-//    private boolean isImageFile(MultipartFile file) {
-//        String contenType = file.getContentType();
-//        return contenType != null && contenType.startsWith("image/");
-//    }
-//
-//    @Override
-//    public String storeFile(MultipartFile file) throws IOException {
-//        if(!isImageFile(file) || file.getOriginalFilename() == null) {
-//            throw new IOException(("Invalid image format"));
-//        }
-//        String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-//        // thêm UUID vào trước tên file để đảm bảo tên file là duy nhất
-//        String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
-//        // đường dẫn đến thư mục mà bạn muốn lưu file
-//        java.nio.file.Path uploadDir = Paths.get(UPLOADS_FOLDER);
-//        // Kiểm tra và tạo thư mục nếu nó không tồn tại
-//        if(!Files.exists(uploadDir)) {
-//            Files.createDirectories(uploadDir);
-//        }
-//        // Đường dẫn đầy đủ đến file
-//        java.nio.file.Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
-//        // Sao chép file vào thư mục đích
-//        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-//        return uniqueFilename;
-//    }
 
     private CourseDTO convertToDto(Course discount) {
         CourseDTO dto = new CourseDTO();
