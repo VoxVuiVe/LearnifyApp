@@ -275,7 +275,7 @@ public class UserService implements IUserService {
             String encodedPassword = passwordEncoder.encode(newPassword);
             existingUser.setPassword(encodedPassword);
         }
-        //existingUser.setRole(updatedRole);
+//        existingUser.setRole(updatedRole);
         // Save the updated user
         return userRepository.save(existingUser);
     }
