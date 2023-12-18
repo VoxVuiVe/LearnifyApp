@@ -14,8 +14,7 @@ import com.project.learnifyapp.service.mapper.CourseMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,78 +33,29 @@ public class ShoppingCartService implements IShoppingCartService {
     private final CourseService courseService;
 
     @Override
-    public List<CartItemDTO> saveShoppingCart(CartItemDTO request) {
-        if (request.getUserId() == null) {
-            log.debug("User not logged in");
-            return Collections.emptyList();
+    public CartItemDTO save(CartItemDTO cartItemDTO){
+        System.out.println(cartItemDTO);
+        CartItem cartItems = cartItemRepository.findCartItemByUser(cartItemDTO.getUserId());
+        User user = userRepository.findById(cartItemDTO.getUserId()).orElse(null);
+        if (cartItems == null){
+            cartItems.setCartData(cartItemDTO.getCartData());
+            cartItems.setStatus(cartItemDTO.getStatus());
+            cartItems.setUser(user);
+            cartItems.setTotalPrice(cartItemDTO.getTotalPrice());
+            CartItem cartItemdto = cartItemRepository.save(cartItems);
+            return cartItemMapper.toDTO(cartItemdto);
         }
-
-        String cartData = request.getCartData();
-        if (cartData == null) {
-            log.debug("No cart data provided");
-            return Collections.emptyList();
-        }
-
-        String[] courseIds = cartData.split(",");
-        List<Course> listCourse = new ArrayList<>();
-
-        for (String courseId : courseIds) {
-            try {
-                Long courseIdLong = Long.valueOf(courseId);
-                Course courseDTO = courseRepository.findById(courseIdLong).orElse(null);
-                if (courseDTO != null) {
-                    listCourse.add(courseDTO);
-                }
-            } catch (NumberFormatException e) {
-                log.error("Invalid courseId: {}", courseId);
-            }
-        }
-
-        List<CartItemDTO> newCartItems = new ArrayList<>();
-
-        for (Course course : listCourse) {
-            // Check if the course already exists in the cart
-            CartItem existingCartItem = cartItemRepository.findByUserIdAndCourseId(request.getUserId(), course.getId());
-            if (existingCartItem != null) {
-                log.info("Course {} already exists in the cart", course.getId());
-                continue;
-            }
-
-            // Create a new CartItemDTO for each unique course
-            CartItemDTO cartItemDTO = CartItemDTO.builder()
-                    .totalPrice(course.getPrice())
-                    .userId(request.getUserId())
-                    .build();
-
-            // Update cartData with the new courseId
-            cartData = updateCartData(cartData, course.getId());
-
-            // Set the updated cartData to the CartItemDTO
-            cartItemDTO.setCartData(cartData);
-
-            CartItem ci = cartItemMapper.toEntity(cartItemDTO);
-            newCartItems.add(cartItemMapper.toDTO(cartItemRepository.save(ci)));
-        }
-
-        return newCartItems;
+        cartItems.setCartData(cartItemDTO.getCartData());
+        cartItems.setStatus(cartItemDTO.getStatus());
+        cartItems.setTotalPrice(cartItemDTO.getTotalPrice());
+        cartItems.setUser(user);
+        CartItem updatedCartItem = cartItemRepository.save(cartItems);
+        return cartItemMapper.toDTO(updatedCartItem);
     }
 
-    private String updateCartData(String cartData, Long courseId) {
-        // Parse the existing cartData and update it with the new courseId
-        List<Long> courseIds = Arrays.stream(cartData.split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList());
-
-        // Add the new courseId if it's not already in the list
-        if (!courseIds.contains(courseId)) {
-            courseIds.add(courseId);
-        }
-
-        // Convert the updated list of courseIds back to a String
-        return courseIds.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-    }
+//    public CartItem findByUserIdAndStatus(Long userId){
+//        return cartItemRepository.findUserIdAndStatus(userId);
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -114,88 +64,47 @@ public class ShoppingCartService implements IShoppingCartService {
     }
 
     @Override
-    public Page<CartItemDTO> findAllPage(Long userId, PageRequest pageRequest) {
-        Page<CartItem> cartItemPage = cartItemRepository.findAllByUserId(userId, pageRequest);
-        return cartItemPage.map(this::convertToDTO);
-    }
-
-    private CartItemDTO convertToDTO(CartItem cartitem) {
-        CartItemDTO dto = new CartItemDTO();
-        dto.setId(cartitem.getId());
-        dto.setTotalPrice(cartitem.getTotalPrice());
-        String cartData = cartitem.getCartData();
-        List<CourseDTO> courses = parseCartData(cartData);
-        dto.setCourses(courses);
-
-        User user = cartitem.getUser();
-        if (user != null) {
-            dto.setUserId(user.getId());
+    public List<CourseDTO> findAllPage(Long userId) {
+        List<CartItem> list = cartItemRepository.findAllByUserId(userId);
+        List<CourseDTO> courseDTOS = new ArrayList<>();
+        for (CartItem cartItem : list) {
+            String cartData = cartItem.getCartData();
+            List<CourseDTO> course= getAllCartOfUser(cartData);
+            courseDTOS.addAll(course);
         }
-
-        return dto;
+        if(courseDTOS.isEmpty()){
+            log.debug("User not logged in");
+            return Collections.emptyList();
+        }
+        return courseDTOS;
     }
 
-    private List<CourseDTO> parseCartData(String cartData) {
+
+    public List<CourseDTO> getAllCartOfUser(String cartData) {
         List<CourseDTO> courses = new ArrayList<>();
 
         if (cartData != null && !cartData.isEmpty()) {
             String[] courseIds = cartData.split(",");
             for (String courseId : courseIds) {
-                // Tạo đối tượng CourseDTO và thêm vào danh sách
-                CourseDTO courseDTO = createCourseDTOFromCourseId(Long.parseLong(courseId));
-                courses.add(courseDTO);
+                try {
+                    Long courseIdLong = Long.valueOf(courseId);
+                    Optional<Course> optionalCourse = courseRepository.findById(courseIdLong);
+//                    Course course = optionalCourse.orElse(null);
+
+                    if (optionalCourse.isPresent()) {
+                        Course course = optionalCourse.get();
+                        CourseDTO courseDTO = courseMapper.toDTO(course);
+                        courses.add(courseDTO);
+                    }
+                } catch (NumberFormatException e) {
+                    log.error("Invalid courseId: {}", courseId);
+                }
             }
         }
-
         return courses;
     }
 
-    private CourseDTO createCourseDTOFromCourseId(Long courseId) {
-        // Tìm kiếm và trả về thông tin chi tiết về khóa học dựa trên courseId
-        // (Bạn cần triển khai logic này dựa trên cơ sở dữ liệu của bạn)
-        // Giả sử có một phương thức trong service để lấy thông tin chi tiết của khóa học dựa trên courseId
-        CourseDTO courseDTO = courseService.findOne(courseId);
-        return courseDTO != null ? courseDTO : new CourseDTO();
-    }
 
-
-    @Override
-    public void deleteCartItem(Long id) {
-        try {
-            Optional<CartItem> optionalCartItem = cartItemRepository.findById(id);
-            if (optionalCartItem.isPresent()) {
-                CartItem cartItem = optionalCartItem.get();
-                cartItemRepository.deleteById(id);
-
-                // Kiểm tra xem cartData có rỗng hay không
-                if (cartItem.getCartData() == null || cartItem.getCartData().isEmpty()) {
-                    // Nếu cartData rỗng, có thể thông báo cho người dùng ở đây
-                    // Ví dụ: throw new EmptyCartException("Giỏ hàng trống");
-                    // Trong trường hợp thông báo, bạn có thể tạo một Exception tùy chỉnh hoặc sử dụng một ngoại lệ có sẵn.
-                } else {
-                    // Nếu không rỗng, cập nhật lại cartData sau khi xóa course
-                    String updatedCartData = updateCartDataAfterDelete(cartItem.getCartData(), id);
-                    cartItem.setCartData(updatedCartData);
-                    cartItemRepository.save(cartItem);
-                }
-            }
-        } catch (Exception e) {
-            log.debug("Failed to delete cartItem", e);
-            throw new RuntimeException("Failed to delete cartItem: " + e.getMessage(), e);
-        }
-
-    }
-    private String updateCartDataAfterDelete(String cartData, Long courseId) {
-        List<CourseDTO> courses = parseCartData(cartData);
-
-        // Loại bỏ courseId khỏi danh sách
-        courses.removeIf(course -> Objects.equals(course.getId(), courseId));
-
-        // Chuyển đổi danh sách đã cập nhật thành chuỗi
-        return courses.stream()
-                .map(course -> String.valueOf(course.getId()))
-                .collect(Collectors.joining(","));
-    }
 
 }
 

@@ -75,7 +75,7 @@ public class S3Service {
         s3Client.deleteObject(request);
     }
 
-    public String getPresignedURL(String path, String keyName) {
+    public String getPresignedURL(String keyName) {
         try {
             String cloudFrontURL = cloudFrontDomain + "/" + keyName;
 
@@ -89,9 +89,9 @@ public class S3Service {
                     .getObjectRequest(objectRequest)
                     .build();
 
-            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
-            String myURL = cloudFrontURL + presignedRequest.url().toString();
-            return myURL;
+//            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+//            String presignedURL = cloudFrontURL;
+            return cloudFrontURL;
 
         } catch (S3Exception e) {
             throw new S3ServiceException("Failed to get presigned URL for " + keyName, e);
