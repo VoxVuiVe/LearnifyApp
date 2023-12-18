@@ -45,6 +45,7 @@ public class CommentsService implements ICommentsService {
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Comment comment = commentMapper.toEntity(commentDTO);
+//        comment.setQuantity(user.getComments() * comment.getQuantity());
         comment.setCourse(course);
         comment.setUser(user);
 
@@ -106,6 +107,11 @@ public class CommentsService implements ICommentsService {
     @Override
     public List<CommentDTO> getAllComments() {
         return commentRepository.findAll().stream().map(commentMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommentDTO> getAllCommentByCourseId(Long courseId) {
+        return commentRepository.getCommentByCourseId(courseId).stream().map(commentMapper::toDTO).collect(Collectors.toList());
     }
 
     public boolean existsById(Long id) {

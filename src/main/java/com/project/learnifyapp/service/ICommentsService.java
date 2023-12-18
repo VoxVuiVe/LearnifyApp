@@ -16,6 +16,8 @@ public interface ICommentsService {
 
     List<CommentDTO> getAllComments();
 
+    List<CommentDTO> getAllCommentByCourseId(Long courseId);
+
     boolean existsById(Long id);
 
 }

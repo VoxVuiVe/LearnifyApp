@@ -3,7 +3,10 @@ package com.project.learnifyapp.controllers;
 
 import java.util.List;
 import java.util.Objects;
+
+import com.project.learnifyapp.dtos.RatingDTO;
 import com.project.learnifyapp.exceptions.DataNotFoundException;
+import com.project.learnifyapp.models.Rating;
 import com.project.learnifyapp.service.impl.CommentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +71,12 @@ public class CommentController {
     @GetMapping("/comments")
     public ResponseEntity<List<CommentDTO>> getAllComments() {
         List<CommentDTO> comments = commentsService.getAllComments();
+        return ResponseEntity.ok(comments);
+    }
+
+    @GetMapping("/comments/{courseId}")
+    public ResponseEntity<List<CommentDTO>> getAllCommentByCourseId(@PathVariable("courseId") Long courseId) {
+        List<CommentDTO> comments = commentsService.getAllCommentByCourseId(courseId);
         return ResponseEntity.ok(comments);
     }
 }
