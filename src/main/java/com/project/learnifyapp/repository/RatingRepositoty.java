@@ -11,4 +11,5 @@ import java.util.List;
 public interface RatingRepositoty extends JpaRepository<Rating, Long>{
 
     List<Rating> getRatingByCourseId(Long courseId);
+
 }

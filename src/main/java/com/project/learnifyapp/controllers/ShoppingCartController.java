@@ -49,4 +49,5 @@ public class ShoppingCartController {
         shoppingCartService.deleteCartItem(id);
         return ResponseEntity.ok().build();
     }
+
 }

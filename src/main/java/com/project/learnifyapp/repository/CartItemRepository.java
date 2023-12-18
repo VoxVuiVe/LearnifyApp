@@ -15,6 +15,7 @@ import java.util.List;
 public interface CartItemRepository extends JpaRepository<CartItem , Long> {
 //    List<CartItem> findAllByUserId(Long userId);
     Page<CartItem> findAllByUserId(Long userId, PageRequest pageRequest);
+    
     default CartItem findByUserIdAndCourseId(Long userId, Long courseId) {
         List<CartItem> cartItems = findAllByUserId(userId);
 
