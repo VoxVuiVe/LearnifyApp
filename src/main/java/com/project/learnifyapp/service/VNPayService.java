@@ -116,9 +116,9 @@ public class VNPayService {
         return paymentUrl;
     }
 
-    public int orderReturn(HttpServletRequest request){
+    public int orderReturn(HttpServletRequest request) {
         Map fields = new HashMap();
-        for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
+        for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = null;
             String fieldValue = null;
             try {
@@ -141,45 +141,19 @@ public class VNPayService {
         }
         String signValue = VNPayConfiguration.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
-            if (PaymentStatus.SUCCESS.equals(request.getParameter("vnp_TransactionStatus"))) {
-                // Nếu giao dịch thành công, cập nhật trạng thái thanh toán trong cơ sở dữ liệu
-//                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
-//                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
-                Payment payment = new Payment();
-                if (payment != null) {
-                    payment.setPaymentDate((Date) fields.get("vnp_PayDate"));
-                    String dateString = (String) fields.get("vnp_PayDate");
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); // Thay đổi định dạng này theo định dạng của dateString
-                    Date date = null;
-                    try {
-                        date = formatter.parse(dateString);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        // Xử lý ngoại lệ ở đây
-                    }
-                    if (date != null) {
-                        payment.setPaymentDate(date);
-                    }
-                    payment.setBankCode((String) fields.get("vnp_BankCode"));
-                    payment.setTransactionNo((String) fields.get("vnp_TransactionNo"));
-                    payment.setTransactionStatus((String) fields.get("vnp_TransactionStatus"));
-                    String totalMoneyString = (String) fields.get("vnp_Amount");
-                    Float totalMoney = Float.parseFloat(totalMoneyString);
-                    payment.setTotalMoney(totalMoney);
-                    paymentRepository.save(payment);
-                }
+            if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+
+                System.out.println("GD Thanh cong");
                 return 1;
             } else {
-                // Nếu giao dịch không thành công, cập nhật trạng thái thanh toán trong cơ sở dữ liệu
-                String vnp_TxnRef = request.getParameter("vnp_TxnRef");
-                Payment payment = paymentRepository.findById(Long.parseLong(vnp_TxnRef)).orElse(null);
-                if (payment != null) {
-                    paymentRepository.save(payment);
-                }
+
+                System.out.println("GD Khong thanh cong");
                 return 0;
             }
+
         } else {
-            return -1;
+            System.out.println("Chu ky khong hop le");
+            return 0;
         }
     }
 

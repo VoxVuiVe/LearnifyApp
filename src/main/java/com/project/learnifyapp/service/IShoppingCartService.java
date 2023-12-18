@@ -1,23 +1,24 @@
 package com.project.learnifyapp.service;
 
 import com.project.learnifyapp.dtos.CartItemDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
+import com.project.learnifyapp.dtos.CourseDTO;
+import com.project.learnifyapp.models.Course;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IShoppingCartService {
 
-    List<CartItemDTO> saveShoppingCart(CartItemDTO request);
+//    List<CartItemDTO> saveShoppingCart(CartItemDTO request);
 
 //    List<CartItemDTO> findAll(Long userId);
 
+    CartItemDTO save(CartItemDTO cartItemDTO);
+
     Optional<CartItemDTO> findOneCartItemById(Long cartItemId);
 
-    Page<CartItemDTO> findAllPage(Long userId, PageRequest pageRequest);
+//    Page<CartItemDTO> findAllPage(Long userId, PageRequest pageRequest);
 
     void deleteCartItem(Long cartItemId);
-
+List<CourseDTO> findAllPage(Long userId);
 }

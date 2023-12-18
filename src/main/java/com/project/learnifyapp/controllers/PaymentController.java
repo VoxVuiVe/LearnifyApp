@@ -7,10 +7,13 @@ import com.project.learnifyapp.models.PaymentStatus;
 import com.project.learnifyapp.models.UserCourse;
 import com.project.learnifyapp.repository.PaymentRepository;
 import com.project.learnifyapp.repository.UserCourseRepository;
+import com.project.learnifyapp.service.VNPayService;
 import com.project.learnifyapp.service.impl.PaymentService;
+import com.project.learnifyapp.service.mapper.PaymentMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -29,7 +32,8 @@ public class PaymentController {
     private final PaymentRepository paymentRepository;
 
     private final UserCourseRepository userCourseRepository;
-
+    private final VNPayService vnPayService;
+    private final PaymentMapper paymentMapper;
     @PostMapping("/create")
     public ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO,
                                            BindingResult result) {
@@ -39,8 +43,10 @@ public class PaymentController {
                         .stream().map(FieldError::getDefaultMessage).toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            PaymentDTO paymentResponse = paymentService.createPayment(paymentDTO);
-            return ResponseEntity.ok(paymentResponse);
+            Payment payment = paymentMapper.toEntity(paymentDTO);
+            String vnPayUrl = vnPayService.createOrder(payment);
+            return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, vnPayUrl).build();
+
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

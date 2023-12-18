@@ -1,5 +1,6 @@
 package com.project.learnifyapp.repository;
 
+import com.project.learnifyapp.dtos.CourseDTO;
 import com.project.learnifyapp.models.Course;
 import com.project.learnifyapp.models.Discount;
 import org.springframework.data.domain.Page;
@@ -29,4 +30,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
             "LEFT JOIN sections s ON s.course_id = c.id " +
             "LEFT JOIN user_image ui ON ui.image_url = u.image_url", nativeQuery = true)
     List<Object[]> getCoursesInfo();
+
 }
