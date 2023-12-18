@@ -124,26 +124,26 @@ public class LessonService implements ILessonService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<LessonDTO> findOneWithPresignedURL(Long id) {
-        Optional<LessonDTO> lessonDTO = lessonRepository.findById(id).map(lessonMapper::toDTO);
-        if (lessonDTO.isPresent()) {
-            LessonDTO lesson = lessonDTO.get();
-            String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
+            public Optional<LessonDTO> findOneWithPresignedURL(Long id) {
+                Optional<LessonDTO> lessonDTO = lessonRepository.findById(id).map(lessonMapper::toDTO);
+                if (lessonDTO.isPresent()) {
+                    LessonDTO lesson = lessonDTO.get();
+                    String videoKey = lesson.getVideoUrl(); // Giả định rằng getVideoUrl trả về key
 
-            // Kiểm tra nullability của videoKey
-            if (videoKey != null) {
-                // Sử dụng S3Service để lấy presigned URL
-                String presignedURL = s3Service.getPresignedURL(videoKey);
+                    // Kiểm tra nullability của videoKey
+                    if (videoKey != null) {
+                        // Sử dụng S3Service để lấy presigned URL
+                        String presignedURL = s3Service.getPresignedURL(videoKey);
 
-                // Cập nhật đường dẫn video trong lessonDTO với presigned URL
-                lesson.setVideoUrl(presignedURL);
+                        // Cập nhật đường dẫn video trong lessonDTO với presigned URL
+                        lesson.setVideoUrl(presignedURL);
 
-                return Optional.of(lesson);
-            } else {
-                // Xử lý trường hợp videoKey là null, nếu cần
-                return Optional.empty();
-            }
-        } else {
+                        return Optional.of(lesson);
+                    } else {
+                        // Xử lý trường hợp videoKey là null, nếu cần
+                        return Optional.empty();
+                    }
+                } else {
             return Optional.empty();
         }
     }
