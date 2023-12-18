@@ -19,4 +19,5 @@ public interface IShoppingCartService {
     Page<CartItemDTO> findAllPage(Long userId, PageRequest pageRequest);
 
     void deleteCartItem(Long cartItemId);
+
 }

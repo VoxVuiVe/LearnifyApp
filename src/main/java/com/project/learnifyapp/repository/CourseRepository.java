@@ -23,10 +23,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
             ":keyword IS NULL OR (cs.title LIKE CONCAT('%', :keyword, '%'))", nativeQuery = true)
     Page<Course> searchCategory(@Param("keyword") String keyword, PageRequest pageRequest);
 
-    @Query(value = "SELECT courses.id as course_id, courses.thumbnail, courses.created_at,courses.title, users.fullname, user_image.image_url, sections.id as sections_id, sections.quantity_lesson " +
-            "FROM courses " +
-            "LEFT JOIN users ON courses.user_id = users.id " +
-            "LEFT JOIN sections ON sections.course_id = courses.id " +
-            "LEFT JOIN user_image ON user_image.image_url = users.image_url", nativeQuery = true)
+    @Query(value = "SELECT c.id, c.thumbnail, c.created_at,c.title, u.fullname, ui.image_url, s.id, s.quantity_lesson " +
+            "FROM courses c " +
+            "LEFT JOIN users u ON c.user_id = u.id " +
+            "LEFT JOIN sections s ON s.course_id = c.id " +
+            "LEFT JOIN user_image ui ON ui.image_url = u.image_url", nativeQuery = true)
     List<Object[]> getCoursesInfo();
 }

@@ -142,19 +142,19 @@ public class CourseController {
                 .build();
     }
 
-    @GetMapping("/pages")
-    public ResponseEntity<Map<String, Object>> getCoursePage(
-            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size ){
-        PageRequest pageRequest = PageRequest.of(page,size);
-        Page<CourseDTO> courses = courseService.findAllPage(keyword,pageRequest);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("courses",courses.getContent());
-        response.put("totalPages",courses.getTotalPages());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @GetMapping("/pages")
+//    public ResponseEntity<Map<String, Object>> getCoursePage(
+//            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue = "10") int size ){
+//        PageRequest pageRequest = PageRequest.of(page,size);
+//        Page<CourseDTO> courses = courseService.findAllPage(keyword,pageRequest);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("courses",courses.getContent());
+//        response.put("totalPages",courses.getTotalPages());
+//
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
 }

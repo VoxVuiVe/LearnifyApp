@@ -78,7 +78,13 @@ public class ShoppingCartService implements IShoppingCartService {
                     .build();
 
             // Update cartData with the new courseId
-            cartData = updateCartData(cartData, course.getId());
+
+            if(request.getUserId() != null){
+                Long userId = request.getUserId();
+                updateCartData(cartData,userId);
+            }else{
+                cartData = updateCartData(cartData, course.getId());
+            }
 
             // Set the updated cartData to the CartItemDTO
             cartItemDTO.setCartData(cartData);
@@ -183,8 +189,8 @@ public class ShoppingCartService implements IShoppingCartService {
             log.debug("Failed to delete cartItem", e);
             throw new RuntimeException("Failed to delete cartItem: " + e.getMessage(), e);
         }
-
     }
+
     private String updateCartDataAfterDelete(String cartData, Long courseId) {
         List<CourseDTO> courses = parseCartData(cartData);
 
